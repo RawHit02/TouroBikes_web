@@ -1,8 +1,11 @@
+import { Box } from '@mui/material'
 import React from 'react'
 
 const SideNav = () => {
   return (
-    <div>SideNav</div>
+    <>
+      <Box className="w-full">side nav</Box>
+    </>
   )
 }
 
