@@ -110,7 +110,7 @@ const theme = createTheme({
                     },
                 },
             ],
-        },
+        }, 
     },
 });
 
