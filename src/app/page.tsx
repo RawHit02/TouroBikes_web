@@ -1,13 +1,12 @@
-import { Box } from "@mui/material";
-import Image from "next/image";
-import { LoginBackground } from "./assets";
+"use client"
+import React from "react";
+import { SignIn } from "./components";
 
 export default function Home() {
+
   return (
     <>
-      <Box className="h-screen">
-        <Image className="w-full h-full" src={LoginBackground} alt="login" />
-      </Box>
+      <SignIn />
     </>
   );
 }

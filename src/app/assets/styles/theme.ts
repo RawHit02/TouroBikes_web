@@ -3,12 +3,55 @@
 import { createTheme } from "@mui/material";
 
 const theme = createTheme({
+  typography:{
+    h1:{
+      fontSize:'25px',
+      fontWeight:'bold'
+    },
+    h2:{
+      fontSize:'23px',
+      fontWeight:'bold'
+    },
+    h3:{
+      fontSize:'18px',
+      
+    },
+    h4:{
+      fontSize:'16px',
+      
+    },
+    h5:{
+      fontSize:'14px',
+    },
+    h6:{
+      fontSize:'13px',
+      fontFamily:'sans-serif',
+    },
+    subtitle2:{
+      fontSize:'15px',
+      fontWeight:'bold'
+    },
+    subtitle1:{
+      fontSize:'13px',
+      fontWeight:'light'
+    },
+    body1:{
+      fontSize:'13px',
+      fontWeight:'light'
+    },
+    body2:{
+      fontSize:'13px',
+      fontWeight:'bold'
+    },
+
+  },
     components: {
         MuiButton: {
             styleOverrides: {
                 root: {
                     textTransform: "uppercase",
                     boxShadow: "none",
+                    borderRadius: "8px"
                 },
             },
             variants: [
@@ -24,7 +67,7 @@ const theme = createTheme({
                 {
                     props: { variant: "outlined" },
                     style: {
-                        borderColor: "#092E20",
+                        borderColor: "#245434",
                         color: "#092E20"
                     },
                 },
@@ -110,7 +153,15 @@ const theme = createTheme({
                     },
                 },
             ],
-        }, 
+        },
+        MuiLink:{
+          styleOverrides: {
+            root: {
+              textDecoration:'none',
+              color:'black',
+          },
+          },
+        },
     },
 });
 

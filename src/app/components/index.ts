@@ -1,6 +1,7 @@
 import Header from "./Header";
 import SideNav from "./SideNav";
 import AddNewBuyerDialog from "./AddNewBuyerDialog";
-import PrimaryTable from "./PrimaryTable";
+import SignIn from "./SignIn";
 
-export { Header, SideNav, AddNewBuyerDialog, PrimaryTable } 
+
+export { Header, SideNav, AddNewBuyerDialog, SignIn } 

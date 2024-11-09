@@ -12,6 +12,7 @@ const Buyers = () => {
                 </Box>
                     <PrimaryTable/>
             </Box>
+            
         </>
     )
 }
