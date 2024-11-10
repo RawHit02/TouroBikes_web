@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, IconButton, InputAdornment, OutlinedInput } from "@mui/material";
 import Image from "next/image";
-import { ArrowForwardIosOutlinedIcon, ArrowRightIcon, Logo2, RemoveRedEyeOutlinedIcon, VisibilityOffOutlinedIcon } from "../assets";
+import { ArrowForwardIosOutlinedIcon, Logo2, RemoveRedEyeOutlinedIcon, VisibilityOffOutlinedIcon } from "../assets";
 import Link from "next/link";
 import { LoginBackground } from "../assets";
 

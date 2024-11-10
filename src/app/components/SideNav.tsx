@@ -73,7 +73,7 @@ const SideNav = () => {
                     </Box>
                     <Box className="flex gap-2 text-white cursor-pointer side-nav-child">
                       <ArrowRightIcon className='side-nav-child-icon' />
-                      <Typography className='side-nav-child-label text-sm'>Today's Attendance</Typography>
+                      <Typography className='side-nav-child-label text-sm'>Today&aposs Attendance</Typography>
                     </Box>
                     <Box className="flex gap-2 text-white cursor-pointer side-nav-child">
                       <ArrowRightIcon className='side-nav-child-icon' />
