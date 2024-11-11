@@ -20,6 +20,10 @@ const config: Config = {
         secondary800: "#4B7D47",
         gray100: "#1C1B1F",
         gray200: "#64707D",
+        gray300: "#D2D6DB",
+        purple100: "#484C72",
+        error200: "#C03744",
+        red100: "#E4626F"
       },
     },
   },

@@ -6,6 +6,7 @@
 
 @import './assets//styles//accordion.scss';
 @import './assets//styles//table.scss';
+@import './assets//styles//tabs.scss';
 
 * {
     font-family: "Poppins", "Helvetica", "Arial", sans-serif !important;
@@ -48,4 +49,8 @@
     .nav-item-icon-active {
         @apply hidden
     }
+}
+
+.linear-gradient-bg {
+    background: linear-gradient(90deg, #EDFFF2 68.05%, #FFFFFF 100%);
 }
