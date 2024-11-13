@@ -1,3 +1,4 @@
+// components/AddNewBuyerDialog.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -25,7 +26,6 @@ import {
 } from "../assets";
 import { addBuyerSchema } from "@/yupSchema/addBuyerSchema";
 
-// Define types for Formik's values
 interface BuyerFormValues {
     name: string;
     contactNumber: string;
@@ -35,10 +35,24 @@ interface BuyerFormValues {
     profileImage: File | null;
 }
 
-const AddNewBuyerDialog = () => {
+interface Data {
+    id: number;
+    name: string;
+    contactNumber: string;
+    whatsappNumber: string;
+    email: string;
+    address: string;
+    profileImage?: string; // For image URL
+}
+
+interface AddNewBuyerDialogProps {
+    onAddBuyer: (buyer: Data) => void;
+}
+
+const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps> = ({ onAddBuyer }) => {
     const [open, setOpen] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [uploadedImage, setUploadedImage] = useState<string | null>(null); // Allow 'string' or 'null' for URL
+    const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -52,22 +66,30 @@ const AddNewBuyerDialog = () => {
         setSnackbarOpen(false);
     };
 
-    // Handle image upload with preview
     const handleImageUpload = (
         event: React.ChangeEvent<HTMLInputElement>,
-        setFieldValue: (field: string, value: any) => void
+        setFieldValue: (field: string, value: File | null) => void
     ) => {
         const file = event.currentTarget.files ? event.currentTarget.files[0] : null;
         if (file) {
             setFieldValue("profileImage", file);
             const imageUrl = URL.createObjectURL(file);
-            setUploadedImage(imageUrl); // Set preview image URL
+            setUploadedImage(imageUrl);
         }
     };
 
-    // Handle form submission
     const handleSubmit = (values: BuyerFormValues, { resetForm }: { resetForm: () => void }) => {
-        console.log("Form submitted with values: ", values);
+        const newBuyer: Data = {
+            id: Date.now(), // Unique ID
+            name: values.name,
+            contactNumber: values.contactNumber,
+            whatsappNumber: values.whatsappNumber,
+            email: values.email,
+            address: values.address,
+            profileImage: uploadedImage ?? undefined, // Use the image URL
+        };
+
+        onAddBuyer(newBuyer); // Send data to parent component
         resetForm();
         setUploadedImage(null);
         setSnackbarOpen(true);
@@ -85,10 +107,8 @@ const AddNewBuyerDialog = () => {
             >
                 <DialogTitle className="flex items-start justify-between px-9 pt-9 pb-6">
                     <Box>
-                        
                         <Typography className='text-2xl leading-6 font-semibold'>Add New Buyer</Typography>
                         <Typography className='text-secondary800 mt-2'>Enter details of your Vendor</Typography>
-
                     </Box>
                     <IconButton onClick={handleClose} className="p-0">
                         <CloseOutlinedIcon />
@@ -111,7 +131,7 @@ const AddNewBuyerDialog = () => {
                         <Form>
                             <DialogContent className="px-9">
                                 {/* Profile Picture Upload */}
-                                <Box className="flex items-center gap-6">
+                                <Box className="flex items-center gap-6 mb-4">
                                     <Box className="border-[6px] border-primary200 bg-primaryExtraLight rounded-full overflow-hidden w-[120px] h-[120px] flex items-center justify-center relative">
                                         {uploadedImage ? (
                                             <Image
@@ -166,28 +186,25 @@ const AddNewBuyerDialog = () => {
                                 </Box>
 
                                 {/* Form Fields */}
-                                <Box className="flex flex-col w-full gap-3 mt-3">
-                                    {/* Name Field */}
+                                <Box className="flex flex-col gap-3">
                                     <Box>
                                         <Typography className="text-sm text-primary">Name</Typography>
                                         <Field
                                             as={OutlinedInput}
                                             name="name"
-                                            placeholder="Enter here"
+                                            placeholder="Enter name"
                                             fullWidth
                                             className="mt-1"
                                             error={touched.name && Boolean(errors.name)}
                                         />
                                         <ErrorMessage name="name" component="div" className="text-red-600" />
                                     </Box>
-                                    
-                                    {/* Contact Number Field */}
                                     <Box>
                                         <Typography className="text-sm text-primary">Contact Number</Typography>
                                         <Field
                                             as={OutlinedInput}
                                             name="contactNumber"
-                                            placeholder="Enter here"
+                                            placeholder="Enter contact number"
                                             fullWidth
                                             className="mt-1"
                                             startAdornment={<InputAdornment position="start"><Typography className="text-secondary800 text-sm">+1</Typography></InputAdornment>}
@@ -195,14 +212,12 @@ const AddNewBuyerDialog = () => {
                                         />
                                         <ErrorMessage name="contactNumber" component="div" className="text-red-600" />
                                     </Box>
-
-                                    {/* WhatsApp Number Field */}
                                     <Box>
                                         <Typography className="text-sm text-primary">WhatsApp Number</Typography>
                                         <Field
                                             as={OutlinedInput}
                                             name="whatsappNumber"
-                                            placeholder="Enter here"
+                                            placeholder="Enter WhatsApp number"
                                             fullWidth
                                             className="mt-1"
                                             startAdornment={<InputAdornment position="start"><Typography className="text-secondary800 text-sm">+1</Typography></InputAdornment>}
@@ -210,29 +225,25 @@ const AddNewBuyerDialog = () => {
                                         />
                                         <ErrorMessage name="whatsappNumber" component="div" className="text-red-600" />
                                     </Box>
-
-                                    {/* Email Field */}
                                     <Box>
                                         <Typography className="text-sm text-primary">Email</Typography>
                                         <Field
                                             as={OutlinedInput}
                                             name="email"
                                             type="email"
-                                            placeholder="Enter here"
+                                            placeholder="Enter email"
                                             fullWidth
                                             className="mt-1"
                                             error={touched.email && Boolean(errors.email)}
                                         />
                                         <ErrorMessage name="email" component="div" className="text-red-600" />
                                     </Box>
-
-                                    {/* Address Field */}
                                     <Box>
                                         <Typography className="text-sm text-primary">Address</Typography>
                                         <Field
                                             as={OutlinedInput}
                                             name="address"
-                                            placeholder="Enter address here"
+                                            placeholder="Enter address"
                                             fullWidth
                                             className="mt-1"
                                             error={touched.address && Boolean(errors.address)}
@@ -241,7 +252,6 @@ const AddNewBuyerDialog = () => {
                                     </Box>
                                 </Box>
                             </DialogContent>
-                            
                             <DialogActions className="mb-[36px] px-9">
                                 <Button
                                     variant="outlined"
@@ -262,8 +272,6 @@ const AddNewBuyerDialog = () => {
                     )}
                 </Formik>
             </Dialog>
-
-            {/* Snackbar for success message */}
             <Snackbar
                 open={snackbarOpen}
                 autoHideDuration={3000}
