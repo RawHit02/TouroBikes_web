@@ -1,7 +1,7 @@
 // Images
 import LoginBackground from './images/login-bg.jpg'
 import NotificationIcon from './images/notification-icon.svg'
-import SearchIcon from './images/search-icon.svg'
+import HeaderSearchIcon from './images/search-icon.svg'
 import Logo1 from './images/logo-1.svg'
 import Hamburger from './images/hamburger.svg'
 import UploadImageIcon from './images/upload-image-icon.svg';
@@ -42,13 +42,16 @@ import EmailIcon from '@mui/icons-material/Email';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import BlockIcon from '@mui/icons-material/Block';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import SearchIcon from '@mui/icons-material/Search';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 
 export {
     //images
     LoginBackground,
     NotificationIcon,
-    SearchIcon,
+    HeaderSearchIcon,
     Logo1,
     Hamburger,
     UploadImageIcon,
@@ -89,4 +92,7 @@ export {
     LocalPhoneIcon,
     ContentCopyIcon,
     BlockIcon,
+    ShareOutlinedIcon,
+    SearchIcon,
+    KeyboardArrowDownIcon,
 }

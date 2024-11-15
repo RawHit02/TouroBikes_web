@@ -16,7 +16,7 @@ export default function Layout({
           <Box className="max-w-[270px] w-full">
             <SideNav />
           </Box>
-          <Box className="w-calc(100%-286px) flex flex-col gap-3 w-full">
+          <Box className="w-[calc(100%-286px)] flex flex-col gap-3">
             <Header/>
             {/* <SecondaryHeader /> */}
             {children}

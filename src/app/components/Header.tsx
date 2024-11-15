@@ -1,7 +1,7 @@
 import { Box, InputAdornment, OutlinedInput} from '@mui/material'
 import Image from 'next/image'
 import React from 'react'
-import { NotificationIcon, SearchIcon } from '../assets'
+import { NotificationIcon, HeaderSearchIcon } from '../assets'
 
 const Header = () => {
   return (
@@ -11,7 +11,7 @@ const Header = () => {
           <OutlinedInput
             id="outlined-adornment-weight"
             color='secondary'
-            startAdornment={<InputAdornment position="start"><Image src={SearchIcon} alt='search' /></InputAdornment>}
+            startAdornment={<InputAdornment position="start"><Image src={HeaderSearchIcon} alt='search' /></InputAdornment>}
             aria-describedby="outlined-weight-helper-text"
             inputProps={{
               'aria-label': 'weight',

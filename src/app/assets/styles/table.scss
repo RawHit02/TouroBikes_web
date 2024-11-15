@@ -24,16 +24,65 @@
                     }
                 }
             }
+
             .MuiTableBody-root {
                 .MuiTableRow-root {
                     .MuiTableCell-root {
-                       @apply text-sm font-normal border-primary100;
+                        @apply text-sm font-normal border-primary100;
                     }
                 }
+
                 .MuiTableRow-hover:hover {
                     @apply bg-primaryExtraLight;
                 }
             }
         }
     }
+}
+
+.secondary-table {
+    .MuiTableContainer-root {
+        .MuiTable-root {
+            .MuiTableHead-root {
+                .MuiTableRow-root {
+                    .MuiTableCell-root {
+                        @apply bg-primary border-none;
+
+                        &:first-child {
+                            border-radius: 4px 0 0 0;
+                        }
+
+                        &:last-child {
+                            border-radius: 0 4px 0 0;
+                        }
+
+                        .MuiButtonBase-root {
+                            @apply text-white text-sm font-normal;
+
+                            .MuiSvgIcon-root {
+                                @apply text-white;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .MuiTableBody-root {
+                .MuiTableRow-root {
+                    .MuiTableCell-root {
+                        @apply text-sm font-normal border-primary100;
+                        border-left: 1px solid rgba(224, 224, 224, 1);
+
+                        &:last-child {
+                            border-right: 1px solid rgba(224, 224, 224, 1);
+                        }
+                    }
+                    &:last-child {
+                        border-bottom: 1px solid rgba(224, 224, 224, 1);
+                    }
+                }
+            }
+        }
+    }
+    
 }
