@@ -54,3 +54,62 @@
 .linear-gradient-bg {
     background: linear-gradient(90deg, #EDFFF2 68.05%, #FFFFFF 100%);
 }
+
+
+//Mui Select popover
+.MuiPopover-paper {
+    &.MuiMenu-paper {
+        @apply rounded-2xl;
+    }
+}
+
+//date picker
+.primary-datepicker {
+    @apply p-0;
+
+    .MuiFormControl-root {
+        @apply w-full;
+    }
+
+    .MuiFormControl-root {
+        @apply w-full;
+
+        .MuiFormLabel-root {
+            transform: translate(14px, 12px) scale(1);
+
+            &.MuiInputLabel-shrink {
+                transform: translate(14px, -9px) scale(0.75);
+            }
+            &.Mui-focused {
+                @apply text-primary
+            }
+
+        }
+    }
+
+    .MuiInputBase-root {
+        @apply h-[42px];
+    }
+}
+
+//scrollbar design
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }

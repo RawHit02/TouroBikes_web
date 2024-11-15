@@ -6,7 +6,7 @@ import Image from 'next/image'
 const SideNav = () => {
   return (
     <>
-      <Box className="w-full bg-primary h-[calc(100vh-32px)] rounded-xl px-4 pt-9 pb-4 flex flex-col justify-between">
+      <Box className="w-full bg-primary h-[calc(100vh-32px)] rounded-xl px-4 pt-9 pb-4 flex flex-col justify-between overflow-auto">
         <Box>
           <Box className="flex items-center justify-between">
             <Box>

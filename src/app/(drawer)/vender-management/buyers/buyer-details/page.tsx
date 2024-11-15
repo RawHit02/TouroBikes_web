@@ -3,9 +3,14 @@ import React, { useState } from 'react'
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { Avatar, Divider, Switch, Typography } from '@mui/material';
+import { Button, Divider, FormControl, MenuItem, Select, SelectChangeEvent, Slider, Switch, Typography } from '@mui/material';
 import Image from 'next/image';
-import { AddressIcon, BlockIcon, ContentCopyIcon, DeleteIcon, DiamondImage, DummyProfile, EmailIcon, LocalPhoneIcon, TransactionIcon, UserProfileIcon, WhatsappIcon } from '@/app/assets';
+import { AddressIcon, BlockIcon, ContentCopyIcon, DeleteIcon, DiamondImage, DummyProfile, EmailIcon, KeyboardArrowDownIcon, LocalPhoneIcon, SearchIcon, ShareOutlinedIcon, TransactionIcon, UserProfileIcon, WhatsappIcon } from '@/app/assets';
+import { styled } from '@mui/material/styles';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { SecondaryTable } from '@/app/components';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -13,6 +18,61 @@ interface TabPanelProps {
   index: number;
   value: number;
 }
+
+const BoxShadow =
+  '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
+
+const PriceSlider = styled(Slider)(({ theme }) => ({
+  color: '#B6D063',
+  height: 2,
+  padding: '15px 0',
+  '& .MuiSlider-thumb': {
+    height: 8,
+    width: 8,
+    backgroundColor: '#092E20',
+    boxShadow: '0 0 2px 0px rgba(0, 0, 0, 0.1)',
+    '&:focus, &:hover, &.Mui-active': {
+      boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.1)',
+      // Reset on touch devices, it doesn't add specificity
+      '@media (hover: none)': {
+        boxShadow: BoxShadow,
+      },
+    },
+    '&:before': {
+      boxShadow:
+        '0px 0px 1px 0px rgba(0,0,0,0.2), 0px 0px 0px 0px rgba(0,0,0,0.14), 0px 0px 1px 0px rgba(0,0,0,0.12)',
+    },
+  },
+  '& .MuiSlider-valueLabel': {
+    fontSize: 12,
+    fontWeight: 'normal',
+    top: 2,
+    backgroundColor: 'unset',
+    color: theme.palette.text.primary,
+    '&::before': {
+      display: 'none',
+    },
+    '& *': {
+      background: 'transparent',
+      color: '#000',
+      ...theme.applyStyles('dark', {
+        color: '#fff',
+      }),
+    },
+  },
+  '& .MuiSlider-track': {
+    border: 'none',
+    height: 2,
+  },
+  '& .MuiSlider-rail': {
+    opacity: 1,
+    boxShadow: 'inset 0px 0px 4px -2px #000',
+    backgroundColor: '#092E20',
+  },
+  ...theme.applyStyles('dark', {
+    color: '#0a84ff',
+  }),
+}));
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -41,11 +101,17 @@ function a11yProps(index: number) {
   };
 }
 const BuyerDetails = () => {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(1);
+  const [age, setAge] = useState('');
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const handleChangeSelect = (event: SelectChangeEvent) => {
+    setAge(event.target.value as string);
+  };
+
   return (
     <>
       <Box className="bg-white rounded-xl py-2 h-[calc(100vh-116px)] overflow-auto">
@@ -57,8 +123,8 @@ const BuyerDetails = () => {
             aria-label="full width tabs example"
             className='px-4 pb-2'
           >
-            <Tab icon={<Image src={(UserProfileIcon) as any} alt='tab' />} iconPosition='start' label="User Profile" {...a11yProps(0)} />
-            <Tab icon={<Image src={(TransactionIcon) as any} alt='tab' />} iconPosition='start' label="Transaction" {...a11yProps(1)} />
+            <Tab icon={<Image src={UserProfileIcon} alt='tab' />} iconPosition='start' label="User Profile" {...a11yProps(0)} />
+            <Tab icon={<Image src={UserProfileIcon} alt='tab' />} iconPosition='start' label="Transaction" {...a11yProps(1)} />
           </Tabs>
           <Divider className='border-2 border-primaryExtraLight' />
           <TabPanel value={value} index={0}>
@@ -143,7 +209,103 @@ const BuyerDetails = () => {
             </Box>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            Item Two
+            <Box className="mt-5">
+              <Box className="flex items-center gap-[10px]">
+                <Typography className='text-2xl font-bold'>Ledger</Typography>
+                <Box className="flex items-center gap-3">
+                  <ShareOutlinedIcon className='text-primary500' />
+                  <Typography className='text-primary500 text-base'>Share</Typography>
+                </Box>
+              </Box>
+              <Box className="flex items-center gap-2 mt-4">
+                <Box className="w-full primary-datepicker">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker label="Choose Start Date" name="startDate" />
+                  </LocalizationProvider>
+                </Box>
+                <Box className="w-full primary-datepicker">
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker label="Choose End Date" name="endDate" />
+                  </LocalizationProvider>
+                </Box>
+                <FormControl fullWidth>
+                  <Select
+                    size='small'
+                    value={age}
+                    onChange={handleChangeSelect}
+                    displayEmpty
+                    IconComponent={() => (<KeyboardArrowDownIcon className='text-baseBlack text-[20px] mr-1' />)}
+                  >
+                    <MenuItem disabled value="">
+                      Item
+                    </MenuItem>
+                    <MenuItem value={10}>Diamond</MenuItem>
+                    <MenuItem value={20}>Gold</MenuItem>
+                    <MenuItem value={30}>Silver</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                  <Select
+                    size='small'
+                    value={age}
+                    onChange={handleChangeSelect}
+                    displayEmpty
+                    IconComponent={() => (<KeyboardArrowDownIcon className='text-baseBlack text-[20px] mr-1' />)}
+                  >
+                    <MenuItem disabled value="">
+                      Price
+                    </MenuItem>
+                    <MenuItem value={10}>Less than 5000</MenuItem>
+                    <MenuItem value={20}>1 Lakh</MenuItem>
+                    <MenuItem value={30}>3 Lakh</MenuItem>
+                    <Box className="px-[14px] mt-3">
+                      <Typography>Range</Typography>
+                      <PriceSlider
+                        aria-label="ios slider" defaultValue={[60, 90]} valueLabelDisplay="on"
+                      />
+                    </Box>
+                    <Box>
+                    </Box>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                  <Select
+                    size='small'
+                    value={age}
+                    onChange={handleChangeSelect}
+                    displayEmpty
+                    IconComponent={() => (<KeyboardArrowDownIcon className='text-baseBlack text-[20px] mr-1' />)}
+                  >
+                    <MenuItem disabled value="">
+                      Payment Method
+                    </MenuItem>
+                    <MenuItem value={10}>Diamond</MenuItem>
+                    <MenuItem value={20}>Gold</MenuItem>
+                    <MenuItem value={30}>Silver</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                  <Select
+                    size='small'
+                    value={age}
+                    onChange={handleChangeSelect}
+                    displayEmpty
+                    IconComponent={() => (<KeyboardArrowDownIcon className='text-baseBlack text-[20px] mr-1' />)}
+                  >
+                    <MenuItem disabled value="">
+                      Status
+                    </MenuItem>
+                    <MenuItem value={10}>Diamond</MenuItem>
+                    <MenuItem value={20}>Gold</MenuItem>
+                    <MenuItem value={30}>Silver</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button className='min-w-[121px] h-[42px]' variant='contained' size='large' color='primary' startIcon={<SearchIcon />}>Search</Button>
+              </Box>
+              <Box className="mt-4">
+                <SecondaryTable />
+              </Box>
+            </Box>
           </TabPanel>
         </Box>
       </Box>
