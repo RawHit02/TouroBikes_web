@@ -14,7 +14,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { visuallyHidden } from '@mui/utils';
-import { DeleteIcon, DeleteRed, DummyProfile, EditOutlinedIcon, MoreVertIcon } from '../assets';
+import { DeleteRed, DummyProfile, EditOutlinedIcon, MoreVertIcon } from '../assets';
 import Image from 'next/image';
 
 const ITEM_HEIGHT = 48;
