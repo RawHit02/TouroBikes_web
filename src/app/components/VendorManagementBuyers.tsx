@@ -26,48 +26,17 @@ import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { GetAllBuyersRequest } from "@/models/req-model/VendorManagementBuyerModel";
 import { getAllBuyersAction } from "@/redux/vendor_management/vendor_management.actions";
+import { VendorManagementBuyerModel } from "@/models/req-model/VendorManagementBuyerModel";
 
 const ITEM_HEIGHT = 48;
 
 interface Data {
-  id: number;
+  id: string; // Correct type for IDs from the API
   name: string;
-  contact: number;
-  whatsapp: number;
-  address: number;
+  contact: string;
+  whatsapp: string;
+  address: string;
 }
-
-function createData(
-  id: number,
-  name: string,
-  contact: number,
-  whatsapp: number,
-  address: number
-): Data {
-  return {
-    id,
-    name,
-    contact,
-    whatsapp,
-    address,
-  };
-}
-
-const rows = [
-  createData(1, "Cupcake", 305, 3.7, 67),
-  createData(2, "Donut", 452, 25.0, 51),
-  createData(3, "Eclair", 262, 16.0, 24),
-  createData(4, "Frozen yoghurt", 159, 6.0, 24),
-  createData(5, "Gingerbread", 356, 16.0, 49),
-  createData(6, "Honeycomb", 408, 3.2, 87),
-  createData(7, "Ice cream sandwich", 237, 9.0, 37),
-  createData(8, "Jelly Bean", 375, 0.0, 94),
-  createData(9, "KitKat", 518, 26.0, 65),
-  createData(10, "Lollipop", 392, 0.2, 98),
-  createData(11, "Marshmallow", 318, 0, 81),
-  createData(12, "Nougat", 360, 19.0, 9),
-  createData(13, "Oreo", 437, 18.0, 63),
-];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -133,7 +102,7 @@ interface EnhancedTableProps {
     event: React.MouseEvent<unknown>,
     property: keyof Data
   ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void; // Add this line
   order: Order;
   orderBy: string;
   rowCount: number;
@@ -181,7 +150,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 const VendorManagementBuyers = () => {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof Data>("contact");
-  const [selected, setSelected] = useState<readonly number[]>([]);
+  const [selected, setSelected] = useState<readonly string[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -214,7 +183,7 @@ const VendorManagementBuyers = () => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected = getAllBuyers.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -244,9 +213,9 @@ const VendorManagementBuyers = () => {
     }
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
+  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
     const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly number[] = [];
+    let newSelected: readonly string[] = [];
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
@@ -274,143 +243,124 @@ const VendorManagementBuyers = () => {
     setPage(0);
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  // Map Redux data to rows
+  const rows: Data[] = getAllBuyers.map((buyer: VendorManagementBuyerModel) => ({
+    id: buyer.id,
+    name: buyer.name,
+    contact: buyer.contactNumber,
+    whatsapp: buyer.whatsappNumber,
+    address: buyer.address,
+  }));
 
-  const visibleRows = React.useMemo(
-    () =>
-      [...rows]
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
-  );
   return (
-    <>
-      {/* {getAllBuyerLoading ? <Loader /> : " "} */}
-      <Box sx={{ width: "100%" }} className="primary-table">
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size="small"
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-            <TableBody>
-              {getAllBuyers.map((row, index) => {
-                // const isItemSelected = selected.includes(row.id);
-                const labelId = `enhanced-table-checkbox-${index}`;
+    <Box sx={{ width: "100%" }} className="primary-table">
+      <TableContainer>
+        <Table
+          sx={{ minWidth: 750 }}
+          aria-labelledby="tableTitle"
+          size="small"
+        >
+          <EnhancedTableHead
+            numSelected={selected.length}
+            order={order}
+            orderBy={orderBy}
+            onSelectAllClick={handleSelectAllClick}
+            onRequestSort={handleRequestSort}
+            rowCount={rows.length}
+          />
+          <TableBody>
+            {rows.map((row, index) => {
+              const labelId = `enhanced-table-checkbox-${index}`;
 
-                return (
-                  <TableRow
-                    hover
-                    tabIndex={-1}
-                    key={row.id}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell component="th" id={labelId} scope="row">
-                      <Box className="flex items-center gap-[10px]">
-                        <Box className="w-[32px] h-[32px] rounded-full overflow-hidden">
-                          <Image
-                            className="w-full h-full"
-                            src={DummyProfile}
-                            alt="img"
-                          />
-                        </Box>
-                        <Box>
-                          <Typography className="text-sm">
-                            {row.name}
-                          </Typography>
-                          <Typography className="text-xs text-gray200">
-                            {row.email}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="left">{row.contactNumber}</TableCell>
-                    <TableCell align="left">{row.whatsappNumber}</TableCell>
-                    <TableCell align="left">{row.address}</TableCell>
-                    <TableCell align="left">
-                      <Box>
-                        <IconButton
-                          aria-label="more"
-                          id="long-button"
-                          aria-controls={open ? "long-menu" : undefined}
-                          aria-expanded={open ? "true" : undefined}
-                          aria-haspopup="true"
-                          onClick={handleClickMenu}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                          id="long-menu"
-                          MenuListProps={{
-                            "aria-labelledby": "long-button",
-                          }}
-                          anchorEl={anchorEl}
-                          open={open}
-                          onClose={handleCloseMenu}
-                          slotProps={{
-                            paper: {
-                              style: {
-                                maxHeight: ITEM_HEIGHT * 4.5,
-                                width: "126px",
-                                boxShadow: "#9f9e9e29 5px 5px 16px 0px",
-                                borderRadius: "8px",
-                              },
-                            },
-                          }}
-                        >
-                          <MenuItem onClick={handleCloseMenu}>
-                            <Box className="flex items-center gap-[6px] text-baseBlack">
-                              <EditOutlinedIcon className="text-[20px]" />
-                              <Typography className="text-sm">Edit</Typography>
-                            </Box>
-                          </MenuItem>
-                          <MenuItem onClick={handleCloseMenu}>
-                            <Box className="flex items-center gap-[6px] text-error200">
-                              <Image src={DeleteRed} alt="delete" />
-                              <Typography className="text-sm">
-                                Delete
-                              </Typography>
-                            </Box>
-                          </MenuItem>
-                        </Menu>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
+              return (
                 <TableRow
-                  style={{
-                    height: 53 * emptyRows,
-                  }}
+                  hover
+                  tabIndex={-1}
+                  key={row.id}
+                  sx={{ cursor: "pointer" }}
                 >
-                  <TableCell colSpan={6} />
+                  <TableCell component="th" id={labelId} scope="row">
+                    <Box className="flex items-center gap-[10px]">
+                      <Box className="w-[32px] h-[32px] rounded-full overflow-hidden">
+                        <Image
+                          className="w-full h-full"
+                          src={DummyProfile}
+                          alt="img"
+                        />
+                      </Box>
+                      <Box>
+                        <Typography className="text-sm">{row.name}</Typography>
+                        <Typography className="text-xs text-gray200">
+                          {row.contact}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell align="left">{row.contact}</TableCell>
+                  <TableCell align="left">{row.whatsapp}</TableCell>
+                  <TableCell align="left">{row.address}</TableCell>
+                  <TableCell align="left">
+                    <Box>
+                      <IconButton
+                        aria-label="more"
+                        id="long-button"
+                        aria-controls={open ? "long-menu" : undefined}
+                        aria-expanded={open ? "true" : undefined}
+                        aria-haspopup="true"
+                        onClick={handleClickMenu}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                      <Menu
+                        id="long-menu"
+                        MenuListProps={{
+                          "aria-labelledby": "long-button",
+                        }}
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleCloseMenu}
+                        slotProps={{
+                          paper: {
+                            style: {
+                              maxHeight: ITEM_HEIGHT * 4.5,
+                              width: "126px",
+                              boxShadow: "#9f9e9e29 5px 5px 16px 0px",
+                              borderRadius: "8px",
+                            },
+                          },
+                        }}
+                      >
+                        <MenuItem onClick={handleCloseMenu}>
+                          <Box className="flex items-center gap-[6px] text-baseBlack">
+                            <EditOutlinedIcon className="text-[20px]" />
+                            <Typography className="text-sm">Edit</Typography>
+                          </Box>
+                        </MenuItem>
+                        <MenuItem onClick={handleCloseMenu}>
+                          <Box className="flex items-center gap-[6px] text-error200">
+                            <Image src={DeleteRed} alt="delete" />
+                            <Typography className="text-sm">Delete</Typography>
+                          </Box>
+                        </MenuItem>
+                      </Menu>
+                    </Box>
+                  </TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 15, 20]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
-    </>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 15, 20]}
+        component="div"
+        count={itemCount}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </Box>
   );
 };
 

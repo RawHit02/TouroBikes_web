@@ -1,4 +1,3 @@
-// components/AddNewBuyerDialog.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -16,7 +15,11 @@ import {
     Snackbar,
 } from "@mui/material";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { Data } from "@/types/types"; // Import Data type for Omit
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { createBuyer, getAllBuyersAction } from "@/redux/vendor_management/vendor_management.actions";
+import { addBuyerSchema } from "@/yupSchema/addBuyerSchema";
+import * as Yup from "yup";
 import Image from "next/image";
 import {
     AddCircleOutlineOutlinedIcon,
@@ -25,7 +28,8 @@ import {
     FileUploadOutlinedIcon,
     UploadImageIcon,
 } from "../assets";
-import { addBuyerSchema } from "@/yupSchema/addBuyerSchema";
+import { useSnackbar } from 'notistack';
+
 
 interface BuyerFormValues {
     name: string;
@@ -36,14 +40,14 @@ interface BuyerFormValues {
     profileImage: File | null;
 }
 
-interface AddNewBuyerDialogProps {
-    onAddBuyer: (buyer: Omit<Data, 'id'>) => void;
-}
-
-const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps> = ({ onAddBuyer }) => {
+const AddNewBuyerDialog: React.FC = () => {
+      const { enqueueSnackbar } = useSnackbar();
     const [open, setOpen] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
     const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+
+    const dispatch = useDispatch<AppDispatch>();
 
     const handleClickOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -61,21 +65,31 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps> = ({ onAddBuyer }) => 
         }
     };
 
-    const handleSubmit = (values: BuyerFormValues, { resetForm }: { resetForm: () => void }) => {
-        const newBuyer = {
+    const handleSubmit = async (values: BuyerFormValues, { resetForm }: { resetForm: () => void }) => {
+        const buyerPayload = {
+            vendorType: "Buyer", // Buyer type
             name: values.name,
             contactNumber: values.contactNumber,
             whatsappNumber: values.whatsappNumber,
             email: values.email,
             address: values.address,
-            profileImage: uploadedImage ?? undefined,
         };
 
-        onAddBuyer(newBuyer); // Pass the new buyer to the onAddBuyer function
-        resetForm();
-        setUploadedImage(null);
-        setSnackbarOpen(true);
-        handleClose();
+
+        try {
+            console.log("Payload for API:", buyerPayload); 
+            await dispatch(createBuyer({ createBuyerPayload: buyerPayload })).unwrap();
+            enqueueSnackbar("Buyer added successfully!", { variant: "success" });
+            
+            resetForm();
+            setUploadedImage(null);
+            setSnackbarOpen(true);
+            handleClose();
+        } catch (error: any) {
+            console.error("Failed to add buyer:", error);
+            enqueueSnackbar(error?.message || "Failed to add buyer", { variant: "error" });
+            setSnackbarOpen(true);
+        }
     };
 
     return (
@@ -278,7 +292,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps> = ({ onAddBuyer }) => 
                 open={snackbarOpen}
                 autoHideDuration={3000}
                 onClose={handleSnackbarClose}
-                message="Buyer added successfully"
+                message={snackbarMessage}
             />
         </>
     );

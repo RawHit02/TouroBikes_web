@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SignInModel } from "@/models/SignInModel";
 import { InitialBuyersModelState } from "@/models/req-model/VendorManagementBuyerModel";
-import { createBuyer, getAllBuyersAction } from "./vendor_management.actions";
+import { createBuyer, getAllBuyersAction, fetchBuyersAction } from "./vendor_management.actions";
 
 const initialState: InitialBuyersModelState = {
   message: "",
@@ -21,32 +20,35 @@ export const manageVendorManagementSlice = createSlice({
       return initialState;
     },
   },
-
   extraReducers: (builder) => {
-    // Create Vehicle Points
-    builder.addCase(createBuyer.pending, (state, action) => {
+    // Create Buyer
+    builder.addCase(createBuyer.pending, (state) => {
       state.createBuyerLoading = true;
       state.userError = "";
     });
     builder.addCase(createBuyer.fulfilled, (state, action) => {
+      console.log("Buyer created successfully:", action.payload.data); 
       state.createBuyerLoading = false;
-      state.userError = "";
-      state.createBuyerRes = action.payload.data;
+        state.userError = "";
+      state.createBuyerRes = action.payload.data.name;
+      state.getAllBuyers = [action.payload.data, ...state.getAllBuyers];
+
     });
     builder.addCase(createBuyer.rejected, (state, action) => {
       state.createBuyerLoading = false;
       state.userError = action.error.message;
     });
 
-    // Get All Vehicles Points
-    builder.addCase(getAllBuyersAction.pending, (state, action) => {
+    // Get All Buyers
+    builder.addCase(getAllBuyersAction.pending, (state) => {
       state.getAllBuyerLoading = true;
       state.userError = "";
       state.createBuyerRes = "";
     });
     builder.addCase(getAllBuyersAction.fulfilled, (state, action) => {
+      console.log("Fetched buyers:", action.payload.data); 
       state.getAllBuyerLoading = false;
-      state.userError = "";
+        state.userError = "";
       state.getAllBuyers = action.payload.data;
       state.itemCount = action.payload.itemCount;
       state.createBuyerRes = "";
@@ -55,6 +57,23 @@ export const manageVendorManagementSlice = createSlice({
       state.getAllBuyerLoading = false;
       state.userError = action.error.message;
       state.createBuyerRes = "";
+    });
+
+    // Fetch Buyers (New Action)
+    builder.addCase(fetchBuyersAction.pending, (state) => {
+      state.getAllBuyerLoading = true;
+      state.userError = "";
+    });
+    builder.addCase(fetchBuyersAction.fulfilled, (state, action) => {
+      console.log("Fetched buyers:", action.payload.data); 
+      state.getAllBuyerLoading = false;
+      state.userError = "";
+      state.getAllBuyers = action.payload.data;
+      state.itemCount = action.payload.meta.itemCount;
+    });
+    builder.addCase(fetchBuyersAction.rejected, (state, action) => {
+      state.getAllBuyerLoading = false;
+      state.userError = action.payload?.message || "Failed to fetch buyers.";
     });
   },
 });
