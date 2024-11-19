@@ -1,3 +1,5 @@
+
+
 import CustomToast from "@/app/components/CustomToast";
 import { apiClient } from "@/base-url/apiClient";
 import {
@@ -11,6 +13,9 @@ import {
   VendorManagementBuyerModel,
 } from "@/models/req-model/VendorManagementBuyerModel";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { DELETE_VENDOR } from "@/base-url/apiRoutes";  
+import { EDIT_VENDOR } from "@/base-url/apiRoutes";  
+
 
 // createBuyer function
 export const createBuyer = createAsyncThunk<
@@ -111,7 +116,7 @@ export const fetchBuyersAction = createAsyncThunk<
       const response = await apiClient.get(GET_ALL_BUYERS, options);
       return {
         data: response.data.data.data, // Fetched buyers
-        meta: response.data.data.meta, // Metadata (e.g., pagination)
+        meta: response.data.data.meta, // Metadata ( pagination)
       };
     } catch (error: any) {
       console.error("Error occurred while fetching buyers:", error);
@@ -120,6 +125,60 @@ export const fetchBuyersAction = createAsyncThunk<
       );
       return rejectWithValue({
         message: error.response?.data?.message || "An error occurred.",
+      });
+    }
+  }
+);
+
+// Edit Buyer Action
+export const editBuyerAction = createAsyncThunk<
+  { data: VendorManagementBuyerModel; message: string },
+  { editBuyerPayload: CreateBuyerPayload; buyerId: string },
+  { rejectValue: { message: string; status?: number } }
+>(
+  "vendorManagement/editBuyer",
+  async ({ editBuyerPayload, buyerId }, { rejectWithValue }) => {
+    try {
+      const body = {
+        vendorType: editBuyerPayload.vendorType,
+        name: editBuyerPayload.name,
+        contactNumber: "+91" + editBuyerPayload.contactNumber,
+        whatsappNumber: "+91" + editBuyerPayload.whatsappNumber,
+        email: editBuyerPayload.email,
+        address: editBuyerPayload.address,
+      };
+
+       const res = await apiClient.patch(`${EDIT_VENDOR}/${buyerId}`, body); // Corrected string interpolation
+  return { data: res.data.data, message: res.data.message };
+} catch (error: any) {
+  console.error("Error occurred while editing buyer:", error);
+  const status = error.response?.status || 500;
+  CustomToast.ErrorToast(error?.response?.data?.message || "Something went wrong");
+  return rejectWithValue({
+    message: error.response?.data?.message || "Failed to edit buyer",
+    status,
+  });
+}
+  }
+);
+
+export const deleteBuyerAction = createAsyncThunk<
+  { message: string },
+  string, // buyerId
+  { rejectValue: { message: string; status?: number } }
+>(
+  "vendorManagement/deleteBuyer",
+  async (buyerId, { rejectWithValue }) => {
+    try {
+      // Use _delete instead of delete
+      const response = await apiClient._delete(`${DELETE_VENDOR}/${buyerId}`);
+      return { message: "Buyer deleted successfully" };
+    } catch (error: any) {
+      console.error("Error occurred while deleting buyer:", error.response?.data || error.message);
+      const status = error.response?.status || 500;
+      return rejectWithValue({
+        message: error.response?.data?.message || "Failed to delete buyer",
+        status,
       });
     }
   }

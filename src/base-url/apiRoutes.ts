@@ -12,3 +12,7 @@ export const GET_ALL_VENDOR = `${BASE_URL}/vendorManagement/getVendor`;
 
 // Get buyers
 export const GET_ALL_BUYERS = `${BASE_URL}/vendorManagement/getVendor`;
+
+// Edit Buyer
+export const EDIT_VENDOR = `${BASE_URL}/vendorManagement/updateVendor`; 
+export const DELETE_VENDOR = `${BASE_URL}/vendorManagement/deleteVendor`;  

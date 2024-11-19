@@ -13,228 +13,149 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 import { visuallyHidden } from "@mui/utils";
 import {
   DeleteRed,
   DummyProfile,
   EditOutlinedIcon,
   MoreVertIcon,
+  CheckCircleIcon,
 } from "../assets";
 import Image from "next/image";
-import localSessionStorage from "@/hooks/localSessionStorage";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { GetAllBuyersRequest } from "@/models/req-model/VendorManagementBuyerModel";
-import { getAllBuyersAction } from "@/redux/vendor_management/vendor_management.actions";
+import {
+  deleteBuyerAction,
+  getAllBuyersAction,
+  editBuyerAction,
+} from "@/redux/vendor_management/vendor_management.actions";
 import { VendorManagementBuyerModel } from "@/models/req-model/VendorManagementBuyerModel";
 
 const ITEM_HEIGHT = 48;
 
-interface Data {
-  id: string; // Correct type for IDs from the API
-  name: string;
-  contact: string;
-  whatsapp: string;
-  address: string;
-}
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-type Order = "asc" | "desc";
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-interface HeadCell {
-  disablePadding: boolean;
-  id: keyof Data;
-  label: string;
-  numeric: boolean;
-}
-
-const headCells: readonly HeadCell[] = [
-  {
-    id: "name",
-    numeric: false,
-    disablePadding: false,
-    label: "Name/ Email",
-  },
-  {
-    id: "contact",
-    numeric: false,
-    disablePadding: false,
-    label: "Contact Number",
-  },
-  {
-    id: "whatsapp",
-    numeric: false,
-    disablePadding: false,
-    label: "WhatsApp Number",
-  },
-  {
-    id: "address",
-    numeric: false,
-    disablePadding: false,
-    label: "Address",
-  },
+const headCells = [
+  { id: "name", label: "Name/Email", numeric: false },
+  { id: "contact", label: "Contact Number", numeric: false },
+  { id: "whatsapp", label: "WhatsApp Number", numeric: false },
+  { id: "address", label: "Address", numeric: false },
 ];
 
-interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Data
-  ) => void;
-  onSelectAllClick?: (event: React.ChangeEvent<HTMLInputElement>) => void; // Add this line
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-}
-
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const { order, orderBy, onRequestSort } = props;
-  const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
-
-  return (
-    <TableHead>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "normal"}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-        <TableCell className="text-white" align="left">
-          Action
-        </TableCell>
-      </TableRow>
-    </TableHead>
-  );
-}
-
 const VendorManagementBuyers = () => {
-  const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof Data>("contact");
-  const [selected, setSelected] = useState<readonly string[]>([]);
+  const [order, setOrder] = useState<"asc" | "desc">("asc");
+  const [orderBy, setOrderBy] = useState<string>("name");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isEditing, setIsEditing] = useState<string | null>(null); // Track editing row ID
+  const [editedRow, setEditedRow] = useState<VendorManagementBuyerModel | null>(
+    null
+  ); // Temporary edited data
   const open = Boolean(anchorEl);
-
-  // save Nav drawer info in Session Storage
-  const { getItem } = localSessionStorage();
-
-  // Add Redux Dispatcher
+  const [selectedBuyerId, setSelectedBuyerId] = useState<string | null>(null); // Buyer ID for the menu actions
   const dispatch = useDispatch<AppDispatch>();
-  const { getAllBuyers, itemCount, getAllBuyerLoading } = useAppSelector(
+  const { getAllBuyers, itemCount } = useAppSelector(
     (state) => state.VendorManagementReducer
   );
 
-  const handleClickMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const fetchData = async () => {
+    try {
+      const params: GetAllBuyersRequest = {
+        page: page + 1,
+        take: rowsPerPage,
+        order,
+        orderBy,
+      };
+      await dispatch(getAllBuyersAction({ commonApiParamModel: params }));
+    } catch (error) {
+      console.error("Error fetching buyers:", error);
+    }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [dispatch, page, rowsPerPage, order, orderBy]);
+
+  const handleClickMenu = (
+    event: React.MouseEvent<HTMLElement>,
+    buyerId: string
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedBuyerId(buyerId); // Set the buyer ID for menu actions
+  };
+
   const handleCloseMenu = () => {
     setAnchorEl(null);
+    setSelectedBuyerId(null); // Clear selected buyer
+  };
+
+  const handleEditClick = (row: VendorManagementBuyerModel) => {
+    setIsEditing(row.id); // Enable edit mode for the specific row
+    setEditedRow({ ...row }); // Copy current row data for editing
+    handleCloseMenu();
+  };
+
+  const handleSaveClick = async () => {
+    if (editedRow) {
+      try {
+        await dispatch(
+          editBuyerAction({
+            buyerId: editedRow.id,
+            editBuyerPayload: {
+              name: editedRow.name,
+              contactNumber: editedRow.contactNumber,
+              whatsappNumber: editedRow.whatsappNumber,
+              address: editedRow.address,
+              email: editedRow.email,
+            },
+          })
+        ).unwrap();
+        fetchData(); // Refresh data after saving
+      } catch (error) {
+        console.error("Failed to update buyer:", error);
+      }
+    }
+    setIsEditing(null); // Exit edit mode
+    setEditedRow(null); // Clear edited data
+  };
+
+  const handleDeleteBuyer = async () => {
+    if (selectedBuyerId) {
+      if (window.confirm("Are you sure you want to delete this buyer?")) {
+        try {
+          await dispatch(deleteBuyerAction(selectedBuyerId)).unwrap();
+          fetchData();
+        } catch (error) {
+          console.error("Failed to delete buyer:", error);
+        }
+      }
+      handleCloseMenu();
+    }
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: keyof VendorManagementBuyerModel
+  ) => {
+    if (editedRow) {
+      setEditedRow({
+        ...editedRow,
+        [field]: e.target.value,
+      });
+    }
   };
 
   const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: keyof Data
+    _: React.MouseEvent<unknown>,
+    property: string
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = getAllBuyers.map((n) => n.id);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
-
-  // Get All buyers
-  useEffect(() => {
-    fetchData();
-  }, [dispatch, page, rowsPerPage, order, orderBy]);
-
-  const fetchData = async () => {
-    try {
-      const commonApiParamModel: GetAllBuyersRequest = {
-        page: page + 1,
-        take: rowsPerPage,
-        order: order,
-        orderBy: orderBy,
-      };
-      await dispatch(
-        getAllBuyersAction({
-          commonApiParamModel,
-        })
-      );
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly string[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -243,109 +164,122 @@ const VendorManagementBuyers = () => {
     setPage(0);
   };
 
-  // Map Redux data to rows
-  const rows: Data[] = getAllBuyers.map(
-    (buyer: VendorManagementBuyerModel) => ({
-      id: buyer.id,
-      name: buyer.name,
-      contact: buyer.contactNumber,
-      whatsapp: buyer.whatsappNumber,
-      address: buyer.address,
-    })
-  );
-
   return (
-    <Box sx={{ width: "100%" }} className="primary-table">
+    <Box className="w-full primary-table">
       <TableContainer>
-        <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
-          <EnhancedTableHead
-            numSelected={selected.length}
-            order={order}
-            orderBy={orderBy}
-            onSelectAllClick={handleSelectAllClick}
-            onRequestSort={handleRequestSort}
-            rowCount={itemCount}
-          />
-          <TableBody>
-            {getAllBuyers.map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-                <TableRow
-                  hover
-                  tabIndex={-1}
-                  key={row.id}
-                  sx={{ cursor: "pointer" }}
+        <Table className="min-w-[750px]" size="small">
+          <TableHead>
+            <TableRow>
+              {headCells.map((headCell) => (
+                <TableCell
+                  key={headCell.id}
+                  sortDirection={orderBy === headCell.id ? order : false}
                 >
-                  <TableCell component="th" id={labelId} scope="row">
-                    <Box className="flex items-center gap-[10px]">
-                      <Box className="w-[32px] h-[32px] rounded-full overflow-hidden">
-                        <Image
-                          className="w-full h-full"
-                          src={DummyProfile}
-                          alt="img"
-                        />
+                  <TableSortLabel
+                    active={orderBy === headCell.id}
+                    direction={orderBy === headCell.id ? order : "asc"}
+                    onClick={(event) => handleRequestSort(event, headCell.id)}
+                  >
+                    {headCell.label}
+                    {orderBy === headCell.id ? (
+                      <Box component="span" className="sr-only">
+                        {order === "desc"
+                          ? "sorted descending"
+                          : "sorted ascending"}
                       </Box>
-                      <Box>
-                        <Typography className="text-sm">{row.name}</Typography>
-                        <Typography className="text-xs text-gray200">
-                          {row.contactNumber}
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {getAllBuyers.map((row: VendorManagementBuyerModel) => (
+              <TableRow key={row.id} className="hover:cursor-pointer">
+                {isEditing === row.id ? (
+                  <>
+                    <TableCell>
+                      <TextField
+                        value={editedRow?.name || ""}
+                        onChange={(e) => handleInputChange(e, "name")}
+                        fullWidth
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedRow?.contactNumber || ""}
+                        onChange={(e) => handleInputChange(e, "contactNumber")}
+                        fullWidth
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedRow?.whatsappNumber || ""}
+                        onChange={(e) => handleInputChange(e, "whatsappNumber")}
+                        fullWidth
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        value={editedRow?.address || ""}
+                        onChange={(e) => handleInputChange(e, "address")}
+                        fullWidth
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <IconButton onClick={handleSaveClick}>
+                        <CheckCircleIcon />
+                      </IconButton>
+                    </TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell>
+                      <Box className="flex items-center gap-2">
+                        <Box className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
+                          <Image
+                            src={row.profileImage || DummyProfile}
+                            alt={row.name || "Profile"}
+                            width={32}
+                            height={32}
+                            className="object-cover w-full h-full"
+                          />
+                        </Box>
+                        <Typography className="font-semibold text-sm">
+                          {row.name}
                         </Typography>
                       </Box>
-                    </Box>
-                  </TableCell>
-                  <TableCell align="left">{row.contactNumber}</TableCell>
-                  <TableCell align="left">{row.whatsappNumber}</TableCell>
-                  <TableCell align="left">{row.address}</TableCell>
-                  <TableCell align="left">
-                    <Box>
+                    </TableCell>
+                    <TableCell>{row.contactNumber}</TableCell>
+                    <TableCell>{row.whatsappNumber}</TableCell>
+                    <TableCell>{row.address}</TableCell>
+                    <TableCell>
                       <IconButton
+                        onClick={(event) => handleClickMenu(event, row.id)}
                         aria-label="more"
-                        id="long-button"
-                        aria-controls={open ? "long-menu" : undefined}
-                        aria-expanded={open ? "true" : undefined}
-                        aria-haspopup="true"
-                        onClick={handleClickMenu}
                       >
                         <MoreVertIcon />
                       </IconButton>
                       <Menu
-                        id="long-menu"
-                        MenuListProps={{
-                          "aria-labelledby": "long-button",
-                        }}
                         anchorEl={anchorEl}
-                        open={open}
+                        open={open && selectedBuyerId === row.id}
                         onClose={handleCloseMenu}
-                        slotProps={{
-                          paper: {
-                            style: {
-                              maxHeight: ITEM_HEIGHT * 4.5,
-                              width: "126px",
-                              boxShadow: "#9f9e9e29 5px 5px 16px 0px",
-                              borderRadius: "8px",
-                            },
-                          },
-                        }}
                       >
-                        <MenuItem onClick={handleCloseMenu}>
-                          <Box className="flex items-center gap-[6px] text-baseBlack">
-                            <EditOutlinedIcon className="text-[20px]" />
-                            <Typography className="text-sm">Edit</Typography>
-                          </Box>
+                        <MenuItem onClick={() => handleEditClick(row)}>
+                          <EditOutlinedIcon />
+                          Edit
                         </MenuItem>
-                        <MenuItem onClick={handleCloseMenu}>
-                          <Box className="flex items-center gap-[6px] text-error200">
-                            <Image src={DeleteRed} alt="delete" />
-                            <Typography className="text-sm">Delete</Typography>
-                          </Box>
+                        <MenuItem onClick={handleDeleteBuyer}>
+                          <Image src={DeleteRed} alt="Delete" />
+                          Delete
                         </MenuItem>
                       </Menu>
-                    </Box>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                    </TableCell>
+                  </>
+                )}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>

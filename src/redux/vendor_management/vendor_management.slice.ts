@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { InitialBuyersModelState } from "@/models/req-model/VendorManagementBuyerModel";
-import { createBuyer, getAllBuyersAction, fetchBuyersAction } from "./vendor_management.actions";
+import { createBuyer, getAllBuyersAction, fetchBuyersAction , deleteBuyerAction, editBuyerAction} from "./vendor_management.actions";
 
 const initialState: InitialBuyersModelState = {
   message: "",
@@ -75,6 +75,20 @@ export const manageVendorManagementSlice = createSlice({
       state.getAllBuyerLoading = false;
       state.userError = action.payload?.message || "Failed to fetch buyers.";
     });
+
+    builder.addCase(editBuyerAction.fulfilled, (state, action) => {
+    const updatedBuyer = action.payload.data;
+    const index = state.getAllBuyers.findIndex((buyer) => buyer.id === updatedBuyer.id);
+    if (index !== -1) {
+    state.getAllBuyers[index] = updatedBuyer;
+      }
+    });
+    builder.addCase(deleteBuyerAction.fulfilled, (state, action) => {
+    const deletedBuyerId = action.meta.arg; // buyerId
+    state.getAllBuyers = state.getAllBuyers.filter(
+    (buyer) => buyer.id !== deletedBuyerId
+    );
+  });
   },
 });
 

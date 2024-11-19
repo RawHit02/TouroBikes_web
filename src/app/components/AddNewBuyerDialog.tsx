@@ -42,7 +42,10 @@ interface BuyerFormValues {
   profileImage: File | null;
 }
 
-const AddNewBuyerDialog: React.FC = () => {
+const AddNewBuyerDialog: React.FC<{onBuyerCreated?: () => void }> = ({
+  onBuyerCreated,
+}) =>{
+
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -93,6 +96,9 @@ const AddNewBuyerDialog: React.FC = () => {
       setUploadedImage(null);
       setSnackbarOpen(true);
       handleClose();
+
+      //buyer was created
+      if(onBuyerCreated) onBuyerCreated();
     } catch (error: any) {
       console.error("Failed to add buyer:", error);
       enqueueSnackbar(error?.message || "Failed to add buyer", {
@@ -232,6 +238,7 @@ const AddNewBuyerDialog: React.FC = () => {
                     <Field
                       as={OutlinedInput}
                       name="contactNumber"
+                      type = "number"
                       placeholder="Enter contact number"
                       fullWidth
                       className="mt-1"
@@ -259,6 +266,7 @@ const AddNewBuyerDialog: React.FC = () => {
                     <Field
                       as={OutlinedInput}
                       name="whatsappNumber"
+                      type = "number"
                       placeholder="Enter WhatsApp number"
                       fullWidth
                       className="mt-1"
