@@ -244,32 +244,30 @@ const VendorManagementBuyers = () => {
   };
 
   // Map Redux data to rows
-  const rows: Data[] = getAllBuyers.map((buyer: VendorManagementBuyerModel) => ({
-    id: buyer.id,
-    name: buyer.name,
-    contact: buyer.contactNumber,
-    whatsapp: buyer.whatsappNumber,
-    address: buyer.address,
-  }));
+  const rows: Data[] = getAllBuyers.map(
+    (buyer: VendorManagementBuyerModel) => ({
+      id: buyer.id,
+      name: buyer.name,
+      contact: buyer.contactNumber,
+      whatsapp: buyer.whatsappNumber,
+      address: buyer.address,
+    })
+  );
 
   return (
     <Box sx={{ width: "100%" }} className="primary-table">
       <TableContainer>
-        <Table
-          sx={{ minWidth: 750 }}
-          aria-labelledby="tableTitle"
-          size="small"
-        >
+        <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
           <EnhancedTableHead
             numSelected={selected.length}
             order={order}
             orderBy={orderBy}
             onSelectAllClick={handleSelectAllClick}
             onRequestSort={handleRequestSort}
-            rowCount={rows.length}
+            rowCount={itemCount}
           />
           <TableBody>
-            {rows.map((row, index) => {
+            {getAllBuyers.map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
@@ -291,13 +289,13 @@ const VendorManagementBuyers = () => {
                       <Box>
                         <Typography className="text-sm">{row.name}</Typography>
                         <Typography className="text-xs text-gray200">
-                          {row.contact}
+                          {row.contactNumber}
                         </Typography>
                       </Box>
                     </Box>
                   </TableCell>
-                  <TableCell align="left">{row.contact}</TableCell>
-                  <TableCell align="left">{row.whatsapp}</TableCell>
+                  <TableCell align="left">{row.contactNumber}</TableCell>
+                  <TableCell align="left">{row.whatsappNumber}</TableCell>
                   <TableCell align="left">{row.address}</TableCell>
                   <TableCell align="left">
                     <Box>

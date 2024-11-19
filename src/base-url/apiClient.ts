@@ -57,7 +57,7 @@ const getConfig = (jwt: string, options?: AxiosRequestConfig<unknown>) => {
     headers: {
       "content-type": "application/json",
       // Authorization: jwt ? `Bearer ${jwt}` : "",
-      // "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Credentials": "true",
       "Access-Control-Allow-Origin": "*",
       ...headers,
     },

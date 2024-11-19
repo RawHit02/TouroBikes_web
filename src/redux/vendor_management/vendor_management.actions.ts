@@ -1,6 +1,10 @@
 import CustomToast from "@/app/components/CustomToast";
 import { apiClient } from "@/base-url/apiClient";
-import { CREATE_VENDOR, GET_ALL_VENDOR, GET_ALL_BUYERS } from "@/base-url/apiRoutes";
+import {
+  CREATE_VENDOR,
+  GET_ALL_VENDOR,
+  GET_ALL_BUYERS,
+} from "@/base-url/apiRoutes";
 import {
   CreateBuyerPayload,
   GetAllBuyersRequest,
@@ -20,18 +24,22 @@ export const createBuyer = createAsyncThunk<
       const body = {
         vendorType: createBuyerPayload.vendorType,
         name: createBuyerPayload.name,
-        contactNumber: createBuyerPayload.contactNumber,
-        whatsappNumber: createBuyerPayload.whatsappNumber,
+        contactNumber: "+91" + createBuyerPayload.contactNumber,
+        whatsappNumber: "+91" + createBuyerPayload.whatsappNumber,
         email: createBuyerPayload.email,
         address: createBuyerPayload.address,
       };
       const res = await apiClient.post(CREATE_VENDOR, body);
       return { data: res.data.data, message: res.data.message };
-    }
-     catch (error: any) {
-    console.error("Error occurred while creating buyer:", error.response?.data || error.message);
-    const status = error.response?.status || 500;
-    CustomToast.ErrorToast(error?.response?.data?.message || "Something went wrong");
+    } catch (error: any) {
+      console.error(
+        "Error occurred while creating buyer:",
+        error.response?.data || error.message
+      );
+      const status = error.response?.status || 500;
+      CustomToast.ErrorToast(
+        error?.response?.data?.message || "Something went wrong"
+      );
       return rejectWithValue({
         message: error.response?.data?.message || "Failed to create buyer",
         status,
@@ -99,7 +107,6 @@ export const fetchBuyersAction = createAsyncThunk<
       };
 
       console.log("API URL:", GET_ALL_BUYERS, "Params:", options);
-
 
       const response = await apiClient.get(GET_ALL_BUYERS, options);
       return {
