@@ -108,6 +108,7 @@ const VendorManagementBuyers = () => {
               whatsappNumber: editedRow.whatsappNumber,
               address: editedRow.address,
               email: editedRow.email,
+              vendorType: ""
             },
           })
         ).unwrap();
