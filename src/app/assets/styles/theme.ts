@@ -152,6 +152,14 @@ const theme = createTheme({
                         },
                     },
                 },
+                {
+                    props: { maxWidth: "lg" },
+                    style: {
+                        ".MuiPaper-root": {
+                            maxWidth: "665px",
+                        },
+                    },
+                },
             ],
         },
         MuiLink: {

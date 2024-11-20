@@ -4,6 +4,8 @@ import AddNewBuyerDialog from "./AddNewBuyerDialog";
 import SignIn from "./SignIn";
 import PrimaryTable from "./PrimaryTable";
 import SecondaryTable from "./SecondaryTable";
+import AddStockEntryDialog from "./AddStockEntryrDialog";
+import PrimaryTableExample from "./PrimaryTableExample";
 
 
-export { Header, SideNav, AddNewBuyerDialog, SignIn, PrimaryTable, SecondaryTable } 
+export { Header, SideNav, AddNewBuyerDialog, SignIn, PrimaryTable, SecondaryTable, AddStockEntryDialog, PrimaryTableExample } 
