@@ -28,7 +28,8 @@ const Buyers = () => {
         <Typography className="text-2xl font-bold">
           Vendor Management / Buyers
         </Typography>
-        <AddNewBuyerDialog onAddBuyer={addNewBuyer} />
+        {/* <AddNewBuyerDialog onAddBuyer={addNewBuyer} /> */}
+        <AddNewBuyerDialog />
       </Box>
       <Box className="mt-4">
         <VendorManagementBuyers />

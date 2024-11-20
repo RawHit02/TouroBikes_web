@@ -1,6 +1,7 @@
 import { ApiParamModel } from "../common/ApiParamModel";
 
 export interface VendorManagementBuyerModel {
+  profileImage: any;
   id: string;
   vendorType: string;
   name: string;
