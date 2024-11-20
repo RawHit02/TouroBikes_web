@@ -23,7 +23,7 @@ export const createBuyer = createAsyncThunk<
   { createBuyerPayload: CreateBuyerPayload },
   { rejectValue: { message: string; status?: number } }
 >(
-  "vendorManagement/createVehicle",
+  "vendorManagement/createBuyer",
   async ({ createBuyerPayload }, { rejectWithValue }) => {
     try {
       const body = {
@@ -140,7 +140,7 @@ export const editBuyerAction = createAsyncThunk<
   async ({ editBuyerPayload, buyerId }, { rejectWithValue }) => {
     try {
       const body = {
-        vendorType: editBuyerPayload.vendorType,
+        vendorType: "buyer", // Buyer type
         name: editBuyerPayload.name,
         contactNumber: "+91" + editBuyerPayload.contactNumber,
         whatsappNumber: "+91" + editBuyerPayload.whatsappNumber,
@@ -170,7 +170,7 @@ export const deleteBuyerAction = createAsyncThunk<
   "vendorManagement/deleteBuyer",
   async (buyerId, { rejectWithValue }) => {
     try {
-      // Use _delete instead of delete
+      // _delete instead of delete
       const response = await apiClient._delete(`${DELETE_VENDOR}/${buyerId}`);
       return { message: "Buyer deleted successfully" };
     } catch (error: any) {

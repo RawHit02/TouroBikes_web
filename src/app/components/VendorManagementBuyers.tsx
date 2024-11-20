@@ -59,6 +59,9 @@ const VendorManagementBuyers = () => {
     (state) => state.VendorManagementReducer
   );
 
+  let debounceTimer: NodeJS.Timeout;
+
+
   const fetchData = async () => {
     try {
       const params: GetAllBuyersRequest = {
@@ -70,12 +73,12 @@ const VendorManagementBuyers = () => {
       await dispatch(getAllBuyersAction({ commonApiParamModel: params }));
     } catch (error) {
       console.error("Error fetching buyers:", error);
-    }
-  };
+  } 
+};
 
   useEffect(() => {
     fetchData();
-  }, [dispatch, page, rowsPerPage, order, orderBy]);
+  }, [ page, rowsPerPage, order, orderBy]);
 
   const handleClickMenu = (
     event: React.MouseEvent<HTMLElement>,
@@ -155,15 +158,23 @@ const VendorManagementBuyers = () => {
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
+  const handleChangePage = (_: unknown, newPage: number) => {
+    console.log("Page changed to:", newPage);
+    setPage(newPage); 
+    fetchData(); 
+  };
 
-  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const newRowsPerPage = parseInt(event.target.value, 10);
+  console.log("Rows per page changed to:", newRowsPerPage);
+  setRowsPerPage(newRowsPerPage);
+  setPage(0);
+  fetchData();
+};
+
 
   return (
     <Box className="w-full primary-table">

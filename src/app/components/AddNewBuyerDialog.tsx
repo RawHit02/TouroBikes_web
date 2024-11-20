@@ -77,7 +77,7 @@ const AddNewBuyerDialog: React.FC<{onBuyerCreated?: () => void }> = ({
     { resetForm }: { resetForm: () => void }
   ) => {
     const buyerPayload = {
-      vendorType: "Buyer", // Buyer type
+      vendorType: "buyer", // Buyer type
       name: values.name,
       contactNumber: values.contactNumber,
       whatsappNumber: values.whatsappNumber,

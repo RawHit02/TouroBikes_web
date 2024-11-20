@@ -26,12 +26,16 @@ export const manageVendorManagementSlice = createSlice({
       state.createBuyerLoading = true;
       state.userError = "";
     });
+    
+    // this detects the change in getAllBuyers triggers re-render
+
     builder.addCase(createBuyer.fulfilled, (state, action) => {
       console.log("Buyer created successfully:", action.payload.data); 
       state.createBuyerLoading = false;
         state.userError = "";
-      state.createBuyerRes = action.payload.data.name;
+      //state.createBuyerRes = action.payload.data.name;
       state.getAllBuyers = [action.payload.data, ...state.getAllBuyers];
+      //state.itemCount += 1;
 
     });
     builder.addCase(createBuyer.rejected, (state, action) => {
@@ -89,6 +93,12 @@ export const manageVendorManagementSlice = createSlice({
     (buyer) => buyer.id !== deletedBuyerId
     );
   });
+  builder.addCase(deleteBuyerAction.rejected, (state, action) => {
+  console.error("Failed to delete buyer:", action.payload?.message || action.error.message);
+});
+
+
+
   },
 });
 
