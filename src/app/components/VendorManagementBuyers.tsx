@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
@@ -13,14 +14,12 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import { visuallyHidden } from "@mui/utils";
 import {
   DeleteRed,
   DummyProfile,
   EditOutlinedIcon,
   MoreVertIcon,
-  CheckCircleIcon,
 } from "../assets";
 import Image from "next/image";
 import { useDispatch } from "react-redux";
@@ -29,7 +28,6 @@ import { GetAllBuyersRequest } from "@/models/req-model/VendorManagementBuyerMod
 import {
   deleteBuyerAction,
   getAllBuyersAction,
-  editBuyerAction,
 } from "@/redux/vendor_management/vendor_management.actions";
 import { VendorManagementBuyerModel } from "@/models/req-model/VendorManagementBuyerModel";
 
@@ -37,30 +35,28 @@ const ITEM_HEIGHT = 48;
 
 const headCells = [
   { id: "name", label: "Name/Email", numeric: false },
+  //{ id: "email", label: "Email", numeric: false }, 
   { id: "contact", label: "Contact Number", numeric: false },
   { id: "whatsapp", label: "WhatsApp Number", numeric: false },
   { id: "address", label: "Address", numeric: false },
 ];
 
-const VendorManagementBuyers = () => {
+const VendorManagementBuyers = ({
+  onEditBuyer,
+}: {
+  onEditBuyer: (row: VendorManagementBuyerModel) => void;
+}) => {
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<string>("name");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [isEditing, setIsEditing] = useState<string | null>(null); // Track editing row ID
-  const [editedRow, setEditedRow] = useState<VendorManagementBuyerModel | null>(
-    null
-  ); // Temporary edited data
   const open = Boolean(anchorEl);
   const [selectedBuyerId, setSelectedBuyerId] = useState<string | null>(null); // Buyer ID for the menu actions
   const dispatch = useDispatch<AppDispatch>();
   const { getAllBuyers, itemCount } = useAppSelector(
     (state) => state.VendorManagementReducer
   );
-
-  let debounceTimer: NodeJS.Timeout;
-
 
   const fetchData = async () => {
     try {
@@ -73,12 +69,12 @@ const VendorManagementBuyers = () => {
       await dispatch(getAllBuyersAction({ commonApiParamModel: params }));
     } catch (error) {
       console.error("Error fetching buyers:", error);
-  } 
-};
+    }
+  };
 
   useEffect(() => {
     fetchData();
-  }, [ page, rowsPerPage, order, orderBy]);
+  }, [page, rowsPerPage, order, orderBy]);
 
   const handleClickMenu = (
     event: React.MouseEvent<HTMLElement>,
@@ -94,34 +90,11 @@ const VendorManagementBuyers = () => {
   };
 
   const handleEditClick = (row: VendorManagementBuyerModel) => {
-    setIsEditing(row.id); // Enable edit mode for the specific row
-    setEditedRow({ ...row }); // Copy current row data for editing
-    handleCloseMenu();
-  };
-
-  const handleSaveClick = async () => {
-    if (editedRow) {
-      try {
-        await dispatch(
-          editBuyerAction({
-            buyerId: editedRow.id,
-            editBuyerPayload: {
-              name: editedRow.name,
-              contactNumber: editedRow.contactNumber,
-              whatsappNumber: editedRow.whatsappNumber,
-              address: editedRow.address,
-              email: editedRow.email,
-              vendorType: ""
-            },
-          })
-        ).unwrap();
-        fetchData(); // Refresh data after saving
-      } catch (error) {
-        console.error("Failed to update buyer:", error);
-      }
-    }
-    setIsEditing(null); // Exit edit mode
-    setEditedRow(null); // Clear edited data
+    onEditBuyer(row);
+    handleCloseMenu(); 
+    // setIsEditing(row.id); // Enable edit mode for the specific row
+    //setEditedRow({...row }); // Copy current row data for editing
+    //handleCloseMenu();
   };
 
   const handleDeleteBuyer = async () => {
@@ -129,24 +102,12 @@ const VendorManagementBuyers = () => {
       if (window.confirm("Are you sure you want to delete this buyer?")) {
         try {
           await dispatch(deleteBuyerAction(selectedBuyerId)).unwrap();
-          fetchData();
+          fetchData(); // Refresh data after deletion
         } catch (error) {
           console.error("Failed to delete buyer:", error);
         }
       }
       handleCloseMenu();
-    }
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: keyof VendorManagementBuyerModel
-  ) => {
-    if (editedRow) {
-      setEditedRow({
-        ...editedRow,
-        [field]: e.target.value,
-      });
     }
   };
 
@@ -158,23 +119,20 @@ const VendorManagementBuyers = () => {
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
+
   const handleChangePage = (_: unknown, newPage: number) => {
-    console.log("Page changed to:", newPage);
-    setPage(newPage); 
-    fetchData(); 
+    setPage(newPage);
+    fetchData();
   };
 
-
   const handleChangeRowsPerPage = (
-  event: React.ChangeEvent<HTMLInputElement>
-) => {
-  const newRowsPerPage = parseInt(event.target.value, 10);
-  console.log("Rows per page changed to:", newRowsPerPage);
-  setRowsPerPage(newRowsPerPage);
-  setPage(0);
-  fetchData();
-};
-
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage);
+    setPage(0);
+    fetchData();
+  };
 
   return (
     <Box className="w-full primary-table">
@@ -207,89 +165,49 @@ const VendorManagementBuyers = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {getAllBuyers.map((row: VendorManagementBuyerModel) => (
-              <TableRow key={row.id} className="hover:cursor-pointer">
-                {isEditing === row.id ? (
-                  <>
-                    <TableCell>
-                      <TextField
-                        value={editedRow?.name || ""}
-                        onChange={(e) => handleInputChange(e, "name")}
-                        fullWidth
+            {getAllBuyers.map((row: VendorManagementBuyerModel, index: number) => (
+              <TableRow key={row.id || `${index}`} className="hover:cursor-pointer">
+                <TableCell>
+                  <Box className="flex items-center gap-2">
+                    <Box className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
+                      <Image
+                        src={row.profileImage || DummyProfile}
+                        alt={row.name || "Profile"}
+                        width={32}
+                        height={32}
+                        className="object-cover w-full h-full"
                       />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        value={editedRow?.contactNumber || ""}
-                        onChange={(e) => handleInputChange(e, "contactNumber")}
-                        fullWidth
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        value={editedRow?.whatsappNumber || ""}
-                        onChange={(e) => handleInputChange(e, "whatsappNumber")}
-                        fullWidth
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        value={editedRow?.address || ""}
-                        onChange={(e) => handleInputChange(e, "address")}
-                        fullWidth
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <IconButton onClick={handleSaveClick}>
-                        <CheckCircleIcon />
-                      </IconButton>
-                    </TableCell>
-                  </>
-                ) : (
-                  <>
-                    <TableCell>
-                      <Box className="flex items-center gap-2">
-                        <Box className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
-                          <Image
-                            src={row.profileImage || DummyProfile}
-                            alt={row.name || "Profile"}
-                            width={32}
-                            height={32}
-                            className="object-cover w-full h-full"
-                          />
-                        </Box>
-                        <Typography className="font-semibold text-sm">
-                          {row.name}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>{row.contactNumber}</TableCell>
-                    <TableCell>{row.whatsappNumber}</TableCell>
-                    <TableCell>{row.address}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        onClick={(event) => handleClickMenu(event, row.id)}
-                        aria-label="more"
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={open && selectedBuyerId === row.id}
-                        onClose={handleCloseMenu}
-                      >
-                        <MenuItem onClick={() => handleEditClick(row)}>
-                          <EditOutlinedIcon />
-                          Edit
-                        </MenuItem>
-                        <MenuItem onClick={handleDeleteBuyer}>
-                          <Image src={DeleteRed} alt="Delete" />
-                          Delete
-                        </MenuItem>
-                      </Menu>
-                    </TableCell>
-                  </>
-                )}
+                    </Box>
+                    <Typography className="font-semibold text-sm">
+                      {row.name}
+                    </Typography>
+                  </Box>
+                </TableCell>
+                <TableCell>{row.contactNumber}</TableCell>
+                <TableCell>{row.whatsappNumber}</TableCell>
+                <TableCell>{row.address}</TableCell>
+                <TableCell>
+                  <IconButton
+                    onClick={(event) => handleClickMenu(event, row.id)}
+                    aria-label="more"
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={open && selectedBuyerId === row.id}
+                    onClose={handleCloseMenu}
+                  >
+                    <MenuItem onClick={() => handleEditClick(row)}>
+                      <EditOutlinedIcon />
+                      Edit
+                    </MenuItem>
+                    <MenuItem onClick={handleDeleteBuyer}>
+                      <Image src={DeleteRed} alt="Delete" />
+                      Delete
+                    </MenuItem>
+                  </Menu>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

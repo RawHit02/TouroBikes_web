@@ -22,6 +22,9 @@ import {
   getAllBuyersAction,
 } from "@/redux/vendor_management/vendor_management.actions";
 import { addBuyerSchema } from "@/yupSchema/addBuyerSchema";
+import { editBuyerAction } from "@/redux/vendor_management/vendor_management.actions";
+import { useSnackbar } from "notistack";
+
 import * as Yup from "yup";
 import Image from "next/image";
 import {
@@ -31,9 +34,9 @@ import {
   FileUploadOutlinedIcon,
   UploadImageIcon,
 } from "../assets";
-import { useSnackbar } from "notistack";
 
-interface BuyerFormValues {
+export interface BuyerFormValues {
+  id? : string; 
   name: string;
   contactNumber: string;
   whatsappNumber: string;
@@ -42,22 +45,49 @@ interface BuyerFormValues {
   profileImage: File | null;
 }
 
-const AddNewBuyerDialog: React.FC<{onBuyerCreated?: () => void }> = ({
-  onBuyerCreated,
-}) =>{
 
+interface AddNewBuyerDialogProps {
+  onBuyerCreated?: () => void;
+  initialValues?: BuyerFormValues; // Prefilled data
+  isEditMode?: boolean;           // differentiate between add/edit
+  open : boolean;
+  onClose : () => void;
+}
+
+
+const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
+  onBuyerCreated,
+  initialValues = {
+     id: undefined,
+    name: "",
+    contactNumber: "",
+    whatsappNumber: "",
+    email: "",
+    address: "",
+    profileImage: null,
+   } ,
+  isEditMode = false, 
+  open,
+  onClose,
+}) =>{
   const { enqueueSnackbar } = useSnackbar();
-  const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [isAddBuyerDialogOpen, setIsAddBuyerDialogOpen] = useState(false);
+
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const handleSnackbarClose = () => setSnackbarOpen(false);
-
+  const handleSnackbarClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return; // Ignore clickaway to keep Snackbar open until timeout
+    }
+    setSnackbarOpen(false); // Close the Snackbar
+  };
   const handleImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
     setFieldValue: (field: string, value: File | null) => void
@@ -76,28 +106,43 @@ const AddNewBuyerDialog: React.FC<{onBuyerCreated?: () => void }> = ({
     values: BuyerFormValues,
     { resetForm }: { resetForm: () => void }
   ) => {
-    const buyerPayload = {
-      vendorType: "buyer", // Buyer type
-      name: values.name,
-      contactNumber: values.contactNumber,
-      whatsappNumber: values.whatsappNumber,
-      email: values.email,
-      address: values.address,
-    };
-
     try {
-      console.log("Payload for API:", buyerPayload);
-      await dispatch(
-        createBuyer({ createBuyerPayload: buyerPayload })
-      ).unwrap();
+      if(isEditMode && initialValues?.id){
+        // Edit Buyer
+        const editPayload = {
+          buyerId: initialValues.id, // Use the id from initialValues
+          editBuyerPayload : {
+           vendorType: "buyer", // Include vendorType
+            name : values.name,
+            contactNumber : values.contactNumber,
+            whatsappNumber : values.whatsappNumber,
+            email : values.email,
+            address : values.address,
+          },
+        };
+        await dispatch(editBuyerAction(editPayload)).unwrap();
+        enqueueSnackbar("Buyer updated successfully!", { variant: "success" });
+      }else{
+        // Add Buyer
+        const buyerPayload = {
+        vendorType: "buyer", // Buyer type
+        name: values.name,
+        contactNumber: values.contactNumber,
+        whatsappNumber: values.whatsappNumber,
+        email: values.email,
+        address: values.address,
+      }
+      await dispatch(createBuyer({ createBuyerPayload: buyerPayload })).unwrap();
       enqueueSnackbar("Buyer added successfully!", { variant: "success" });
+      }
 
+      // Reset form and close dialog
       resetForm();
       setUploadedImage(null);
       setSnackbarOpen(true);
-      handleClose();
+      onClose();
 
-      //buyer was created
+      // Refresh list on success
       if(onBuyerCreated) onBuyerCreated();
     } catch (error: any) {
       console.error("Failed to add buyer:", error);
@@ -110,18 +155,10 @@ const AddNewBuyerDialog: React.FC<{onBuyerCreated?: () => void }> = ({
 
   return (
     <>
-      <Button
-        variant="contained"
-        className="bg-primary500 rounded-lg h-10 text-base"
-        startIcon={<AddCircleOutlineOutlinedIcon />}
-        onClick={handleClickOpen}
-      >
-        ADD BUYER
-      </Button>
       <Dialog
-        onClose={handleClose}
+      open = {open}
+        onClose={onClose}
         aria-labelledby="customized-dialog-title"
-        open={open}
         maxWidth="sm"
       >
         <DialogTitle className="flex items-start justify-between px-9 pt-9 pb-6">
@@ -133,20 +170,20 @@ const AddNewBuyerDialog: React.FC<{onBuyerCreated?: () => void }> = ({
               Enter details of your Vendor
             </Typography>
           </Box>
-          <IconButton onClick={handleClose} className="p-0">
+          <IconButton onClick={onClose} className="p-0">
             <CloseOutlinedIcon />
           </IconButton>
         </DialogTitle>
 
         <Formik
           initialValues={{
-            name: "",
-            contactNumber: "",
-            whatsappNumber: "",
-            email: "",
-            address: "",
-            profileImage: null,
-          }}
+            name: initialValues?.name || "",
+              contactNumber: initialValues?.contactNumber || "",
+              whatsappNumber: initialValues?.whatsappNumber || "",
+              email: initialValues?.email || "",
+              address: initialValues.address || "",
+              profileImage: initialValues?.profileImage || null,
+            }}
           validationSchema={addBuyerSchema}
           onSubmit={handleSubmit}
         >
