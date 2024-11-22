@@ -112,10 +112,14 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
         const editPayload = {
           buyerId: initialValues.id, // Use the id from initialValues
           editBuyerPayload : {
-           vendorType: "buyer", // Include vendorType
+           vendorType: "buyer", 
             name : values.name,
-            contactNumber : values.contactNumber,
-            whatsappNumber : values.whatsappNumber,
+             contactNumber: values.contactNumber.startsWith("+91")
+            ? values.contactNumber 
+            : `+91${values.contactNumber}`, 
+          whatsappNumber: values.whatsappNumber.startsWith("+91")
+            ? values.whatsappNumber
+            : `+91${values.whatsappNumber}`,
             email : values.email,
             address : values.address,
           },
@@ -176,17 +180,21 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
         </DialogTitle>
 
         <Formik
-          initialValues={{
-            name: initialValues?.name || "",
-              contactNumber: initialValues?.contactNumber || "",
-              whatsappNumber: initialValues?.whatsappNumber || "",
+                    initialValues={{
+              name: initialValues?.name || "",
+              contactNumber: initialValues?.contactNumber?.startsWith("+91")
+                ? initialValues.contactNumber.slice(3)
+                : initialValues?.contactNumber || "",
+              whatsappNumber: initialValues?.whatsappNumber?.startsWith("+91")
+                ? initialValues.whatsappNumber.slice(3) 
+                : initialValues?.whatsappNumber || "",
               email: initialValues?.email || "",
-              address: initialValues.address || "",
+              address: initialValues?.address || "",
               profileImage: initialValues?.profileImage || null,
             }}
-          validationSchema={addBuyerSchema}
-          onSubmit={handleSubmit}
-        >
+            validationSchema={addBuyerSchema}
+            onSubmit={handleSubmit}
+          >
           {({ touched, errors, setFieldValue, resetForm }) => (
             <Form>
               <DialogContent className="px-9">

@@ -35,13 +35,18 @@ const Buyers = () => {
     await fetchData();
   };
 
+  const normalizeNumberForEdit = (number: string) => {
+  return number.startsWith("+91") ? number.slice(3) : number;
+};
+
+
   // Handle edit button click
   const handleEditBuyer = (buyer: VendorManagementBuyerModel) => {
     setEditedBuyer({
       id: buyer.id,
       name: buyer.name,
-      contactNumber: buyer.contactNumber,
-      whatsappNumber: buyer.whatsappNumber,
+      contactNumber: normalizeNumberForEdit(buyer.contactNumber),
+    whatsappNumber: normalizeNumberForEdit(buyer.whatsappNumber),
       email: buyer.email,
       address: buyer.address,
       profileImage: null, // Handle profile image as needed
