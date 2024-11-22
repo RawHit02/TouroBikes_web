@@ -23,7 +23,7 @@ export const createBuyer = createAsyncThunk<
   { createBuyerPayload: CreateBuyerPayload },
   { rejectValue: { message: string; status?: number } }
 >(
-  "vendorManagement/createVehicle",
+  "vendorManagement/createBuyer",
   async ({ createBuyerPayload }, { rejectWithValue }) => {
     try {
       const body = {
@@ -139,23 +139,27 @@ export const editBuyerAction = createAsyncThunk<
   "vendorManagement/editBuyer",
   async ({ editBuyerPayload, buyerId }, { rejectWithValue }) => {
     try {
-      const body = {
-        vendorType: editBuyerPayload.vendorType,
-        name: editBuyerPayload.name,
-        contactNumber: "+91" + editBuyerPayload.contactNumber,
-        whatsappNumber: "+91" + editBuyerPayload.whatsappNumber,
-        email: editBuyerPayload.email,
-        address: editBuyerPayload.address,
+      const body ={
+        id : buyerId,
+        ...editBuyerPayload,
       };
-
-       const res = await apiClient.patch(`${EDIT_VENDOR}/${buyerId}`, body); // Corrected string interpolation
+      //request body 
+      // const body = {
+      //   vendorType: "buyer",
+      //   name: editBuyerPayload.name,
+      //   contactNumber: "+91" + editBuyerPayload.contactNumber,
+      //   whatsappNumber: "+91" + editBuyerPayload.whatsappNumber,
+      //   email: editBuyerPayload.email,
+      //   address: editBuyerPayload.address,
+      // };
+       const res = await apiClient.patch(EDIT_VENDOR, body); // Corrected string interpolation
   return { data: res.data.data, message: res.data.message };
 } catch (error: any) {
   console.error("Error occurred while editing buyer:", error);
   const status = error.response?.status || 500;
   CustomToast.ErrorToast(error?.response?.data?.message || "Something went wrong");
   return rejectWithValue({
-    message: error.response?.data?.message || "Failed to edit buyer",
+    message: error.response?.data?.message || "Failed to update buyer",
     status,
   });
 }
@@ -170,7 +174,7 @@ export const deleteBuyerAction = createAsyncThunk<
   "vendorManagement/deleteBuyer",
   async (buyerId, { rejectWithValue }) => {
     try {
-      // Use _delete instead of delete
+      // _delete instead of delete
       const response = await apiClient._delete(`${DELETE_VENDOR}/${buyerId}`);
       return { message: "Buyer deleted successfully" };
     } catch (error: any) {
