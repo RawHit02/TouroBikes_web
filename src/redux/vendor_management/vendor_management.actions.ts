@@ -111,9 +111,9 @@ export const fetchBuyersAction = createAsyncThunk<
         },
       };
 
-      console.log("API URL:", GET_ALL_BUYERS, "Params:", options);
+      console.log("API URL:", GET_ALL_VENDOR, "Params:", options);
 
-      const response = await apiClient.get(GET_ALL_BUYERS, options);
+      const response = await apiClient.get(GET_ALL_VENDOR, options);
       return {
         data: response.data.data.data, // Fetched buyers
         meta: response.data.data.meta, // Metadata ( pagination)
@@ -140,7 +140,6 @@ export const editBuyerAction = createAsyncThunk<
   async ({ editBuyerPayload, buyerId }, { rejectWithValue }) => {
     try {
       const body ={
-        id : buyerId,
         ...editBuyerPayload,
       };
       //request body 
@@ -152,7 +151,7 @@ export const editBuyerAction = createAsyncThunk<
       //   email: editBuyerPayload.email,
       //   address: editBuyerPayload.address,
       // };
-       const res = await apiClient.patch(EDIT_VENDOR, body); // Corrected string interpolation
+       const res = await apiClient.patch(`${EDIT_VENDOR}/${buyerId}`, body); // Corrected string interpolation
   return { data: res.data.data, message: res.data.message };
 } catch (error: any) {
   console.error("Error occurred while editing buyer:", error);
