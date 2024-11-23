@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import buyerReducer from "./slices/buyerSlice"; // Import the buyer slice
 import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { combineReducers } from "@reduxjs/toolkit";
 
 import authReducer from "./slices/authSlice";
 import VendorManagementReducer from "./vendor_management/vendor_management.slice";
