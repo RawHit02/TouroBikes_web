@@ -178,10 +178,15 @@ const VendorManagementBuyers = ({
                         className="object-cover w-full h-full"
                       />
                     </Box>
-                    <Typography className="font-semibold text-sm">
-                      {row.name}
-                    </Typography>
-                  </Box>
+                     <Box>
+                <Typography className="font-semibold text-sm">
+                  {row.name}
+                </Typography>
+                <Typography className="text-xs text-gray-500">
+                  {row.email}
+                </Typography>
+              </Box>  
+              </Box>
                 </TableCell>
                 <TableCell>{row.contactNumber}</TableCell>
                 <TableCell>{row.whatsappNumber}</TableCell>
