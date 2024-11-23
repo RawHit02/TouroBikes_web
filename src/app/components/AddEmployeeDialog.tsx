@@ -59,8 +59,8 @@ const AddEmployeeDialog = () => {
       >
         <DialogTitle className="flex items-start justify-between px-9 pt-9 pb-6">
           <Box>
-            <Typography variant="h1">Add Employee</Typography>
-            <Typography variant="body1" className="text-[#4B7D47] mt-2">
+            <Typography className="text-2xl font-bold">Add Employee</Typography>
+            <Typography className="text-base font-normal text-[#4B7D47] mt-2">
               Enter details of your employee
             </Typography>
           </Box>
@@ -86,18 +86,22 @@ const AddEmployeeDialog = () => {
                   className="rounded-[8px] border-[1px] pt-[10px] pb-[10px] pl-[12px] pr-[20px] flex flex-row gap-[10px]"
                 >
                   <Image src={upload} alt="upload" />
-                  <Typography variant="body1">UPLOAD</Typography>
+                  <Typography className="text-base font-normal">
+                    UPLOAD
+                  </Typography>
                 </Button>
                 <Button
                   variant="outlined"
                   className="rounded-[8px] border-[1px] pt-[10px] pb-[10px] pl-[12px] pr-[20px] flex flex-row gap-[10px]"
                 >
                   <Image src={close} alt="reset" />
-                  <Typography variant="body1">RESET</Typography>
+                  <Typography className="text-base font-normal">
+                    RESET
+                  </Typography>
                 </Button>
               </Box>
               <Box>
-                <Typography variant="body2" className="text-[#92929D]">
+                <Typography className="text-[#92929D] text-xs">
                   Allowed JPG, GIF or PNG. Max size of 800K
                 </Typography>
               </Box>
@@ -109,7 +113,7 @@ const AddEmployeeDialog = () => {
           >
             <Box className="flex flex-col gap-[4px]">
               <Box className="p-[2px]">
-                <Typography variant="h5" className=" text-primary mb-1">
+                <Typography className=" text-primary text-sm font-normal mb-1">
                   Name
                 </Typography>
               </Box>
@@ -123,7 +127,7 @@ const AddEmployeeDialog = () => {
             </Box>
             <Box className="flex flex-col gap-[4px]">
               <Box className="p-[2px]">
-                <Typography variant="h5" className=" text-primary mb-1">
+                <Typography className=" text-primary text-sm font-normal mb-1">
                   Contact Number
                 </Typography>
               </Box>
@@ -148,7 +152,7 @@ const AddEmployeeDialog = () => {
             </Box>
             <Box className="flex flex-col gap-[4px]">
               <Box className="p-[2px]">
-                <Typography variant="h5" className=" text-primary mb-1">
+                <Typography className=" text-primary text-sm font-normal mb-1">
                   Email
                 </Typography>
               </Box>
@@ -162,7 +166,7 @@ const AddEmployeeDialog = () => {
             </Box>
             <Box className="flex flex-col gap-[4px]">
               <Box className="p-[2px]">
-                <Typography variant="h5" className=" text-primary mb-1">
+                <Typography className=" text-primary text-sm font-normal mb-1">
                   Address
                 </Typography>
               </Box>
@@ -176,7 +180,7 @@ const AddEmployeeDialog = () => {
             </Box>
             <Box className="flex flex-col gap-[4px]">
               <Box className="p-[2px]">
-                <Typography variant="h5" className=" text-primary mb-1">
+                <Typography className=" text-primary text-sm font-normal mb-1">
                   Shift
                 </Typography>
               </Box>

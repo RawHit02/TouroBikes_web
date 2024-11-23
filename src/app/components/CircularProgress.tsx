@@ -26,16 +26,14 @@ function CircularProgressWithLabel(
       >
         <Box className="flex flex-col">
           <Typography
-            variant="body2"
             component="div"
-            className="text-[#000000] flex flex-row self-center"
+            className="text-[#000000] flex flex-row self-center text-xs font-normal"
           >
             79%
           </Typography>
           <Typography
-            variant="body2"
             component="div"
-            className="text-[#000000] flex flex-row self-center"
+            className="text-[#000000] flex flex-row self-center text-xs font-normal"
           >
             Present
           </Typography>

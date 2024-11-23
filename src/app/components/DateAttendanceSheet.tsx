@@ -8,7 +8,6 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Box, Button, Typography } from "@mui/material";
 import { search } from "@/app/assets";
 import Image from "next/image";
-import { PickersInput } from "@mui/x-date-pickers/PickersTextField";
 
 const DateAttendanceSheet = () => {
   return (
@@ -55,7 +54,7 @@ const DateAttendanceSheet = () => {
           alt="search"
           className="flex flex-row self-center"
         />
-        <Typography variant="body1">Search</Typography>
+        <Typography className="text-base font-medium">Search</Typography>
       </Button>
     </Box>
   );
