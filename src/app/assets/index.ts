@@ -29,6 +29,7 @@ import imagepic from './images/imagepic.svg'
 import upload from './images/upload.svg'
 import close from './images/close.svg'
 import search from './images/search.svg'
+import ShortLogo from './images/short-logo.svg'
 
 //Mui Icons
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -86,6 +87,7 @@ export {
     upload,
     close,
     search,
+    ShortLogo,
 
     //Mui Icons
     CheckCircleIcon,
