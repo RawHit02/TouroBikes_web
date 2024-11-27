@@ -8,13 +8,14 @@ import { useDispatch } from "react-redux";
 import { getAllOutwardsAction } from "@/redux/stock_management/stock_management.actions";
 import { StockManagementOutwardModel } from "@/models/req-model/StockManagementOutwardModel";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-// import { useSnackbar } from "notistack";
-
 
 const Outward = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [editedOutward, setEditedOutward] = useState<StockManagementOutwardModel | null>(null); // Store outward data for edit
-  const [isAddOutwardDialogOpen, setIsAddOutwardDialogOpen] = useState(false); // Control dialog visibility
+
+  // State for managing dialog
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [dialogInitialValues, setDialogInitialValues] = useState<StockManagementOutwardModel | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // Fetch outwards data from backend
   const fetchData = async () => {
@@ -37,31 +38,23 @@ const Outward = () => {
   };
 
   // Handle edit button click
-  const handleEditOutward = (outward: StockManagementOutwardModel) => {
-    setEditedOutward({
-      ...outward,
-    });
-    setIsAddOutwardDialogOpen(true);
+  const handleEditOutward = (row: StockManagementOutwardModel) => {
+    setIsEditMode(true); // Enable edit mode
+    setDialogInitialValues(row); // Prefill dialog with selected row data
+    setDialogOpen(true); // Open the dialog
   };
 
   // Handle add button click
   const handleAddOutward = () => {
-    setEditedOutward(null); // Reset edited outward
-    setIsAddOutwardDialogOpen(true); // Open dialog for adding outward
+    setIsEditMode(false); // Disable edit mode
+    setDialogInitialValues(null); // Clear dialog initial values
+    setDialogOpen(true); // Open the dialog
   };
 
-    // Handle add button click
-
-    const handleAddEntry = () => {
-    setEditedOutward(null); // Reset edited outward
-    setIsAddOutwardDialogOpen(true); // Open dialog for adding outward
-  };
-
-  
   // Close dialog handler
   const handleCloseDialog = () => {
-    setIsAddOutwardDialogOpen(false); // Close dialog
-    setEditedOutward(null); // Reset edited outward data
+    setDialogOpen(false); // Close the dialog
+    setDialogInitialValues(null); // Clear dialog initial values
   };
 
   // Fetch outwards on component load
@@ -92,11 +85,11 @@ const Outward = () => {
       {/* Add/Edit Dialog */}
       <AddStockEntryDialog
         stock={false} // Indicates it's for outward
-        onOutwardCreated={refreshOutwards} // Refresh outwards after dialog submission
-        initialValues={editedOutward || undefined} // Prefill data for edit
-        isEditMode={Boolean(editedOutward?.id)} // Indicate edit mode
-        open={isAddOutwardDialogOpen} // Dialog visibility control
+        isEditMode={isEditMode} // Indicate edit mode
+        initialValues={dialogInitialValues || undefined} // Prefill data for edit
+        open={dialogOpen} // Dialog visibility control
         onClose={handleCloseDialog} // Close dialog handler
+        onOutwardCreated={refreshOutwards} // Refresh outwards after dialog submission
       />
     </Box>
   );

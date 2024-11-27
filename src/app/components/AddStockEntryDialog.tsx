@@ -28,6 +28,7 @@ import { AppDispatch } from "@/redux/store";
 import {
   createInward,
   editInwardAction,
+  editOutwardAction,
 } from "@/redux/stock_management/stock_management.actions";
 import { createOutward } from "@/redux/stock_management/stock_management.actions";
 
@@ -109,6 +110,7 @@ const AddStockEntryDialog = ({
   const handleSubmit = async (values: any, { resetForm }: { resetForm: () => void }) => {
     try {
           const payload = {  
+            ...values,
             stockType: stock ? "inward" : "outward",
             transId: values.transId,
             description: values.description,
@@ -122,17 +124,36 @@ const AddStockEntryDialog = ({
             location: values.location,
             notes: values.notes,
             vendorId: values.vendorId, 
-            ...initialValues,
           };
-        if(isEditMode && initialValues ?.id) {
-            // Edit Stock entry
-            await dispatch(editInwardAction({ id: initialValues.id, ...payload })).unwrap();
-      enqueueSnackbar("Stock updated successfully!", { variant: "success" });
-      }else{
-        if (stock) {
-        // Handle inward stock creation
+         if (isEditMode && initialValues?.id) {
+      // Handle editing for both inward and outward
+      if (stock) {
+        await dispatch(
+          editInwardAction({
+            editInwardPayload: payload,
+            inwardId: initialValues.id,
+          })
+        ).unwrap();
+        enqueueSnackbar("Inward stock updated successfully!", {
+          variant: "success",
+        });
+    }else{
+        await dispatch(
+          editOutwardAction({
+            editOutwardPayload: payload,
+            outwardId: initialValues.id,
+          })
+        ).unwrap();
+        enqueueSnackbar("Outward stock updated successfully!", {
+          variant: "success",
+        });
+      }}else {
+      // Handle creation for both inward and outward
+      if (stock) {
         await dispatch(createInward({ createInwardPayload: payload })).unwrap();
-        enqueueSnackbar("Inward stock added successfully!", { variant: "success" });
+        enqueueSnackbar("Inward stock added successfully!", {
+          variant: "success",
+        });
         if (onInwardCreated) await onInwardCreated();
       } else {
         // Handle outward stock creation
@@ -150,8 +171,7 @@ const AddStockEntryDialog = ({
       });
     }
   };
-
-  return (
+   return (
     <Dialog
       fullWidth
       onClose={onClose}
@@ -185,9 +205,9 @@ const AddStockEntryDialog = ({
             <DialogContent className="px-9">
               <Box sx={{ width: "100%" }}>
                 <Grid container rowSpacing={1} columnSpacing={1}>
-                  {[
+                    {[
                     { name: "stockType", label: "Stock Type", type: "select", options: ["Gold", "Diamond", "Silver"] },
-                    { name: "goldType", label: "Gold Type", type: "select", options: ["24K", "22K", "18K"] },
+                    { name: "goldType", label: "Gold Type", type: "select", options: ["Yellow Gold", "White Gold", "Rose Gold" , "Green Gold"] },
                     { name: "formOfGold", label: "Form of Gold", type: "select", options: ["Bar", "Coin", "Jewelry"] },
                     { name: "quantity", label: "Quantity", type: "number" },
                     { name: "purity", label: "Purity (Karat Rating)", type: "text" },
@@ -198,31 +218,44 @@ const AddStockEntryDialog = ({
                     { name: "commission", label: "Commission", type: "number" },
                     { name: "paymentStatus", label: "Payment Status", type: "select", options: ["Paid", "Pending"] },
                     { name: "amountReceived", label: "Amount Received", type: "number" },
-                    { name: "notes", label: "Notes (if any)", type: "text" },
-
-                    
+                    { name: "notes", label: "Notes (if any)", type: "text" },   
                   ].map((field, index) => (
                     <Grid size={6} key={index}>
-                      <Box>
-                        <Typography className="text-sm text-primary mb-1">{field.label}</Typography>
+                        <Box>
+                        <Typography className="text-sm text-primary mb-1">
+                          {field.label}
+                        </Typography>
                         {field.type === "select" ? (
-                          <Field as={Select} name={field.name} fullWidth className="mt-1" displayEmpty>
-                            <MenuItem value="">Select {field.label}</MenuItem>
-                            {field.type === "select" && field.options && (
-                                field.options.map((option: string, idx: number) => (
+                          <Field name={field.name}>
+                            {({
+                              field: formikField,
+                            }: {
+                              field: any;
+                            }) => (
+                              <Select
+                                {...formikField}
+                                fullWidth
+                                displayEmpty
+                                className="mt-1"
+                                value={formikField.value || ""}
+                              >
+                                <MenuItem value="">
+                                  Select {field.label}
+                                </MenuItem>
+                                {field.options?.map(
+                                  (option: string, idx: number) => (
                                     <MenuItem value={option} key={idx}>
-                                    {option}
+                                      {option}
                                     </MenuItem>
-                                ))
+                                  )
                                 )}
-
+                              </Select>
+                            )}
                           </Field>
                         ) : (
                           <Field
-                            as={OutlinedInput}
                             name={field.name}
-                            type={field.type}
-                            placeholder={`Enter ${field.label.toLowerCase()}`}
+                            as={OutlinedInput}
                             fullWidth
                             className="mt-1"
                           />

@@ -1,8 +1,8 @@
 import CustomToast from "@/app/components/CustomToast";
 import { apiClient } from "@/base-url/apiClient";
 import {
-  CREATE_INWARD_STOCK,
-  CREATE_OUTWARD_STOCK,
+  CREATE_STOCK,
+  DELETE_STOCK,
   FETCH_INWARD_STOCK,
   FETCH_OUTWARD_STOCK,
 } from "@/base-url/apiRoutes";
@@ -27,7 +27,7 @@ export const createInward = createAsyncThunk<
   "stockManagement/createInward",
   async ({ createInwardPayload }, { rejectWithValue }) => {
     try {
-      const res = await apiClient.post(CREATE_INWARD_STOCK, createInwardPayload);
+      const res = await apiClient.post(CREATE_STOCK, createInwardPayload);
       return { data: res.data.data, message: res.data.message };
     } catch (error: any) {
       console.error(
@@ -55,20 +55,14 @@ export const createOutward = createAsyncThunk<
   "stockManagement/createOutward",
   async ({ createOutwardPayload }, { rejectWithValue }) => {
     try {
-      const res = await apiClient.post(CREATE_OUTWARD_STOCK, createOutwardPayload);
+      const res = await apiClient.post(CREATE_STOCK, createOutwardPayload);
       return { data: res.data.data, message: res.data.message };
     } catch (error: any) {
       console.error(
-        "Error occurred while creating outward entry:",
-        error.response?.data || error.message
-      );
-      const status = error.response?.status || 500;
-      CustomToast.ErrorToast(
-        error?.response?.data?.message || "Something went wrong"
-      );
+        "Error occurred while creating outward entry:", error);
       return rejectWithValue({
         message: error.response?.data?.message || "Failed to create outward",
-        status,
+        status: error.response?.status || 500,
       });
     }
   }
@@ -115,9 +109,7 @@ export const getAllInwardsAction = createAsyncThunk<
 // Get All Outwards
 export const getAllOutwardsAction = createAsyncThunk<
   { data: StockManagementOutwardModel[]; itemCount: number },
-  {
-    commonApiParamModel: GetAllOutwardsRequest;
-  },
+  { commonApiParamModel: GetAllOutwardsRequest },
   { rejectValue: { message: string; status?: number } }
 >(
   "stockManagement/getOutwards",
@@ -133,15 +125,13 @@ export const getAllOutwardsAction = createAsyncThunk<
         },
       };
       const res = await apiClient.get(FETCH_OUTWARD_STOCK, options);
-      // let data: StockManagementOutwardModel[] = [];
-      // if (res?.data?.data.data) data = res.data.data.data;
-      return { data : res.data.data, itemCount: res.data.data.meta.itemCount };
+      console.log("Outward API Response:", res.data); // Debug log
+      return {
+        data: res.data.data || [], // Fallback to empty array if data is undefined
+        itemCount: res.data.meta?.itemCount || 0, // Ensure itemCount is valid
+      };
     } catch (error: any) {
-      console.error("Error occurred while fetching outwards:", error);
-      // const status = error.response?.status || 500;
-      // CustomToast.ErrorToast(
-      //   error?.response?.data?.message || error?.message || "Failed to fetch outwards"
-      // );
+      console.error("Error fetching outwards:", error);
       return rejectWithValue({
         message: error.response?.data?.message || "Failed to fetch outwards",
         status: error.response?.status || 500,
@@ -149,6 +139,7 @@ export const getAllOutwardsAction = createAsyncThunk<
     }
   }
 );
+
 
 // Edit Inward
 export const editInwardAction = createAsyncThunk<
@@ -160,7 +151,7 @@ export const editInwardAction = createAsyncThunk<
   async ({ editInwardPayload, inwardId }, { rejectWithValue }) => {
     try {
       const res = await apiClient.patch(
-        `${CREATE_INWARD_STOCK}/${inwardId}`,
+        `${CREATE_STOCK}/${inwardId}`,
         editInwardPayload
       );
       return { data: res.data.data, message: res.data.message };
@@ -188,7 +179,7 @@ export const editOutwardAction = createAsyncThunk<
   async ({ editOutwardPayload, outwardId }, { rejectWithValue }) => {
     try {
       const res = await apiClient.patch(
-        `${CREATE_OUTWARD_STOCK}/${outwardId}`,
+        `${CREATE_STOCK}/${outwardId}`,
         editOutwardPayload
       );
       return { data: res.data.data, message: res.data.message };
@@ -215,7 +206,7 @@ export const deleteInwardAction = createAsyncThunk<
   "stockManagement/deleteInward",
   async (inwardId, { rejectWithValue }) => {
     try {
-      await apiClient._delete(`${CREATE_INWARD_STOCK}/${inwardId}`);
+      await apiClient._delete(`${DELETE_STOCK}/${inwardId}`);
       return { message: "Inward entry deleted successfully" };
     } catch (error: any) {
       console.error(
@@ -240,7 +231,7 @@ export const deleteOutwardAction = createAsyncThunk<
   "stockManagement/deleteOutward",
   async (outwardId, { rejectWithValue }) => {
     try {
-      await apiClient._delete(`${CREATE_OUTWARD_STOCK}/${outwardId}`);
+      await apiClient._delete(`${DELETE_STOCK}/${outwardId}`);
       return { message: "Outward entry deleted successfully" };
     } catch (error: any) {
       console.error(

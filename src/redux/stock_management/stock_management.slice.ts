@@ -129,8 +129,10 @@ export const stockManagementSlice = createSlice({
     builder.addCase(getAllOutwardsAction.fulfilled, (state, action) => {
       state.outwards.getAllOutwardLoading = false;
       state.outwards.userError = "";
-      state.outwards.getAllOutwards = action.payload.data;
-      state.outwards.itemCount = action.payload.itemCount;
+      state.outwards.getAllOutwards = Array.isArray(action.payload.data)
+      ? action.payload.data
+      :[];
+      state.outwards.itemCount = action.payload.itemCount || 0;
     });
     builder.addCase(getAllOutwardsAction.rejected, (state, action) => {
       state.outwards.getAllOutwardLoading = false;
