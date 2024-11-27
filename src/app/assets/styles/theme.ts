@@ -4,48 +4,6 @@ import { Padding, RoundedCorner } from "@mui/icons-material";
 import { createTheme } from "@mui/material";
 
 const theme = createTheme({
-    typography: {
-        h1: {
-            fontSize: '24px',
-            fontWeight: '700',
-        },
-        h2: {
-            fontSize: '23px',
-            fontWeight: 'bold'
-        },
-        h3: {
-            fontSize: '18px',
-
-        },
-        h4: {
-            fontSize: '16px',
-
-        },
-        h5: {
-            fontSize: '14px',
-            fontWeight: '400',
-        },
-        h6: {
-            fontSize: '13px',
-        },
-        subtitle2: {
-            fontSize: '15px',
-            fontWeight: 'bold'
-        },
-        subtitle1: {
-            fontSize: '13px',
-            fontWeight: 'light'
-        },
-        body1: {
-            fontSize: '16px',
-            fontWeight: '500',
-        },
-
-        body2: {
-            fontSize: '12px',
-            fontWeight: '400',
-        },
-},
     palette:{
         primary:{
             main:'rgba(75, 125, 71, 1)',

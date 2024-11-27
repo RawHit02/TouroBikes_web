@@ -1,31 +1,29 @@
 "use client";
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { AddAttendance, PrimaryTableExample } from "@/app/components";
-import { CircularProgress } from "@/app/components";
-import { CircularSecon } from "@/app/components";
+import { AddAttendanceDialog, PrimaryTableExample, TotalAbsentPercentage, TotalPresentPercentage } from "@/app/components";
 
 const TodaysAttendance = () => {
   return (
     <Box className="bg-white border border-[#E8EBED] rounded-xl p-6 h-[calc(100vh-116px)] overflow-auto">
-      <Box className="flex flex-col gap-4">
-        <Box className="w-full flex items-center justify-between">
+      <Box className="flex flex-col">
+        <Box className="w-full flex items-center justify-between mb-4">
           <Typography className="text-2xl font-bold">
             Today's Attendance
           </Typography>
           <Box>
-            <AddAttendance />
+            <AddAttendanceDialog />
           </Box>
         </Box>
         <Box className="flex flex-row gap-4">
           <Box className="rounded-2xl p-6 flex flex-col gap-4 border border-primary500">
-            <CircularProgress />
+            <TotalPresentPercentage />
             <Typography className="flex flex-row self-center text-base font-medium">
               Total:42
             </Typography>
           </Box>
           <Box className="rounded-2xl p-6 border flex flex-col gap-4 border-primary500">
-            <CircularSecon />
+            <TotalAbsentPercentage />
             <Typography className="flex flex-row self-center text-base font-medium">
               Total:10
             </Typography>

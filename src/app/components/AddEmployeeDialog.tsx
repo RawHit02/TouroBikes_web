@@ -1,6 +1,5 @@
 // components/AddNewBuyerDialog.tsx
 "use client";
-
 import React, { useState } from "react";
 import {
   Box,
@@ -24,8 +23,8 @@ import {
   CheckCircleIcon,
   CloseOutlinedIcon,
   KeyboardArrowDownIcon,
+  UploadImageIcon,
 } from "../assets";
-import { imagepic } from "../assets";
 import { upload } from "@/app/assets";
 import { close } from "@/app/assets";
 
@@ -59,25 +58,24 @@ const AddEmployeeDialog = () => {
       >
         <DialogTitle className="flex items-start justify-between px-9 pt-9 pb-6">
           <Box>
-            <Typography className="text-2xl font-bold">Add Employee</Typography>
-            <Typography className="text-base font-normal text-[#4B7D47] mt-2">
+          <Typography className="text-2xl leading-6 font-semibold">Add Employee</Typography>
+          <Typography className="text-secondary800 mt-2">
               Enter details of your employee
             </Typography>
           </Box>
-          <IconButton onClick={handleClose} className="p-0 text-[#1C1B1F]">
+          <IconButton onClick={handleClose} className="p-0 text-gray100">
             <CloseOutlinedIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent className="px-9">
           <Box className="flex flex-row gap-[24px]">
-            <Box>
-              <Box className="border-[6px] border-[#B6D063] rounded-[50%] w-[121px] h-[121px] bg-[#EDFFF2] relative">
-                <Image
-                  src={imagepic}
-                  alt="image"
-                  className="absolute top-[35px] left-[35px]"
-                />
-              </Box>
+            <Box className="border-[6px] border-primary200 bg-primaryExtraLight rounded-full overflow-hidden w-[120px] h-[120px] flex items-center justify-center relative">
+              <Image src={UploadImageIcon} alt="Upload" />
+              <input
+                type="file"
+                accept="image/*"
+                className="absolute opacity-0 w-full h-full"
+              />
             </Box>
             <Box className="flex flex-col justify-center gap-[8px]">
               <Box className="flex flex-row gap-[8px] items-center">
@@ -111,12 +109,10 @@ const AddEmployeeDialog = () => {
             sx={{ width: "100%" }}
             className="flex flex-col gap-[12px] mt-[25px]"
           >
-            <Box className="flex flex-col gap-[4px]">
-              <Box className="p-[2px]">
-                <Typography className=" text-primary text-sm font-normal mb-1">
-                  Name
-                </Typography>
-              </Box>
+            <Box className="flex flex-col">
+              <Typography className=" text-primary text-sm font-normal mb-1">
+                Name
+              </Typography>
               <Box>
                 <TextField
                   variant="outlined"
@@ -125,12 +121,12 @@ const AddEmployeeDialog = () => {
                 />
               </Box>
             </Box>
-            <Box className="flex flex-col gap-[4px]">
-              <Box className="p-[2px]">
-                <Typography className=" text-primary text-sm font-normal mb-1">
-                  Contact Number
-                </Typography>
-              </Box>
+            <Box className="flex flex-col">
+
+              <Typography className=" text-primary text-sm font-normal mb-1">
+                Contact Number
+              </Typography>
+
               <Box>
                 <TextField
                   variant="outlined"
@@ -140,9 +136,10 @@ const AddEmployeeDialog = () => {
                       startAdornment: (
                         <InputAdornment
                           position="start"
-                          className="text-[#4B7D47]"
                         >
-                          +1
+                          <Typography className="text-secondary800 text-sm">
+                            +91
+                          </Typography>
                         </InputAdornment>
                       ),
                     },
@@ -150,12 +147,12 @@ const AddEmployeeDialog = () => {
                 />
               </Box>
             </Box>
-            <Box className="flex flex-col gap-[4px]">
-              <Box className="p-[2px]">
-                <Typography className=" text-primary text-sm font-normal mb-1">
-                  Email
-                </Typography>
-              </Box>
+            <Box className="flex flex-col">
+
+              <Typography className=" text-primary text-sm font-normal mb-1">
+                Email
+              </Typography>
+
               <Box>
                 <TextField
                   variant="outlined"
@@ -164,12 +161,12 @@ const AddEmployeeDialog = () => {
                 />
               </Box>
             </Box>
-            <Box className="flex flex-col gap-[4px]">
-              <Box className="p-[2px]">
-                <Typography className=" text-primary text-sm font-normal mb-1">
-                  Address
-                </Typography>
-              </Box>
+            <Box className="flex flex-col">
+
+              <Typography className=" text-primary text-sm font-normal mb-1">
+                Address
+              </Typography>
+
               <Box>
                 <TextField
                   variant="outlined"
@@ -178,12 +175,12 @@ const AddEmployeeDialog = () => {
                 />
               </Box>
             </Box>
-            <Box className="flex flex-col gap-[4px]">
-              <Box className="p-[2px]">
-                <Typography className=" text-primary text-sm font-normal mb-1">
-                  Shift
-                </Typography>
-              </Box>
+            <Box className="flex flex-col">
+
+              <Typography className=" text-primary text-sm font-normal mb-1">
+                Shift
+              </Typography>
+
               <Box>
                 <FormControl fullWidth>
                   <Select

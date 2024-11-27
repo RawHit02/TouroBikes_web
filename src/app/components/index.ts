@@ -7,9 +7,25 @@ import SecondaryTable from "./SecondaryTable";
 import AddStockEntryDialog from "./AddStockEntryrDialog";
 import PrimaryTableExample from "./PrimaryTableExample";
 import AddEmployeeDialog from "./AddEmployeeDialog";
-import CircularProgress from "./CircularProgress";
-import CircularSecon from "./CircularSecon"
-import AddAttendance from "./AddAttendance";
+import TotalPresentPercentage from "./TotalPresentPercentage";
+import TotalAbsentPercentage from "./TotalAbsentPercentage"
+import AddAttendanceDialog from "./AddAttendanceDialog";
 import DateAttendanceSheet from "./DateAttendanceSheet";
+import AttendanceTable from "./AttendanceTable";
 
-export { Header, SideNav, DateAttendanceSheet, AddNewBuyerDialog, SignIn, AddEmployeeDialog, PrimaryTable, AddAttendance, CircularProgress, CircularSecon,  SecondaryTable, AddStockEntryDialog, PrimaryTableExample } 
+export {
+    Header,
+    SideNav,
+    DateAttendanceSheet,
+    AddNewBuyerDialog,
+    SignIn,
+    AddEmployeeDialog,
+    PrimaryTable,
+    AddAttendanceDialog,
+    TotalPresentPercentage,
+    TotalAbsentPercentage,
+    SecondaryTable,
+    AddStockEntryDialog,
+    PrimaryTableExample,
+    AttendanceTable
+} 

@@ -26,7 +26,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
-const AddEmployeeDialog = () => {
+const AddAttendanceDialog = () => {
   const [open, setOpen] = useState(false);
   const [age, setAge] = useState("");
 
@@ -56,25 +56,23 @@ const AddEmployeeDialog = () => {
       >
         <DialogTitle className="flex items-start justify-between px-9 pt-9 pb-6">
           <Box>
-            <Typography variant="h1">Add Attendance</Typography>
-            <Typography variant="body1" className="text-[#4B7D47] mt-2">
+            <Typography className="text-2xl leading-6 font-semibold">Add Attendance</Typography>
+            <Typography className="text-secondary800 mt-2">
               Enter your employee attendance
             </Typography>
           </Box>
-          <IconButton onClick={handleClose} className="p-0 text-[#1C1B1F]">
+          <IconButton onClick={handleClose} className="p-0 text-gray100">
             <CloseOutlinedIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent className="px-9">
           <Box sx={{ width: "100%" }} className="flex flex-col gap-[12px]">
-            <Box className="flex flex-col gap-[4px]">
-              <Box className="p-[2px]">
-                <Typography variant="h5" className=" text-primary mb-1">
-                  Name
-                </Typography>
-              </Box>
+            <Box className="flex flex-col">
+              <Typography className="text-sm text-primary">
+                Name
+              </Typography>
               <Box>
-                <FormControl fullWidth>
+                <FormControl fullWidth className="mt-2">
                   <Select
                     size="medium"
                     value={age}
@@ -98,9 +96,9 @@ const AddEmployeeDialog = () => {
                 </FormControl>
               </Box>
             </Box>
-            <Box className="flex flex-col gap-[4px]">
+            <Box className="flex flex-col">
               <Box>
-                <Typography variant="h5" className=" text-primary">
+                <Typography className="text-sm text-primary">
                   In time
                 </Typography>
               </Box>
@@ -108,7 +106,7 @@ const AddEmployeeDialog = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["TimePicker"]}>
                     <TimePicker
-                      className="p-[0px] overflow-hidden lg:w-[520px]"
+                      className="overflow-hidden w-full"
                       slotProps={{
                         // Targets the `IconButton` component.
                         openPickerButton: {
@@ -120,9 +118,9 @@ const AddEmployeeDialog = () => {
                 </LocalizationProvider>
               </Box>
             </Box>
-            <Box className="flex flex-col gap-[4px]">
+            <Box className="flex flex-col">
               <Box>
-                <Typography variant="h5" className=" text-primary">
+                <Typography className="text-sm text-primary">
                   Out time
                 </Typography>
               </Box>
@@ -130,7 +128,7 @@ const AddEmployeeDialog = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["TimePicker"]}>
                     <TimePicker
-                      className="p-[0px] overflow-hidden lg:w-[520px] border-primary500"
+                      className="overflow-hidden border-primary500 w-full"
                       slotProps={{
                         // Targets the `IconButton` component.
                         openPickerButton: {
@@ -142,14 +140,12 @@ const AddEmployeeDialog = () => {
                 </LocalizationProvider>
               </Box>
             </Box>
-            <Box className="flex flex-col gap-[4px]">
-              <Box className="p-[2px]">
-                <Typography variant="h5" className=" text-primary mb-1">
-                  Status
-                </Typography>
-              </Box>
+            <Box className="flex flex-col">
+              <Typography className="text-sm text-primary">
+                Status
+              </Typography>
               <Box>
-                <FormControl fullWidth>
+                <FormControl fullWidth className="mt-2">
                   <Select
                     size="medium"
                     value={age}
@@ -194,4 +190,4 @@ const AddEmployeeDialog = () => {
   );
 };
 
-export default AddEmployeeDialog;
+export default AddAttendanceDialog;
