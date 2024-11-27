@@ -12,6 +12,7 @@ import TotalAbsentPercentage from "./TotalAbsentPercentage"
 import AddAttendanceDialog from "./AddAttendanceDialog";
 import DateAttendanceSheet from "./DateAttendanceSheet";
 import AttendanceTable from "./AttendanceTable";
+import DeleteDialog from "./DeleteDialog";
 
 export {
     Header,
@@ -27,5 +28,6 @@ export {
     SecondaryTable,
     AddStockEntryDialog,
     PrimaryTableExample,
-    AttendanceTable
+    AttendanceTable,
+    DeleteDialog
 } 
