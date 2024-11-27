@@ -70,7 +70,7 @@ const Buyers = () => {
   // Fetch buyers on component load
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   
   return (
