@@ -34,7 +34,7 @@ export const inwardStockSchema = Yup.object({
 // Outward stock validation schema
 export const outwardStockSchema = Yup.object({
   stockType: Yup.string().required("Stock type is required"),
-  transId: Yup.string(),  // Optional for outward stock
+  transId: Yup.string(), // Optional for outward stock
   description: Yup.string().required("Description is required"),
   goldType: Yup.string().required("Gold type is required"),
   formOfGold: Yup.string().required("Form of gold is required"),

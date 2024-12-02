@@ -10,10 +10,10 @@ import { StockManagementInwardModel } from "@/models/req-model/StockManagementIn
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import { useSnackbar } from "notistack";
 
-
 const Inward = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [editedInward, setEditedInward] = useState<StockManagementInwardModel | null>(null); // Store inward data for edit
+  const [editedInward, setEditedInward] =
+    useState<StockManagementInwardModel | null>(null); // Store inward data for edit
   const [isAddInwardDialogOpen, setIsAddInwardDialogOpen] = useState(false); // Control dialog visibility
 
   // Fetch inwards data from backend
@@ -25,7 +25,9 @@ const Inward = () => {
       orderBy: "transId",
     };
     try {
-      await dispatch(getAllInwardsAction({ commonApiParamModel: params })).unwrap();
+      await dispatch(
+        getAllInwardsAction({ commonApiParamModel: params })
+      ).unwrap();
     } catch (error) {
       console.error("Error fetching inwards:", error);
     }
@@ -56,16 +58,13 @@ const Inward = () => {
     setEditedInward(null); // Reset edited inward data
   };
 
-  // Fetch inwards on component load
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   return (
     <Box className="bg-white border border-[#E8EBED] rounded-xl p-6 h-[calc(100vh-116px)] overflow-auto">
       {/* Header */}
       <Box className="w-full flex items-center justify-between">
-        <Typography className="text-2xl font-bold">Stock Management / Inward</Typography>
+        <Typography className="text-2xl font-bold">
+          Stock Management / Inward
+        </Typography>
         <Button
           variant="contained"
           className="bg-primary500 rounded-lg h-10 text-base"
@@ -94,4 +93,4 @@ const Inward = () => {
   );
 };
 
-export default inward;
+export default Inward;

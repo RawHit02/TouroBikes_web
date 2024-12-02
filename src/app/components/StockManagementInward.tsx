@@ -185,7 +185,7 @@ const StockManagementInward = ({
                       {row.transId}
                     </Typography>
                   </TableCell>
-                  <TableCell>{row.date}</TableCell>
+                  <TableCell>{row.createdDate}</TableCell>
                   <TableCell>{row.supplierName || "N/A"}</TableCell>{" "}
                   {/* Display supplierName */}
                   <TableCell>{row.description}</TableCell>

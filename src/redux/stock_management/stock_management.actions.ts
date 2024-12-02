@@ -32,16 +32,17 @@ export const createInward = createAsyncThunk<
       const body = {
         stockType: "inward",
         transId: createInwardPayload.transId,
-        description : createInwardPayload.description,
-        itemType : createInwardPayload.itemType,
-        quantity : createInwardPayload.quantity,
-        commission : createInwardPayload.commission,
-        unitPrice : createInwardPayload.unitPrice,
-        totalValue : createInwardPayload.totalValue,
-        batchNumber : createInwardPayload.batchNumber,
-        receivedBy : createInwardPayload.receivedBy,
-        location : createInwardPayload.location,
-        notes : createInwardPayload.notes,
+        description: createInwardPayload.description,
+        itemType: createInwardPayload.itemType,
+        quantity: createInwardPayload.quantity,
+        commission: createInwardPayload.commission,
+        unitPrice: createInwardPayload.unitPrice,
+        totalValue: createInwardPayload.totalValue,
+        batchNumber: createInwardPayload.batchNumber,
+        receivedBy: createInwardPayload.receivedBy,
+        location: createInwardPayload.location,
+        notes: createInwardPayload.notes,
+        vendor: "981b68ef-db0f-44fb-9993-570f8a8a9fce",
       };
       const res = await apiClient.post(CREATE_STOCK, body);
       console.log(res);
@@ -75,8 +76,7 @@ export const createOutward = createAsyncThunk<
       const res = await apiClient.post(CREATE_STOCK, createOutwardPayload);
       return { data: res.data.data, message: res.data.message };
     } catch (error: any) {
-      console.error(
-        "Error occurred while creating outward entry:", error);
+      console.error("Error occurred while creating outward entry:", error);
       return rejectWithValue({
         message: error.response?.data?.message || "Failed to create outward",
         status: error.response?.status || 500,
@@ -113,7 +113,9 @@ export const getAllInwardsAction = createAsyncThunk<
       console.error("Error occurred while fetching inwards:", error);
       const status = error.response?.status || 500;
       CustomToast.ErrorToast(
-        error?.response?.data?.message || error?.message || "Failed to fetch inwards"
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to fetch inwards"
       );
       return rejectWithValue({
         message: "Failed to fetch inwards",
@@ -156,7 +158,6 @@ export const getAllOutwardsAction = createAsyncThunk<
     }
   }
 );
-
 
 // Edit Inward
 export const editInwardAction = createAsyncThunk<
@@ -219,50 +220,44 @@ export const deleteInwardAction = createAsyncThunk<
   { message: string },
   string, // inwardId
   { rejectValue: { message: string; status?: number } }
->(
-  "stockManagement/deleteInward",
-  async (inwardId, { rejectWithValue }) => {
-    try {
-      await apiClient._delete(`${DELETE_STOCK}/${inwardId}`);
-      return { message: "Inward entry deleted successfully" };
-    } catch (error: any) {
-      console.error(
-        "Error occurred while deleting inward entry:",
-        error.response?.data || error.message
-      );
-      const status = error.response?.status || 500;
-      return rejectWithValue({
-        message: "Failed to delete inward entry",
-        status,
-      });
-    }
+>("stockManagement/deleteInward", async (inwardId, { rejectWithValue }) => {
+  try {
+    await apiClient._delete(`${DELETE_STOCK}/${inwardId}`);
+    return { message: "Inward entry deleted successfully" };
+  } catch (error: any) {
+    console.error(
+      "Error occurred while deleting inward entry:",
+      error.response?.data || error.message
+    );
+    const status = error.response?.status || 500;
+    return rejectWithValue({
+      message: "Failed to delete inward entry",
+      status,
+    });
   }
-);
+});
 
 // Delete Outward
 export const deleteOutwardAction = createAsyncThunk<
   { message: string },
   string, // outwardId
   { rejectValue: { message: string; status?: number } }
->(
-  "stockManagement/deleteOutward",
-  async (outwardId, { rejectWithValue }) => {
-    try {
-      await apiClient._delete(`${DELETE_STOCK}/${outwardId}`);
-      return { message: "Outward entry deleted successfully" };
-    } catch (error: any) {
-      console.error(
-        "Error occurred while deleting outward entry:",
-        error.response?.data || error.message
-      );
-      const status = error.response?.status || 500;
-      return rejectWithValue({
-        message: "Failed to delete outward entry",
-        status,
-      });
-    }
+>("stockManagement/deleteOutward", async (outwardId, { rejectWithValue }) => {
+  try {
+    await apiClient._delete(`${DELETE_STOCK}/${outwardId}`);
+    return { message: "Outward entry deleted successfully" };
+  } catch (error: any) {
+    console.error(
+      "Error occurred while deleting outward entry:",
+      error.response?.data || error.message
+    );
+    const status = error.response?.status || 500;
+    return rejectWithValue({
+      message: "Failed to delete outward entry",
+      status,
+    });
   }
-);
+});
 
 // // Fetch Buyers
 // export const fetchBuyers = createAsyncThunk<
@@ -273,7 +268,7 @@ export const deleteOutwardAction = createAsyncThunk<
 //   "stockManagement/fetchBuyers",
 //   async (_, { rejectWithValue }) => {
 //     try {
-//       const res = await apiClient.get(GET_ALL_BUYERS); 
+//       const res = await apiClient.get(GET_ALL_BUYERS);
 //       return { data: res.data.data };
 //     } catch (error: any) {
 //       console.error("Error occurred while fetching buyers:", error);
@@ -293,8 +288,8 @@ export const deleteOutwardAction = createAsyncThunk<
 //   "stockManagement/fetchSellers",
 //   async (_, { rejectWithValue }) => {
 //     try {
-//       const res = await apiClient.get(GET_ALL_SELLERS); 
-//       return { data: res.data.data }; 
+//       const res = await apiClient.get(GET_ALL_SELLERS);
+//       return { data: res.data.data };
 //     } catch (error: any) {
 //       console.error("Error occurred while fetching sellers:", error);
 //       return rejectWithValue({
@@ -304,4 +299,3 @@ export const deleteOutwardAction = createAsyncThunk<
 //   }
 // );
 // export { GET_ALL_BUYERS, GET_ALL_SELLERS };
-

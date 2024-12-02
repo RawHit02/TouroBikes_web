@@ -12,7 +12,9 @@ import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOu
 
 const Sellers = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [editedSeller, setEditedSeller] = useState<SellerFormValues | null>(null); // Store seller data for edit
+  const [editedSeller, setEditedSeller] = useState<SellerFormValues | null>(
+    null
+  ); // Store seller data for edit
   const [isAddSellerDialogOpen, setIsAddSellerDialogOpen] = useState(false); // Control dialog visibility
 
   // Fetch sellers data from backend
@@ -24,7 +26,9 @@ const Sellers = () => {
       orderBy: "name",
     };
     try {
-      await dispatch(getAllSellersAction({ commonApiParamModel: params })).unwrap();
+      await dispatch(
+        getAllSellersAction({ commonApiParamModel: params })
+      ).unwrap();
     } catch (error) {
       console.error("Error fetching sellers:", error);
     }
@@ -74,7 +78,9 @@ const Sellers = () => {
     <Box className="bg-white border border-[#E8EBED] rounded-xl p-6 h-[calc(100vh-116px)] overflow-auto">
       {/* Header */}
       <Box className="w-full flex items-center justify-between">
-        <Typography className="text-2xl font-bold">Vendor Management / Supplier</Typography>
+        <Typography className="text-2xl font-bold">
+          Vendor Management / Supplier
+        </Typography>
         <Button
           variant="contained"
           className="bg-primary500 rounded-lg h-10 text-base"

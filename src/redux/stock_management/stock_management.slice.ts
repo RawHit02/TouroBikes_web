@@ -43,7 +43,6 @@ const initialState: CombinedState = {
     createOutwardLoading: false,
     getAllOutwardLoading: false,
   },
-  
 };
 
 export const stockManagementSlice = createSlice({
@@ -131,8 +130,8 @@ export const stockManagementSlice = createSlice({
       state.outwards.getAllOutwardLoading = false;
       state.outwards.userError = "";
       state.outwards.getAllOutwards = Array.isArray(action.payload.data)
-      ? action.payload.data
-      :[];
+        ? action.payload.data
+        : [];
       state.outwards.itemCount = action.payload.itemCount || 0;
     });
     builder.addCase(getAllOutwardsAction.rejected, (state, action) => {
@@ -150,16 +149,12 @@ export const stockManagementSlice = createSlice({
       }
     });
 
-
-
     builder.addCase(deleteOutwardAction.fulfilled, (state, action) => {
       const deletedOutwardId = action.meta.arg; // outwardId
       state.outwards.getAllOutwards = state.outwards.getAllOutwards.filter(
         (outward) => outward.id !== deletedOutwardId
       );
     });
-
-    
   },
 });
 

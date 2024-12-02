@@ -57,11 +57,6 @@ const Outward = () => {
     setDialogInitialValues(null); // Clear dialog initial values
   };
 
-  // Fetch outwards on component load
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   return (
     <Box className="bg-white border border-[#E8EBED] rounded-xl p-6 h-[calc(100vh-116px)] overflow-auto">
       {/* Header */}

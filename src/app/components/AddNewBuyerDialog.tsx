@@ -17,9 +17,7 @@ import {
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
-import {
-  createBuyer,
-} from "@/redux/vendor_management/vendor_management.actions";
+import { createBuyer } from "@/redux/vendor_management/vendor_management.actions";
 import { addBuyerSchema } from "@/yupSchema/addBuyerSchema";
 import { editBuyerAction } from "@/redux/vendor_management/vendor_management.actions";
 import { useSnackbar } from "notistack";
@@ -27,7 +25,7 @@ import { useSnackbar } from "notistack";
 //import * as Yup from "yup";
 import Image from "next/image";
 import {
- // AddCircleOutlineOutlinedIcon,
+  // AddCircleOutlineOutlinedIcon,
   CheckCircleIcon,
   CloseOutlinedIcon,
   FileUploadOutlinedIcon,
@@ -35,7 +33,7 @@ import {
 } from "../assets";
 
 export interface BuyerFormValues {
-  id? : string; 
+  id?: string;
   name: string;
   contactNumber: string;
   whatsappNumber: string;
@@ -44,43 +42,40 @@ export interface BuyerFormValues {
   profileImage: File | null;
 }
 
-
 interface AddNewBuyerDialogProps {
   onBuyerCreated?: () => void;
   initialValues?: BuyerFormValues; // Prefilled data
-  isEditMode?: boolean;           // differentiate between add/edit
-  open : boolean;
-  onClose : () => void;
+  isEditMode?: boolean; // differentiate between add/edit
+  open: boolean;
+  onClose: () => void;
 }
 
-
-const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
+const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps> = ({
   onBuyerCreated,
   initialValues = {
-     id: undefined,
+    id: undefined,
     name: "",
     contactNumber: "",
     whatsappNumber: "",
     email: "",
     address: "",
     profileImage: null,
-   } ,
-  isEditMode = false, 
+  },
+  isEditMode = false,
   open,
   onClose,
-}) =>{
+}) => {
   const { enqueueSnackbar } = useSnackbar();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-
 
   const dispatch = useDispatch<AppDispatch>();
   const handleSnackbarClose = (
     event?: React.SyntheticEvent | Event,
     reason?: string
   ) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return; // Ignore clickaway to keep Snackbar open until timeout
     }
     setSnackbarOpen(false); // Close the Snackbar
@@ -104,37 +99,39 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
     { resetForm }: { resetForm: () => void }
   ) => {
     try {
-      if(isEditMode && initialValues?.id){
+      if (isEditMode && initialValues?.id) {
         // Edit Buyer
         const editPayload = {
           buyerId: initialValues.id, // Use the id from initialValues
-          editBuyerPayload : {
-           vendorType: "buyer", 
-            name : values.name,
-             contactNumber: values.contactNumber.startsWith("+91")
-            ? values.contactNumber 
-            : `+91${values.contactNumber}`, 
-          whatsappNumber: values.whatsappNumber.startsWith("+91")
-            ? values.whatsappNumber
-            : `+91${values.whatsappNumber}`,
-            email : values.email,
-            address : values.address,
+          editBuyerPayload: {
+            vendorType: "buyer",
+            name: values.name,
+            contactNumber: values.contactNumber.startsWith("+91")
+              ? values.contactNumber
+              : `+91${values.contactNumber}`,
+            whatsappNumber: values.whatsappNumber.startsWith("+91")
+              ? values.whatsappNumber
+              : `+91${values.whatsappNumber}`,
+            email: values.email,
+            address: values.address,
           },
         };
         await dispatch(editBuyerAction(editPayload)).unwrap();
         enqueueSnackbar("Buyer updated successfully!", { variant: "success" });
-      }else{
+      } else {
         // Add Buyer
         const buyerPayload = {
-        vendorType: "buyer", // Buyer type
-        name: values.name,
-        contactNumber: values.contactNumber,
-        whatsappNumber: values.whatsappNumber,
-        email: values.email,
-        address: values.address,
-      }
-      await dispatch(createBuyer({ createBuyerPayload: buyerPayload })).unwrap();
-      enqueueSnackbar("Buyer added successfully!", { variant: "success" });
+          vendorType: "buyer", // Buyer type
+          name: values.name,
+          contactNumber: values.contactNumber,
+          whatsappNumber: values.whatsappNumber,
+          email: values.email,
+          address: values.address,
+        };
+        await dispatch(
+          createBuyer({ createBuyerPayload: buyerPayload })
+        ).unwrap();
+        enqueueSnackbar("Buyer added successfully!", { variant: "success" });
       }
 
       // Reset form and close dialog
@@ -144,7 +141,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
       onClose();
 
       // Refresh list on success
-      if(onBuyerCreated) onBuyerCreated();
+      if (onBuyerCreated) onBuyerCreated();
     } catch (error: any) {
       console.error("Failed to add buyer:", error);
       enqueueSnackbar(error?.message || "Failed to add buyer", {
@@ -157,7 +154,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
   return (
     <>
       <Dialog
-      open = {open}
+        open={open}
         onClose={onClose}
         aria-labelledby="customized-dialog-title"
         maxWidth="sm"
@@ -177,22 +174,22 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
         </DialogTitle>
 
         <Formik
-              initialValues={{
-              name: initialValues?.name || "",
-              contactNumber: initialValues?.contactNumber?.startsWith("+91")
-                ? initialValues.contactNumber.slice(3)
-                : initialValues?.contactNumber || "",
-              whatsappNumber: initialValues?.whatsappNumber?.startsWith("+91")
-                ? initialValues.whatsappNumber.slice(3) 
-                : initialValues?.whatsappNumber || "",
-              email: initialValues?.email || "",
-              address: initialValues?.address || "",
-              profileImage: initialValues?.profileImage || null,
-            }}
-            validationSchema={addBuyerSchema}
-            onSubmit={handleSubmit}
-            enableReinitialize 
-          >
+          initialValues={{
+            name: initialValues?.name || "",
+            contactNumber: initialValues?.contactNumber?.startsWith("+91")
+              ? initialValues.contactNumber.slice(3)
+              : initialValues?.contactNumber || "",
+            whatsappNumber: initialValues?.whatsappNumber?.startsWith("+91")
+              ? initialValues.whatsappNumber.slice(3)
+              : initialValues?.whatsappNumber || "",
+            email: initialValues?.email || "",
+            address: initialValues?.address || "",
+            profileImage: initialValues?.profileImage || null,
+          }}
+          validationSchema={addBuyerSchema}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
           {({ touched, errors, setFieldValue, resetForm }) => (
             <Form>
               <DialogContent className="!px-9 !pt-0">
@@ -214,7 +211,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                       accept="image/*"
                       className="absolute opacity-0 w-full h-full"
                       onChange={(event) =>
-                      handleImageUpload(event, setFieldValue)
+                        handleImageUpload(event, setFieldValue)
                       }
                     />
                   </Box>
@@ -281,7 +278,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                     <Field
                       as={OutlinedInput}
                       name="contactNumber"
-                      type = "number"
+                      type="number"
                       placeholder="Enter contact number"
                       fullWidth
                       className="mt-1"
@@ -309,7 +306,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                     <Field
                       as={OutlinedInput}
                       name="whatsappNumber"
-                      type = "number"
+                      type="number"
                       placeholder="Enter WhatsApp number"
                       fullWidth
                       className="mt-1"
@@ -374,17 +371,17 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                   variant="outlined"
                   size="large"
                   startIcon={<CloseOutlinedIcon />}
-                   onClick={() => {
-                      resetForm({
-                        values: {
-                          name: initialValues?.name || "",
-                          contactNumber: initialValues?.contactNumber || "",
-                          whatsappNumber: initialValues?.whatsappNumber || "",
-                          email: initialValues?.email || "",
-                          address: initialValues?.address || "",
-                          profileImage: initialValues?.profileImage || null,
-                        },
-                      });
+                  onClick={() => {
+                    resetForm({
+                      values: {
+                        name: initialValues?.name || "",
+                        contactNumber: initialValues?.contactNumber || "",
+                        whatsappNumber: initialValues?.whatsappNumber || "",
+                        email: initialValues?.email || "",
+                        address: initialValues?.address || "",
+                        profileImage: initialValues?.profileImage || null,
+                      },
+                    });
                     setUploadedImage(null);
                   }}
                 >

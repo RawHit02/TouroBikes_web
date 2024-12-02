@@ -12,32 +12,30 @@ import ResetDialogue from "./ResetDialogue";
 import AllPermissionTable from "./AllPermissionTable";
 import AddEmployeeDialog from "./AddEmployeeDialog";
 import TotalPresentPercentage from "./TotalPresentPercentage";
-import TotalAbsentPercentage from "./TotalAbsentPercentage"
+import TotalAbsentPercentage from "./TotalAbsentPercentage";
 import AddAttendanceDialog from "./AddAttendanceDialog";
 import DateAttendanceSheet from "./DateAttendanceSheet";
 import AttendanceTable from "./AttendanceTable";
 import DeleteDialog from "./DeleteDialog";
 
-
-
 export {
-        Header,
-        SideNav,
-        DateAttendanceSheet,
-        AddNewBuyerDialog,
-        SignIn,
-        AddEmployeeDialog,
-        PrimaryTable,
-        AddAttendanceDialog,
-        TotalPresentPercentage,
-        TotalAbsentPercentage,
-        SecondaryTable,
-        AddStockEntryDialog,
-        PrimaryTableExample,
-        AttendanceTable,
-        DeleteDialog,
-        ResetDialogue,
-        UserManagement,
-        AllPermissionTable,
-        AddUserDialog,
-} 
+  Header,
+  SideNav,
+  DateAttendanceSheet,
+  AddNewBuyerDialog,
+  SignIn,
+  AddEmployeeDialog,
+  PrimaryTable,
+  AddAttendanceDialog,
+  TotalPresentPercentage,
+  TotalAbsentPercentage,
+  SecondaryTable,
+  AddStockEntryDialog,
+  PrimaryTableExample,
+  AttendanceTable,
+  DeleteDialog,
+  ResetDialogue,
+  UserManagement,
+  AllPermissionTable,
+  AddUserDialog,
+};

@@ -2,7 +2,6 @@ import { ApiParamModel } from "../common/ApiParamModel";
 
 export interface StockManagementInwardModel {
   id: string;
-  date : string;
   transId: string;
   stockType: string;
   itemType: string;
@@ -11,15 +10,14 @@ export interface StockManagementInwardModel {
   unitPrice: number;
   totalValue: number;
   batchNumber: string;
-  commission : number;
+  commission: number;
   receivedBy: string;
   supplierName: string;
   location: string;
   notes: string;
   createdBy: string;
-  createdDate: Date;
-  updatedDate: Date;
-  vendorId : string;
+  createdDate: string;
+  updatedDate: string;
 }
 
 export interface InitialInwardsModelState {
@@ -49,5 +47,5 @@ export interface CreateStockInwardPayload {
   receivedBy: string;
   location: string;
   notes: string;
-  vendorId: string;
+  vendorId?: string;
 }

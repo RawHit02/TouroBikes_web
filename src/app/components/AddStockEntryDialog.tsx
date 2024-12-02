@@ -34,34 +34,10 @@ import {
 import { FieldProps } from "formik";
 import { StockManagementInwardModel } from "@/models/req-model/StockManagementInwardModel";
 
-
-export interface InwardStockValues {
-  id?: string;
-  transId: string;
-  stockType: string;
-  itemType: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  totalValue: number;
-  batchNumber: string;
-  commission: number;
-  receivedBy: string;
-  supplierName: string;
-  location: string;
-  notes: string;
-  vendorId: string;
-  date?: string;
-  createdBy?: string;
-  createdDate?: string;
-  updatedDate?: string;
-}
-
-
 interface StockEntryProps {
   stock: boolean;
   isEditMode?: boolean;
-  initialValues?: InwardStockValues;
+  initialValues?: StockManagementInwardModel;
   onClose: () => void;
   onInwardCreated?: () => void;
   onOutwardCreated?: () => void;
@@ -71,24 +47,23 @@ const AddStockEntryDialog = ({
   stock,
   isEditMode = false,
   initialValues = {
-    stockType: "",
+    id: "",
     transId: "",
-    description: "",
+    stockType: "",
     itemType: "",
-    supplierName: "",
+    description: "",
     quantity: 0,
     unitPrice: 0,
-    commission: 0,
     totalValue: 0,
     batchNumber: "",
+    commission: 0,
     receivedBy: "",
+    supplierName: "",
     location: "",
     notes: "",
-    vendorId: "",
-    date: "", // Default date
-    createdBy: "", // Default createdBy
-    createdDate: "", // Default createdDate
-    updatedDate: "", // Default updatedDate
+    createdBy: "",
+    createdDate: "",
+    updatedDate: "",
   },
   onClose,
   onInwardCreated,
@@ -97,7 +72,7 @@ const AddStockEntryDialog = ({
 }: StockEntryProps) => {
   initialValues = {
     ...initialValues,
-    id: isEditMode ? initialValues.id : undefined,
+    id: isEditMode ? initialValues.id : "",
   };
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch<AppDispatch>();
@@ -105,8 +80,8 @@ const AddStockEntryDialog = ({
 
   // Handle submit
   const handleSubmit = async (
-    values: StockManagementInwardModel,
-    { resetForm }: { resetForm: () => void }
+    values: StockManagementInwardModel
+    // { resetForm }: { resetForm: () => void }
   ) => {
     console.log("Form Submitted with values: ", values); // Log values
 
@@ -125,8 +100,6 @@ const AddStockEntryDialog = ({
         receivedBy: values.receivedBy,
         location: values.location,
         notes: values.notes,
-        vendorId: values.vendorId, // For inward it's the supplier, for outward it's the buyer
-        date: values.date, // Ensure these fields are included
         createdBy: values.createdBy,
         createdDate: values.createdDate,
         updatedDate: values.updatedDate,
@@ -164,7 +137,7 @@ const AddStockEntryDialog = ({
           enqueueSnackbar("Inward stock added successfully!", {
             variant: "success",
           });
-          if (onInwardCreated) await onInwardCreated();
+          if (onInwardCreated) onInwardCreated();
         } else {
           // Handle outward stock creation
           await dispatch(
@@ -173,10 +146,9 @@ const AddStockEntryDialog = ({
           enqueueSnackbar("Outward stock added successfully!", {
             variant: "success",
           });
-          if (onOutwardCreated) await onOutwardCreated();
+          if (onOutwardCreated) onOutwardCreated();
         }
       }
-      resetForm();
       onClose();
     } catch (error) {
       console.error("Error submitting stock entry:", error);
@@ -209,14 +181,12 @@ const AddStockEntryDialog = ({
         </IconButton>
       </DialogTitle>
       <Formik
-        initialValues={
-          initialValues as StockManagementInwardModel & InwardStockValues
-        } // Type assertion
+        initialValues={initialValues as StockManagementInwardModel} // Type assertion
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {({ errors, touched }) => (
+        {({ errors, touched, values }) => (
           <Form>
             <DialogContent className="px-9">
               <Box sx={{ width: "100%" }}>
@@ -463,24 +433,6 @@ const AddStockEntryDialog = ({
                     </Box>
                   </Grid>
                   {/* Vendor ID */}
-                  <Grid size={6}>
-                    <Box>
-                      <Typography className="text-sm text-primary mb-1">
-                        Vendor ID
-                      </Typography>
-                      <Field
-                        name="vendorId"
-                        as={OutlinedInput}
-                        fullWidth
-                        className="mt-1"
-                      />
-                      <ErrorMessage
-                        name="vendorId"
-                        component="div"
-                        className="text-red-600"
-                      />
-                    </Box>
-                  </Grid>
                 </Grid>
               </Box>
             </DialogContent>
@@ -498,6 +450,7 @@ const AddStockEntryDialog = ({
                 variant="contained"
                 color="primary"
                 size="large"
+                onClick={(e) => handleSubmit(values)}
                 startIcon={<CheckCircleIcon />}
               >
                 Save
