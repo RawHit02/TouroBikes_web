@@ -31,6 +31,7 @@ import close from './images/close.svg'
 import search from './images/search.svg'
 import ShortLogo from './images/short-logo.svg'
 import StarIcon from './images/star-icon.svg'
+import NotificationItemIcon from './images/notification-item-icon.svg'
 
 //Mui Icons
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -94,6 +95,7 @@ export {
     search,
     ShortLogo,
     StarIcon,
+    NotificationItemIcon,
 
     //Mui Icons
     CheckCircleIcon,
