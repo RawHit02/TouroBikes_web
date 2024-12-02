@@ -43,6 +43,7 @@ const initialState: CombinedState = {
     createOutwardLoading: false,
     getAllOutwardLoading: false,
   },
+  
 };
 
 export const stockManagementSlice = createSlice({
@@ -149,12 +150,16 @@ export const stockManagementSlice = createSlice({
       }
     });
 
+
+
     builder.addCase(deleteOutwardAction.fulfilled, (state, action) => {
       const deletedOutwardId = action.meta.arg; // outwardId
       state.outwards.getAllOutwards = state.outwards.getAllOutwards.filter(
         (outward) => outward.id !== deletedOutwardId
       );
     });
+
+    
   },
 });
 

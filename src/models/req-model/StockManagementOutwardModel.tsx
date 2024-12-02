@@ -41,10 +41,10 @@ export interface CreateStockOutwardPayload {
   transId: string;
   description: string;
   itemType: string;
-  quantity: string;
-  unitPrice: string;
-  commission: string; 
-  totalValue: string;
+  quantity: number;
+  unitPrice: number;
+  commission: number;
+  totalValue: number;
   batchNumber: string;
   receivedBy: string;
   location: string;

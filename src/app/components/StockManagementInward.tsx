@@ -33,20 +33,21 @@ import { StockManagementInwardModel } from "@/models/req-model/StockManagementIn
 
 const ITEM_HEIGHT = 48;
 
-const headCells = [
+// Updated column headers
+const headCellsInward = [
   { field: "transId", headerName: "Trans ID", sortable: true },
   { field: "date", headerName: "Date", sortable: true },
+  { field: "supplierName", headerName: "Supplier Name", sortable: true },
   { field: "description", headerName: "Description", sortable: true },
   { field: "itemType", headerName: "Item Type", sortable: true },
-  { field: "quantity", headerName: "Qty.", sortable: true },
-    { field: "commission", headerName: "Commission", sortable: true },
+  { field: "quantity", headerName: "Qty", sortable: true },
   { field: "unitPrice", headerName: "Unit Price", sortable: true },
+  { field: "commission", headerName: "Commission", sortable: true },
   { field: "totalValue", headerName: "Total Value", sortable: true },
   { field: "batchNo", headerName: "Batch No.", sortable: true },
-  { field: "buyer", headerName: "Buyer", sortable: true },
+  { field: "receivedBy", headerName: "Received By", sortable: true },
   { field: "location", headerName: "Location", sortable: true },
   { field: "notes", headerName: "Notes", sortable: true },
-  { field: "action", headerName: "Action", sortable: false },
 ];
 
 const StockManagementInward = ({
@@ -62,7 +63,6 @@ const StockManagementInward = ({
   const open = Boolean(anchorEl);
   const [selectedInwardId, setSelectedInwardId] = useState<string | null>(null); // Inward ID for the menu actions
   const dispatch = useDispatch<AppDispatch>();
-
   const { getAllInwards, itemCount } = useAppSelector(
     (state) => state.stockManagementReducer.inwards
   );
@@ -146,26 +146,30 @@ const StockManagementInward = ({
         <Table className="min-w-[750px]" size="small">
           <TableHead>
             <TableRow>
-              {headCells.map((headCell) => (
-              <TableCell
-                key={headCell.field} // Use 'field' instead of 'id'
-                sortDirection={orderBy === headCell.field ? order : false} // Use 'field' for comparison
-              >
-                <TableSortLabel
-                  active={orderBy === headCell.field} // Use 'field' for comparison
-                  direction={orderBy === headCell.field ? order : "asc"} // Use 'field' for comparison
-                  onClick={(event) => handleRequestSort(event, headCell.field)} // Use 'field' for sort handler
+              {headCellsInward.map((headCell) => (
+                <TableCell
+                  key={headCell.field} // Use 'field' instead of 'id'
+                  sortDirection={orderBy === headCell.field ? order : false} // Use 'field' for comparison
                 >
-                  {headCell.headerName} {/* Use 'headerName' for column name */}
-                  {orderBy === headCell.field ? ( // Use 'field' for comparison
-                    <Box component="span" className="sr-only">
-                      {order === "desc" ? "sorted descending" : "sorted ascending"}
-                    </Box>
-                  ) : null}
-                </TableSortLabel>
-              </TableCell>
-            ))}
-
+                  <TableSortLabel
+                    active={orderBy === headCell.field} // Use 'field' for comparison
+                    direction={orderBy === headCell.field ? order : "asc"} // Use 'field' for comparison
+                    onClick={(event) =>
+                      handleRequestSort(event, headCell.field)
+                    } // Use 'field' for sort handler
+                  >
+                    {headCell.headerName}{" "}
+                    {/* Use 'headerName' for column name */}
+                    {orderBy === headCell.field ? ( // Use 'field' for comparison
+                      <Box component="span" className="sr-only">
+                        {order === "desc"
+                          ? "sorted descending"
+                          : "sorted ascending"}
+                      </Box>
+                    ) : null}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
@@ -182,14 +186,15 @@ const StockManagementInward = ({
                     </Typography>
                   </TableCell>
                   <TableCell>{row.date}</TableCell>
-                  <TableCell>{row.supplierName}</TableCell>
+                  <TableCell>{row.supplierName || "N/A"}</TableCell>{" "}
+                  {/* Display supplierName */}
                   <TableCell>{row.description}</TableCell>
                   <TableCell>{row.itemType}</TableCell>
                   <TableCell>{row.quantity}</TableCell>
                   <TableCell>{row.unitPrice}</TableCell>
                   <TableCell>{row.commission}</TableCell>
                   <TableCell>{row.totalValue}</TableCell>
-                  <TableCell>{row.batchNo}</TableCell>
+                  <TableCell>{row.batchNumber}</TableCell>
                   <TableCell>{row.receivedBy}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.notes}</TableCell>

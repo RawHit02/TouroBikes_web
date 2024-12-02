@@ -7,18 +7,19 @@ export interface StockManagementInwardModel {
   stockType: string;
   itemType: string;
   description: string;
-  quantity: string;
-  unitPrice: string;
-  totalValue: string;
-  batchNo: string;
+  quantity: number;
+  unitPrice: number;
+  totalValue: number;
+  batchNumber: string;
   commission : number;
   receivedBy: string;
   supplierName: string;
   location: string;
   notes: string;
   createdBy: string;
-  createdDate: string;
-  updatedDate: string;
+  createdDate: Date;
+  updatedDate: Date;
+  vendorId : string;
 }
 
 export interface InitialInwardsModelState {
@@ -32,7 +33,7 @@ export interface InitialInwardsModelState {
 }
 
 export interface GetAllInwardsRequest extends ApiParamModel {
-  userId?: string;
+  TransId?: string;
 }
 
 export interface CreateStockInwardPayload {
@@ -40,10 +41,10 @@ export interface CreateStockInwardPayload {
   transId: string;
   description: string;
   itemType: string;
-  quantity: string;
-  unitPrice: string;
-  commission: string; 
-  totalValue: string;
+  quantity: number;
+  unitPrice: number;
+  commission: number;
+  totalValue: number;
   batchNumber: string;
   receivedBy: string;
   location: string;

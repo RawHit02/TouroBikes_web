@@ -18,6 +18,8 @@ import {
 } from "@/models/req-model/StockManagementOutwardModel";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+import { GET_ALL_BUYERS, GET_ALL_SELLERS } from "@/base-url/apiRoutes"; // You need to define these API routes
+
 // Create Inward
 export const createInward = createAsyncThunk<
   { data: StockManagementInwardModel; message: string },
@@ -27,7 +29,22 @@ export const createInward = createAsyncThunk<
   "stockManagement/createInward",
   async ({ createInwardPayload }, { rejectWithValue }) => {
     try {
-      const res = await apiClient.post(CREATE_STOCK, createInwardPayload);
+      const body = {
+        stockType: "inward",
+        transId: createInwardPayload.transId,
+        description : createInwardPayload.description,
+        itemType : createInwardPayload.itemType,
+        quantity : createInwardPayload.quantity,
+        commission : createInwardPayload.commission,
+        unitPrice : createInwardPayload.unitPrice,
+        totalValue : createInwardPayload.totalValue,
+        batchNumber : createInwardPayload.batchNumber,
+        receivedBy : createInwardPayload.receivedBy,
+        location : createInwardPayload.location,
+        notes : createInwardPayload.notes,
+      };
+      const res = await apiClient.post(CREATE_STOCK, body);
+      console.log(res);
       return { data: res.data.data, message: res.data.message };
     } catch (error: any) {
       console.error(
@@ -88,7 +105,7 @@ export const getAllInwardsAction = createAsyncThunk<
           search: commonApiParamModel.search,
         },
       };
-      const res = await apiClient.get(`${FETCH_INWARD_STOCK}`, options);
+      const res = await apiClient.get(FETCH_INWARD_STOCK, options);
       let data: StockManagementInwardModel[] = [];
       if (res?.data?.data.data) data = res.data.data.data;
       return { data, itemCount: res.data.data.meta.itemCount };
@@ -246,3 +263,45 @@ export const deleteOutwardAction = createAsyncThunk<
     }
   }
 );
+
+// // Fetch Buyers
+// export const fetchBuyers = createAsyncThunk<
+//   { data: any[] },
+//   void,
+//   { rejectValue: { message: string } }
+// >(
+//   "stockManagement/fetchBuyers",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const res = await apiClient.get(GET_ALL_BUYERS); 
+//       return { data: res.data.data };
+//     } catch (error: any) {
+//       console.error("Error occurred while fetching buyers:", error);
+//       return rejectWithValue({
+//         message: error.response?.data?.message || "Failed to fetch buyers",
+//       });
+//     }
+//   }
+// );
+
+// // Fetch Sellers
+// export const fetchSellers = createAsyncThunk<
+//   { data: any[] },
+//   void,
+//   { rejectValue: { message: string } }
+// >(
+//   "stockManagement/fetchSellers",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const res = await apiClient.get(GET_ALL_SELLERS); 
+//       return { data: res.data.data }; 
+//     } catch (error: any) {
+//       console.error("Error occurred while fetching sellers:", error);
+//       return rejectWithValue({
+//         message: error.response?.data?.message || "Failed to fetch sellers",
+//       });
+//     }
+//   }
+// );
+// export { GET_ALL_BUYERS, GET_ALL_SELLERS };
+

@@ -14,8 +14,8 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import { visuallyHidden } from "@mui/utils";
-import stockManagementReducer from "@/redux/stock_management/stock_management.slice";
+//import { visuallyHidden } from "@mui/utils";
+//import stockManagementReducer from "@/redux/stock_management/stock_management.slice";
 
 import {
   DeleteRed,
@@ -34,21 +34,20 @@ import {
 import { StockManagementOutwardModel } from "@/models/req-model/StockManagementOutwardModel";
 
 const ITEM_HEIGHT = 48;
-
-const headCells = [
-  { field: "transId", headerName: "Trans ID", sortable: true },
-  { field: "date", headerName: "Date", sortable: true },
-  { field: "description", headerName: "Description", sortable: true },
-  { field: "itemType", headerName: "Item Type", sortable: true },
-  { field: "quantity", headerName: "Qty.", sortable: true },
-  { field: "commission", headerName: "Commission", sortable: true },
-  { field: "unitPrice", headerName: "Unit Price", sortable: true },
-  { field: "totalValue", headerName: "Total Value", sortable: true },
-  { field: "batchNo", headerName: "Batch No.", sortable: true },
-  { field: "buyer", headerName: "Buyer", sortable: true },
-  { field: "location", headerName: "Location", sortable: true },
-  { field: "notes", headerName: "Notes", sortable: true },
-  { field: "action", headerName: "Action", sortable: false },
+const headCellsOutward = [
+  { field: "transId", headerName: "Trans ID", sortable: true }, // Transaction ID
+  { field: "date", headerName: "Date", sortable: true }, // Date of the transaction
+  { field: "description", headerName: "Description", sortable: true }, // Description of the item
+  { field: "itemType", headerName: "Item Type", sortable: true }, // Type of item (Gadget, Gold, etc.)
+  { field: "quantity", headerName: "Quantity", sortable: true }, // Quantity of the item
+  { field: "unitPrice", headerName: "Unit Price", sortable: true }, // Unit price of the item
+  { field: "commission", headerName: "Commission", sortable: true }, // Commission associated with the item
+  { field: "totalValue", headerName: "Total Value", sortable: true }, // Total value calculated from quantity * unit price
+  { field: "batchNumber", headerName: "Batch No.", sortable: true }, // Batch number
+  { field: "receivedBy", headerName: "Received By", sortable: true }, // Person who received the item
+  { field: "location", headerName: "Location", sortable: true }, // Location where the item is stored
+  { field: "notes", headerName: "Notes", sortable: true }, // Any additional notes (Urgent, Special instructions, etc.)
+  { field: "vendor", headerName: "Vendor ID", sortable: true }, // Vendor ID (reference to the vendor table)
 ];
 
 const StockManagementOutward = ({
@@ -143,39 +142,41 @@ const StockManagementOutward = ({
     setPage(0);
     fetchData();
   };
-
   return (
     <Box className="w-full primary-table">
       <TableContainer>
         <Table className="min-w-[750px]" size="small">
-       <TableHead>
-          <TableRow>
-            {headCells.map((headCell) => (
-              <TableCell
-                key={headCell.field} // Updated to use 'field' as the key
-                sortDirection={orderBy === headCell.field ? order : false} // Updated to use 'field'
-              >
-                {headCell.sortable ? ( // Only add sorting if the column is sortable
-                  <TableSortLabel
-                    active={orderBy === headCell.field} // Updated to use 'field'
-                    direction={orderBy === headCell.field ? order : "asc"} // Updated to use 'field'
-                    onClick={(event) => handleRequestSort(event, headCell.field)} // Updated to use 'field'
-                  >
-                    {headCell.headerName} {/* Updated to use 'headerName' */}
-                    {orderBy === headCell.field ? (
-                      <Box component="span" className="sr-only">
-                        {order === "desc" ? "sorted descending" : "sorted ascending"}
-                      </Box>
-                    ) : null}
-                  </TableSortLabel>
-                ) : (
-                  headCell.headerName // Display headerName without sorting
-                )}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-
+          <TableHead>
+            <TableRow>
+              {headCellsOutward.map((headCell) => (
+                <TableCell
+                  key={headCell.field} // Updated to use 'field' as the key
+                  sortDirection={orderBy === headCell.field ? order : false} // Updated to use 'field'
+                >
+                  {headCell.sortable ? ( // Only add sorting if the column is sortable
+                    <TableSortLabel
+                      active={orderBy === headCell.field} // Updated to use 'field'
+                      direction={orderBy === headCell.field ? order : "asc"} // Updated to use 'field'
+                      onClick={(event) =>
+                        handleRequestSort(event, headCell.field)
+                      } // Updated to use 'field'
+                    >
+                      {headCell.headerName} {/* Updated to use 'headerName' */}
+                      {orderBy === headCell.field ? (
+                        <Box component="span" className="sr-only">
+                          {order === "desc"
+                            ? "sorted descending"
+                            : "sorted ascending"}
+                        </Box>
+                      ) : null}
+                    </TableSortLabel>
+                  ) : (
+                    headCell.headerName // Display headerName without sorting
+                  )}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
           <TableBody>
             {getAllOutwards.map(
               (row: StockManagementOutwardModel, index: number) => (
@@ -189,7 +190,7 @@ const StockManagementOutward = ({
                     </Typography>
                   </TableCell>
                   <TableCell>{row.date}</TableCell>
-                  <TableCell>{row.supplierName}</TableCell>
+                  //<TableCell>{row.supplierName}</TableCell>
                   <TableCell>{row.description}</TableCell>
                   <TableCell>{row.itemType}</TableCell>
                   <TableCell>{row.quantity}</TableCell>
@@ -200,6 +201,7 @@ const StockManagementOutward = ({
                   <TableCell>{row.issuedBy}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.notes}</TableCell>
+                  <TableCell>{row.buyerName || "N/A"}</TableCell>
                   <TableCell>
                     <IconButton
                       onClick={(event) => handleClickMenu(event, row.id)}

@@ -76,7 +76,6 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
 
 
   const dispatch = useDispatch<AppDispatch>();
-
   const handleSnackbarClose = (
     event?: React.SyntheticEvent | Event,
     reason?: string
