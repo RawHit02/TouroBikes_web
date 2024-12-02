@@ -13,6 +13,8 @@ import AddAttendanceDialog from "./AddAttendanceDialog";
 import DateAttendanceSheet from "./DateAttendanceSheet";
 import AttendanceTable from "./AttendanceTable";
 import DeleteDialog from "./DeleteDialog";
+import EditDetailsDialog from "./EditDetailsDialog";
+import ResetPasswordDialog from "./ResetPasswordDialog";
 
 export {
     Header,
@@ -29,5 +31,7 @@ export {
     AddStockEntryDialog,
     PrimaryTableExample,
     AttendanceTable,
-    DeleteDialog
+    DeleteDialog,
+    EditDetailsDialog,
+    ResetPasswordDialog,
 } 

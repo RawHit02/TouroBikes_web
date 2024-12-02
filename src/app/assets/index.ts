@@ -31,6 +31,8 @@ import close from './images/close.svg'
 import search from './images/search.svg'
 import ShortLogo from './images/short-logo.svg'
 import StarIcon from './images/star-icon.svg'
+import Email from './images/Email.svg'
+import Password from './images/Password.svg'
 
 //Mui Icons
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -56,7 +58,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PanoramaFishEyeIcon from '@mui/icons-material/PanoramaFishEye';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-
+import ContactsOutlinedIcon from '@mui/icons-material/ContactsOutlined';
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 
 
 export {
@@ -93,6 +96,8 @@ export {
     search,
     ShortLogo,
     StarIcon,
+    Email,
+    Password,
 
     //Mui Icons
     CheckCircleIcon,
@@ -118,4 +123,6 @@ export {
     PanoramaFishEyeIcon,
     CheckCircleOutlineIcon,
     CancelOutlinedIcon,
+    ContactsOutlinedIcon,
+    ManageAccountsOutlinedIcon
 }
