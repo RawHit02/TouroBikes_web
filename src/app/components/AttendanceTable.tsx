@@ -6,10 +6,10 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { CancelOutlinedIcon, CheckCircleOutlineIcon, PanoramaFishEyeIcon, StarIcon } from '../assets';
+import { CancelOutlinedIcon, CheckCircleOutlineIcon, DummyProfile, PanoramaFishEyeIcon, StarIcon } from '../assets';
 import Image from 'next/image';
 
 const AttendanceTable = () => {
@@ -27,6 +27,9 @@ const AttendanceTable = () => {
                     <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                         <TableHead>
                             <TableRow>
+                                <TableCell align='left' className='min-w-[210px]'>
+                                    Employee Name
+                                </TableCell>
                                 {headings.map((number) => (
                                     <TableCell key={number} align="center">
                                         {number}
@@ -40,6 +43,14 @@ const AttendanceTable = () => {
                                     key={number}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
+                                    <TableCell align='left'>
+                                        <Box className="flex items-center gap-[10px]">
+                                            <Box className='h-8 w-8 min-w-8 min-h-8 rounded-full overflow-hidden'>
+                                                <Image src={DummyProfile} alt='employee' />
+                                            </Box>
+                                            <Typography className='text-sm'>Flores, Juanita</Typography>
+                                        </Box>
+                                    </TableCell>
                                     {headings.map((heading, index) => (
                                         <TableCell key={heading} align="center">
                                             <Box className="attendance-select">
