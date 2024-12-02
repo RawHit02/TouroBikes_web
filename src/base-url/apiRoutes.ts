@@ -18,3 +18,12 @@ export const DELETE_VENDOR = `${BASE_URL}/vendorManagement/deleteVendor`;
 // Get Buyer and Sellers
 export const GET_ALL_BUYERS = `${BASE_URL}/vendorManagement/getVendor/buyer`;
 export const GET_ALL_SELLERS = `${BASE_URL}/vendorManagement/getVendor/supplier`;
+
+// STOCK Management 
+export const CREATE_STOCK = `${BASE_URL}/stockManagement/createStock`;
+export const FETCH_INWARD_STOCK = `${BASE_URL}/stockManagement/getStock/inward`;
+export const FETCH_OUTWARD_STOCK = `${BASE_URL}/stockManagement/getStock/outward`;
+export const DELETE_STOCK = `${BASE_URL}/stockManagement/deleteStock`;
+export const UPDATE_STOCK = `${BASE_URL}/stockManagement/updateStock`;
+
+

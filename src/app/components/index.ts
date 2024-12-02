@@ -4,7 +4,7 @@ import AddNewBuyerDialog from "./AddNewBuyerDialog";
 import SignIn from "./SignIn";
 import PrimaryTable from "./PrimaryTable";
 import SecondaryTable from "./SecondaryTable";
-import AddStockEntryDialog from "./AddStockEntryrDialog";
+import AddStockEntryDialog from "./AddStockEntryDialog";
 import PrimaryTableExample from "./PrimaryTableExample";
 import AddUserDialog from "./AddUserDialog";
 import UserManagement from "./UserManagement";
@@ -12,14 +12,12 @@ import ResetDialogue from "./ResetDialogue";
 import AllPermissionTable from "./AllPermissionTable";
 import AddEmployeeDialog from "./AddEmployeeDialog";
 import TotalPresentPercentage from "./TotalPresentPercentage";
-import TotalAbsentPercentage from "./TotalAbsentPercentage"
+import TotalAbsentPercentage from "./TotalAbsentPercentage";
 import AddAttendanceDialog from "./AddAttendanceDialog";
 import DateAttendanceSheet from "./DateAttendanceSheet";
 import AttendanceTable from "./AttendanceTable";
 import DeleteDialog from "./DeleteDialog";
 import EditDetailsDialog from "./EditDetailsDialog";
-
-
 
 export {
     Header,
