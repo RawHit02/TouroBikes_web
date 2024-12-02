@@ -195,7 +195,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
           >
           {({ touched, errors, setFieldValue, resetForm }) => (
             <Form>
-              <DialogContent className="px-9">
+              <DialogContent className="!px-9 !pt-0">
                 <Box className="flex items-center gap-6 mb-4">
                   <Box className="border-[6px] border-primary200 bg-primaryExtraLight rounded-full overflow-hidden w-[120px] h-[120px] flex items-center justify-center relative">
                     {uploadedImage ? (
@@ -271,7 +271,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                     <ErrorMessage
                       name="name"
                       component="div"
-                      className="text-red-600"
+                      className="text-red-600 text-[12px]"
                     />
                   </Box>
                   <Box>
@@ -299,7 +299,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                     <ErrorMessage
                       name="contactNumber"
                       component="div"
-                      className="text-red-600"
+                      className="text-red-600 text-[12px]"
                     />
                   </Box>
                   <Box>
@@ -327,7 +327,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                     <ErrorMessage
                       name="whatsappNumber"
                       component="div"
-                      className="text-red-600"
+                      className="text-red-600 text-[12px]"
                     />
                   </Box>
                   <Box>
@@ -346,7 +346,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                     <ErrorMessage
                       name="email"
                       component="div"
-                      className="text-red-600"
+                      className="text-red-600 text-[12px]"
                     />
                   </Box>
                   <Box>
@@ -364,7 +364,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps > = ({
                     <ErrorMessage
                       name="address"
                       component="div"
-                      className="text-red-600"
+                      className="text-red-600 text-[12px]"
                     />
                   </Box>
                 </Box>

@@ -94,4 +94,4 @@ const Inward = () => {
   );
 };
 
-export default Inward;
+export default inward;
