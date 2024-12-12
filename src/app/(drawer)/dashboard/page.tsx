@@ -1,5 +1,5 @@
 "use client"
-import { ContactsOutlinedIcon, DashChartIcon, DashEditIcon, DashSuitCaseIcon, Ellipses, LocalOfferOutlinedIcon, OverDueIcon, ShieldPersonIcon, TotalSellerIcon } from "@/app/assets";
+import { ContactsOutlinedIcon, DashChartIcon, DashEditIcon, DashSuitCaseIcon, LocalOfferOutlinedIcon, OverDueIcon, ShieldPersonIcon, TotalSellerIcon } from "@/app/assets";
 import { DiamodStock, GoldStock, SilverStock } from "@/app/components";
 import { Box, Typography, Grid2 as Grid } from "@mui/material";
 import Image from "next/image";
