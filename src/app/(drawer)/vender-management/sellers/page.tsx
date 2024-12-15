@@ -70,9 +70,9 @@ const Sellers = () => {
   };
 
   // Fetch sellers on component load
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   return (
     <Box className="bg-white border border-[#E8EBED] rounded-xl p-6 h-[calc(100vh-116px)] overflow-auto">

@@ -111,16 +111,15 @@ const EmployeeManagementEmployees = ({
 
   const handleDeleteEmployee = async () => {
     if (selectedEmployeeId) {
-        try {
-          await dispatch(deleteEmployeeAction(selectedEmployeeId)).unwrap();
-          fetchData(); // Refresh data after deletion
-        } catch (error) {
-          console.error("Failed to delete Employee:", error);
-        }
-        handleCloseMenu();
-         handleCloseDeleteDialog();
-
+      try {
+        await dispatch(deleteEmployeeAction(selectedEmployeeId)).unwrap();
+        fetchData(); // Refresh data after deletion
+      } catch (error) {
+        console.error("Failed to delete Employee:", error);
       }
+      handleCloseMenu();
+      handleCloseDeleteDialog();
+    }
   };
 
   const handleRequestSort = (
