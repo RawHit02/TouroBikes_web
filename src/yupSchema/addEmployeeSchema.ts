@@ -1,11 +1,11 @@
 import * as Yup from "yup";
 
-
-
-
 export const employeeSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
-  phoneNumber: Yup.string().required("Phone number is required"),
+  phoneNumber: Yup.string()
+    .required("Phone number is required")
+    .length(10, "Phone number is not valid") // Ensure exactly 10 digits
+    .matches(/^[0-9]+$/, "Phone number must contain only digits"), // Ensure only digits
   email: Yup.string().email("Invalid email").required("Email is required"),
   address: Yup.string().required("Address is required"),
   employeeShift: Yup.string().required("Employee shift is required"),
@@ -24,4 +24,3 @@ export const employeeSchema = Yup.object().shape({
 //   address: Yup.string().required("Address is required"),
 //   shift: Yup.string().required("Shift is required"),
 // });
-
