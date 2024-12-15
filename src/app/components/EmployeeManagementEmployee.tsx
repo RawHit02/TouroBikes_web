@@ -29,23 +29,26 @@ import { useDispatch } from "react-redux";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
 
-import { EmployeeManagementEmployeeModel, GetAllEmployeesRequest } from "@/models/req-model/EmployeeManagementEmployeeModel";
-
+import {
+  EmployeeManagementEmployeeModel,
+  GetAllEmployeesRequest,
+} from "@/models/req-model/EmployeeManagementEmployeeModel";
 
 import {
   deleteEmployeeAction,
   getAllEmployeesAction,
 } from "@/redux/employee_management/employee_management.actions";
 
-const ITEM_HEIGHT = 48;
+import DeleteDialog from "./DeleteDialog";
 
+const ITEM_HEIGHT = 48;
 
 const headCells = [
   { id: "name", label: "Name", numeric: false },
   { id: "email", label: "Email", numeric: false },
   { id: "phone", label: "Phone Number", numeric: false },
   { id: "address", label: "Address", numeric: false },
-  {id: "employeeShift" , label: "employee Shift" , numeric : false},
+  { id: "employeeShift", label: "Employee Shift", numeric: false },
 ];
 
 const EmployeeManagementEmployees = ({
@@ -56,11 +59,15 @@ const EmployeeManagementEmployees = ({
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<string>("name");
   const [page, setPage] = useState(0);
+  const [openDelete, setOpenDelete] = useState(false);
+
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null); // Employee ID for the menu actions
-  
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(
+    null
+  ); // Employee ID for the menu actions
+
   const dispatch = useDispatch<AppDispatch>();
   const { getAllEmployees, itemCount } = useAppSelector(
     (state) => state.EmployeeManagementReducer.employees
@@ -89,12 +96,12 @@ const EmployeeManagementEmployees = ({
     EmployeeId: string
   ) => {
     setAnchorEl(event.currentTarget);
-    setSelectedEmployeeId(EmployeeId); // Clear selected Employee
+    setSelectedEmployeeId(EmployeeId); // Set selected employee
   };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
-    setSelectedEmployeeId(null); // Clear selected Employee
+    setSelectedEmployeeId(null); // Clear selected employee
   };
 
   const handleEditClick = (row: EmployeeManagementEmployeeModel) => {
@@ -104,16 +111,16 @@ const EmployeeManagementEmployees = ({
 
   const handleDeleteEmployee = async () => {
     if (selectedEmployeeId) {
-      if (window.confirm("Are you sure you want to delete this Employee?")) {
         try {
           await dispatch(deleteEmployeeAction(selectedEmployeeId)).unwrap();
           fetchData(); // Refresh data after deletion
         } catch (error) {
           console.error("Failed to delete Employee:", error);
         }
+        handleCloseMenu();
+         handleCloseDeleteDialog();
+
       }
-      handleCloseMenu();
-    }
   };
 
   const handleRequestSort = (
@@ -135,9 +142,14 @@ const EmployeeManagementEmployees = ({
   ) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage);
-    setPage(0);
+    setPage(0); // Reset to page 0 when rows per page change
     fetchData();
   };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDelete(false);
+  };
+
   return (
     <Box className="w-full primary-table">
       <TableContainer>
@@ -175,7 +187,7 @@ const EmployeeManagementEmployees = ({
                   key={row.id || `${index}`}
                   className="hover:cursor-pointer"
                 >
-                  {/*Name Column*/}
+                  {/* Name Column */}
                   <TableCell>
                     <Box className="flex items-center gap-2">
                       <Box className="w-8 h-8 rounded-full overflow-hidden bg-gray-200">
@@ -215,7 +227,7 @@ const EmployeeManagementEmployees = ({
                         <EditOutlinedIcon />
                         Edit
                       </MenuItem>
-                      <MenuItem onClick={handleDeleteEmployee}>
+                      <MenuItem onClick={() => setOpenDelete(true)}>
                         <Image src={DeleteRed} alt="Delete" />
                         Delete
                       </MenuItem>
@@ -236,6 +248,15 @@ const EmployeeManagementEmployees = ({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      {openDelete && (
+        <DeleteDialog
+          handleCloseDeleteDialog={handleCloseDeleteDialog}
+          openDelete={openDelete}
+          handleDeleteAction={handleDeleteEmployee}
+          dialogueTitle="Delete Employee"
+          dialogueDescription="Are you sure you want to delete this Employee?"
+        />
+      )}
     </Box>
   );
 };
