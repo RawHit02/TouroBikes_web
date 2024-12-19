@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Table,
@@ -73,23 +73,23 @@ const EmployeeManagementEmployees = ({
     (state) => state.EmployeeManagementReducer.employees
   );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const params: GetAllEmployeesRequest = {
         page: page + 1,
         take: rowsPerPage,
-        order,
-        orderBy,
+        order: "asc",
+        orderBy : "name",
       };
       await dispatch(getAllEmployeesAction({ commonApiParamModel: params }));
     } catch (error) {
       console.error("Error fetching Employees:", error);
     }
-  };
+  }, [dispatch, page, rowsPerPage, order, orderBy]);
 
   useEffect(() => {
     fetchData();
-  }, [page, rowsPerPage, order, orderBy]);
+  }, [fetchData]);
 
   const handleClickMenu = (
     event: React.MouseEvent<HTMLElement>,

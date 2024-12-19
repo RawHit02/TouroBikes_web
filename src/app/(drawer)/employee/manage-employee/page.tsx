@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AddEmployeeDialog from "@/app/components/AddNewEmployeeDialog";
 import EmployeeManagementEmployee from "@/app/components/EmployeeManagementEmployee";
@@ -12,13 +12,15 @@ import AddNewEmployeeDialog, {
 import { EmployeeManagementEmployeeModel } from "@/models/req-model/EmployeeManagementEmployeeModel";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 
+
+
 const Employees = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [editedEmployee, setEditedEmployee] =
-    useState<EmployeeFormValues | null>(null); // Store Employee data for edit
-  const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false); // Control dialog visibility
+    useState<EmployeeFormValues | null>(null); 
+  const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const params = {
       page: 1,
       take: 10,
@@ -32,7 +34,7 @@ const Employees = () => {
     } catch (error) {
       console.error("Error fetching employees:", error);
     }
-  };
+  },[dispatch ]);
 
   const refreshEmployees = async () => {
     await fetchData();
@@ -50,7 +52,7 @@ const Employees = () => {
       email: employee.email,
       address: employee.address,
       employeeShift: employee.employeeShift,
-      profileImage: null, // Handle profile image as needed
+      profileImage: null, 
     });
     setIsAddEmployeeDialogOpen(true);
   };
