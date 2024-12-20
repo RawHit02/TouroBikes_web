@@ -3,6 +3,8 @@ import React from 'react'
 import { DefaultizedPieValueType } from "@mui/x-charts/models";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
 import EllipsesSvg from './EllipsesSvg';
+import { SilverImg } from '../assets';
+import Image from 'next/image';
 
 const data = [
     { label: "Fine (99.9% Pure)", value: 120, color: "#93cdff", quantity: "20KG" },
@@ -27,7 +29,7 @@ const getArcLabel = (params: DefaultizedPieValueType) => {
 const SilverStock = () => {
     return (
         <>
-            <Box className="flex flex-col gap-6 border border-[#BED2C5] rounded-[8px] w-full h-full">
+            <Box className="flex flex-col gap-6 border border-primary100 rounded-[8px] w-full h-full">
                 <Typography className="text-base font-normal px-6 pt-6">
                     Silver Stock
                 </Typography>
@@ -71,6 +73,9 @@ const SilverStock = () => {
                             }}
                             {...sizing}
                         />
+                         <Box className="absolute top-[76px] left-[68px]">
+                            <Image src={SilverImg} alt='silver' />
+                        </Box>
                     </Box>
                 </Box>
             </Box>

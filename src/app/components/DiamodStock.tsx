@@ -3,6 +3,8 @@ import React from 'react'
 import { DefaultizedPieValueType } from "@mui/x-charts/models";
 import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
 import EllipsesSvg from './EllipsesSvg';
+import Image from 'next/image';
+import { DiamondImg } from '../assets';
 
 const data = [
     { label: "Round", value: 120, color: "#0F4E36", quantity: "20CT" },
@@ -33,7 +35,7 @@ const getArcLabel = (params: DefaultizedPieValueType) => {
 const DiamodStock = () => {
     return (
         <>
-            <Box className="flex flex-col gap-6 border border-[#BED2C5] rounded-[8px] w-full h-full">
+            <Box className="flex flex-col gap-6 border border-primary100 rounded-[8px] w-full h-full">
                 <Typography className="text-base font-normal px-6 pt-6">
                     Diamond Stock
                 </Typography>
@@ -77,6 +79,9 @@ const DiamodStock = () => {
                             }}
                             {...sizing}
                         />
+                        <Box className="absolute top-[81px] left-[68px]">
+                            <Image src={DiamondImg} alt='diamond' />
+                        </Box>
                     </Box>
                 </Box>
             </Box>

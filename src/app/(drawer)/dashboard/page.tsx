@@ -1,5 +1,5 @@
 "use client"
-import { ContactsOutlinedIcon, DashChartIcon, DashEditIcon, DashSuitCaseIcon, LocalOfferOutlinedIcon, OverDueIcon, ShieldPersonIcon, TotalSellerIcon } from "@/app/assets";
+import { ContactsOutlinedIcon, DashChartIcon, DashEditIcon, DashSuitCaseIcon, DiamondImg, LocalOfferOutlinedIcon, OverDueIcon, ShieldPersonIcon, TotalSellerIcon } from "@/app/assets";
 import { DiamodStock, GoldStock, SilverStock } from "@/app/components";
 import { Box, Typography, Grid2 as Grid } from "@mui/material";
 import Image from "next/image";
@@ -14,7 +14,6 @@ const Dashboard = () => {
             <Grid container spacing={2}>
               <Grid size={3}>
                 <Box className="border border-primary100 rounded-lg p-4 relative overflow-hidden cursor-pointer dash-card">
-                  <Box className="w-[148px] h-[148px] rounded-full bg-[#15B097] absolute top-[-126px] right-[-126px] dash-corner"></Box>
                   <Box className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-full bg-primaryExtraLight flex items-center justify-center mb-4">
                     <Image src={OverDueIcon} alt="overdue" />
                   </Box>
@@ -24,7 +23,6 @@ const Dashboard = () => {
               </Grid>
               <Grid size={3}>
                 <Box className="border border-primary100 rounded-lg p-4 relative overflow-hidden cursor-pointer dash-card">
-                  <Box className="w-[148px] h-[148px] rounded-full bg-[#15B097] absolute top-[-126px] right-[-126px] dash-corner"></Box>
                   <Box className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-full bg-primaryExtraLight flex items-center justify-center mb-4">
                     <Image src={TotalSellerIcon} alt="total seller" />
                   </Box>
@@ -34,7 +32,6 @@ const Dashboard = () => {
               </Grid>
               <Grid size={3}>
                 <Box className="border border-primary100 rounded-lg p-4 relative overflow-hidden cursor-pointer dash-card">
-                  <Box className="w-[148px] h-[148px] rounded-full bg-[#15B097] absolute top-[-126px] right-[-126px] dash-corner"></Box>
                   <Box className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-full bg-primaryExtraLight flex items-center justify-center mb-4">
                     <ContactsOutlinedIcon className="text-[#1D1D1D] text-[18px]" />
                   </Box>
@@ -44,7 +41,6 @@ const Dashboard = () => {
               </Grid>
               <Grid size={3}>
                 <Box className="border border-primary100 rounded-lg p-4 relative overflow-hidden cursor-pointer dash-card">
-                  <Box className="w-[148px] h-[148px] rounded-full bg-[#15B097] absolute top-[-126px] right-[-126px] dash-corner"></Box>
                   <Box className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-full bg-primaryExtraLight flex items-center justify-center mb-4">
                     <Image src={DashEditIcon} alt="edit" />
                   </Box>
@@ -58,7 +54,6 @@ const Dashboard = () => {
             <Grid container spacing={2}>
               <Grid size={3}>
                 <Box className="border border-primary100 rounded-lg p-4 relative overflow-hidden cursor-pointer dash-card">
-                  <Box className="w-[148px] h-[148px] rounded-full bg-[#15B097] absolute top-[-126px] right-[-126px] dash-corner"></Box>
                   <Box className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-full bg-primaryExtraLight flex items-center justify-center mb-4">
                     <Image src={ShieldPersonIcon} alt="overdue" />
                   </Box>
@@ -68,7 +63,6 @@ const Dashboard = () => {
               </Grid>
               <Grid size={3}>
                 <Box className="border border-primary100 rounded-lg p-4 relative overflow-hidden cursor-pointer dash-card">
-                  <Box className="w-[148px] h-[148px] rounded-full bg-[#15B097] absolute top-[-126px] right-[-126px] dash-corner"></Box>
                   <Box className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-full bg-primaryExtraLight flex items-center justify-center mb-4">
                     <Image src={DashChartIcon} alt="overdue" />
                   </Box>
@@ -78,7 +72,6 @@ const Dashboard = () => {
               </Grid>
               <Grid size={3}>
                 <Box className="border border-primary100 rounded-lg p-4 relative overflow-hidden cursor-pointer dash-card">
-                  <Box className="w-[148px] h-[148px] rounded-full bg-[#15B097] absolute top-[-126px] right-[-126px] dash-corner"></Box>
                   <Box className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-full bg-primaryExtraLight flex items-center justify-center mb-4">
                     <Image src={DashSuitCaseIcon} alt="overdue" />
                   </Box>
@@ -88,7 +81,6 @@ const Dashboard = () => {
               </Grid>
               <Grid size={3}>
                 <Box className="border border-primary100 rounded-lg p-4 relative overflow-hidden cursor-pointer dash-card">
-                  <Box className="w-[148px] h-[148px] rounded-full bg-[#15B097] absolute top-[-126px] right-[-126px] dash-corner"></Box>
                   <Box className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-full bg-primaryExtraLight flex items-center justify-center mb-4">
                     <LocalOfferOutlinedIcon className="text-gray100 text-[20px]" />
                   </Box>
@@ -108,6 +100,61 @@ const Dashboard = () => {
           </Grid>
           <Grid size={{ xs: 4, md: 4, lg: 4 }}>
             <SilverStock />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2} className="mt-4">
+          <Grid size={{ xs: 3, md: 3, lg: 3 }}>
+            <Box className="border border-primary100 rounded-lg p-6 flex justify-between items-start">
+              <Box>
+                <Typography className="text-[12px] text-primary max-w-[110px] w-full">Commodity Price for Suppliers</Typography>
+                <Typography className="text-2xl font-bold mt-4">$2,563</Typography>
+                <Typography className="text-[12px] text-secondary800 font-medium mt-[6px]">From <span className="text-success200">April 1st, 2024</span> To <span className="text-success200">Today</span></Typography>
+                <Typography className="mt-4">Update</Typography>
+              </Box>
+              <Box>
+                <Image src={DiamondImg} alt="coin" />
+              </Box>
+            </Box>
+          </Grid>
+          <Grid size={{ xs: 3, md: 3, lg: 3 }}>
+            <Box className="border border-primary100 rounded-lg p-6 flex justify-between items-start">
+              <Box>
+                <Typography className="text-[12px] text-primary max-w-[110px] w-full">Commodity Price for Suppliers</Typography>
+                <Typography className="text-2xl font-bold mt-4">$2,563</Typography>
+                <Typography className="text-[12px] text-secondary800 font-medium mt-[6px]">From <span className="text-success200">April 1st, 2024</span> To <span className="text-success200">Today</span></Typography>
+                <Typography className="mt-4">Update</Typography>
+              </Box>
+              <Box>
+                <Image src={DiamondImg} alt="coin" />
+              </Box>
+            </Box>
+          </Grid>
+          <Grid size={{ xs: 3, md: 3, lg: 3 }}>
+            <Box className="border border-primary100 rounded-lg p-6 flex justify-between items-start">
+              <Box>
+                <Typography className="text-[12px] text-primary max-w-[160px] w-full">Set Daily Commission for Commodities for Supplier</Typography>
+                <Typography className="text-2xl font-bold mt-4">$2,563</Typography>
+                <Typography className="text-[12px] text-secondary800 font-medium mt-[6px]">From <span className="text-success200">April 1st, 2024</span> To <span className="text-success200">Today</span></Typography>
+                <Typography className="mt-4">Update</Typography>
+              </Box>
+              <Box>
+                <Image src={DiamondImg} alt="coin" />
+              </Box>
+            </Box>
+          </Grid>
+          <Grid size={{ xs: 3, md: 3, lg: 3 }}>
+            <Box className="border border-primary100 rounded-lg p-6 flex justify-between items-start">
+              <Box>
+                <Typography className="text-[12px] text-primary max-w-[160px] w-full">Set Daily Commission for Commodities for Supplier</Typography>
+                <Typography className="text-2xl font-bold mt-4">$2,563</Typography>
+                <Typography className="text-[12px] text-secondary800 font-medium mt-[6px]">From <span className="text-success200">April 1st, 2024</span> To <span className="text-success200">Today</span></Typography>
+                <Typography className="mt-4">Update</Typography>
+              </Box>
+              <Box>
+                <Image src={DiamondImg} alt="coin" />
+              </Box>
+            </Box>
           </Grid>
         </Grid>
       </Box>
