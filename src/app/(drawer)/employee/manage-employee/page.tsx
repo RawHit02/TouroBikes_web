@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
@@ -7,11 +6,11 @@ import EmployeeManagementEmployee from "@/app/components/EmployeeManagementEmplo
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { getAllEmployeesAction } from "@/redux/employee_management/employee_management.actions";
-import AddNewEmployeeDialog, { EmployeeFormValues } from "@/app/components/AddNewEmployeeDialog";
-import {EmployeeManagementEmployeeModel } from "@/models/req-model/EmployeeManagementEmployeeModel";
+import AddNewEmployeeDialog, {
+  EmployeeFormValues,
+} from "@/app/components/AddNewEmployeeDialog";
+import { EmployeeManagementEmployeeModel } from "@/models/req-model/EmployeeManagementEmployeeModel";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-
-
 
 const Employees = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -58,7 +57,7 @@ const Employees = () => {
 
   const handleAddEmployee = () => {
     setEditedEmployee(null); // Reset edited
-    setIsAddEmployeeDialogOpen(true); // Open dialog for adding 
+    setIsAddEmployeeDialogOpen(true); // Open dialog for adding
   };
 
   // Close dialog handler
@@ -106,13 +105,3 @@ const Employees = () => {
 };
 
 export default Employees;
-
-
-
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@ import SignIn from "./SignIn";
 import PrimaryTable from "./PrimaryTable";
 import SecondaryTable from "./SecondaryTable";
 import AddStockEntryDialog from "./AddStockEntryDialog";
-import PrimaryTableExample from "./PrimaryTableExample";
+import PrimaryTableExample from "./AttendanceTableRecords";
 import AddUserDialog from "./AddUserDialog";
 import UserManagement from "./UserManagement";
 import ResetDialogue from "./ResetDialogue";

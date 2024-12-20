@@ -30,6 +30,8 @@ import {
   getAllSellersAction,
 } from "@/redux/vendor_management/vendor_management.actions";
 import { VendorManagementSellerModel } from "@/models/req-model/VendorManagementSellerModel";
+import DeleteDialog from "./DeleteDialog";
+
 const ITEM_HEIGHT = 48;
 
 const headCells = [
@@ -52,6 +54,8 @@ const VendorManagementSeller = ({
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<string>("name");
   const [page, setPage] = useState(0);
+  const [openDelete, setOpenDelete] = useState(false);
+
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -100,19 +104,18 @@ const VendorManagementSeller = ({
     //handleCloseMenu();
   };
 
-  const handleDeleteSeller = async () => {
-    if (selectedSellerId) {
-      if (window.confirm("Are you sure you want to delete this Seller?")) {
-        try {
-          await dispatch(deleteSellerAction(selectedSellerId)).unwrap();
-          fetchData(); // Refresh data after deletion
-        } catch (error) {
-          console.error("Failed to delete Seller:", error);
-        }
-      }
-      handleCloseMenu();
-    }
-  };
+   const handleDeleteSeller = async () => {
+     if (selectedSellerId) {
+       try {
+         await dispatch(deleteSellerAction(selectedSellerId)).unwrap();
+         fetchData(); // Refresh data after deletion
+       } catch (error) {
+         console.error("Failed to delete Seller:", error);
+       }
+       handleCloseMenu();
+       handleCloseDeleteDialog();
+     }
+   };
 
   const handleRequestSort = (
     _: React.MouseEvent<unknown>,
@@ -136,6 +139,9 @@ const VendorManagementSeller = ({
     setPage(0);
     fetchData();
   };
+   const handleCloseDeleteDialog = () => {
+     setOpenDelete(false);
+   };
 
   return (
     <Box className="w-full primary-table">
@@ -214,7 +220,7 @@ const VendorManagementSeller = ({
                         <EditOutlinedIcon />
                         Edit
                       </MenuItem>
-                      <MenuItem onClick={handleDeleteSeller}>
+                      <MenuItem onClick={() => setOpenDelete(true)}>
                         <Image src={DeleteRed} alt="Delete" />
                         Delete
                       </MenuItem>
@@ -235,6 +241,15 @@ const VendorManagementSeller = ({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      {openDelete && (
+        <DeleteDialog
+          handleCloseDeleteDialog={handleCloseDeleteDialog}
+          openDelete={openDelete}
+          handleDeleteAction={handleDeleteSeller}
+          dialogueTitle="Delete Seller"
+          dialogueDescription="Are you sure you want to delete this Seller?"
+        />
+      )}
     </Box>
   );
 };
