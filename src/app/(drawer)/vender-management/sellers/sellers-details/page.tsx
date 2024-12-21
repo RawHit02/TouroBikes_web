@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+
+
+import React, { useEffect, useState , Suspense } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -36,12 +38,16 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { SecondaryTable } from "@/app/components";
+import {useSearchParams} from 'next/navigation';
+import {GET_ALL_SELLERS_NEW} from '@/base-url/apiRoutes';
+import { SellerDetailsModel } from "@/models/req-model/VendorManagementSellerModel";
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
 }
+
 
 const BoxShadow =
   "0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)";
@@ -125,12 +131,60 @@ function a11yProps(index: number) {
 }
 
 const SellersDetails = () => {
-  const [value, setValue] = useState(1);
+
+  const searchParams = useSearchParams();
+  const sellerId = searchParams.get("id");
+
+  const [value, setValue] = useState(0);
   const [age, setAge] = useState("");
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  
+
+  const [sellerDetails, setSellerDetails] = useState<SellerDetailsModel | null>(
+    null
+  );
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState<string | null>(null);
+
+
+
+   useEffect(() => {
+    const fetchSellerDetails = async () => {
+      if (!sellerId) return;
+
+      try {
+        const response = await fetch(GET_ALL_SELLERS_NEW);
+        const result = await response.json();
+
+        if (result?.statusCode === 200) {
+          const seller = result.data.find(
+            (item: any) => item.id === sellerId
+          );
+          if (seller) {
+            setSellerDetails(seller);
+          } else {
+            setError("seller not found.");
+          }
+        } else {
+          setError("Failed to fetch seller details.");
+        }
+      } catch (err) {
+        console.error("Error fetching seller details:", err);
+        setError("Error fetching seller details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSellerDetails();
+  }, [sellerId]);
+
+   if (loading) return <Typography>Loading...</Typography>;
+   if (error) return <Typography>{error}</Typography>;
+
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-  };
+    };
 
   const handleChangeSelect = (event: SelectChangeEvent) => {
     setAge(event.target.value as string);
@@ -173,12 +227,12 @@ const SellersDetails = () => {
                   </Box>
                   <Box>
                     <Typography className="text-primary text-2xl font-bold leading-6">
-                      Flores Juanita (Seller)
+                      {sellerDetails?.name} (Seller)
                     </Typography>
                     <Box className="flex items-center gap-2 mt-3">
                       <EmailIcon className="text-primary200 text-xl" />
                       <Typography className="text-sm text-primary">
-                        ayesghaoparween@gmail.com
+                        {sellerDetails?.email}
                       </Typography>
                     </Box>
                   </Box>
@@ -210,7 +264,7 @@ const SellersDetails = () => {
                   <Box className="flex items-center gap-2">
                     <LocalPhoneIcon className="text-gray100" />
                     <Typography className="text-primary text-sm">
-                      Phone Number
+                      {sellerDetails?.contactNumber}
                     </Typography>
                   </Box>
                   <Box className="flex items-center gap-2">
@@ -224,7 +278,7 @@ const SellersDetails = () => {
                   <Box className="flex items-center gap-2">
                     <Image src={WhatsappIcon} alt="whatsapp" />
                     <Typography className="text-primary text-sm">
-                      WhatsApp Number
+                      {sellerDetails?.whatsappNumber}
                     </Typography>
                   </Box>
                   <Box className="flex items-center gap-2">
@@ -238,7 +292,7 @@ const SellersDetails = () => {
                   <Box className="flex items-center gap-2">
                     <Image src={AddressIcon} alt="address" />
                     <Typography className="text-primary text-sm">
-                      Address
+                      {sellerDetails?.address}
                     </Typography>
                   </Box>
                   <Typography className="text-purple100 text-sm">
@@ -384,7 +438,7 @@ const SellersDetails = () => {
                 </Button>
               </Box>
               <Box className="mt-4">
-                <SecondaryTable />
+                <SecondaryTable data={[]} />
               </Box>
             </Box>
           </TabPanel>
@@ -394,4 +448,10 @@ const SellersDetails = () => {
   );
 };
 
-export default SellersDetails;
+const WrappedSellersDetails = () => (
+  <Suspense fallback={<Typography>Loading Suplier Details...</Typography>}>
+    <SellersDetails />
+  </Suspense>
+);
+
+export default WrappedSellersDetails;

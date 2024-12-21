@@ -13,7 +13,9 @@ export const DELETE_VENDOR = `${BASE_URL}/vendorManagement/deleteVendor`;
 export const GET_ALL_BUYERS = `${BASE_URL}/vendorManagement/getVendor/buyer`;
 export const GET_ALL_SELLERS = `${BASE_URL}/vendorManagement/getVendor/supplier`;
 
-
+// for the buyer and Suppliers profile details 
+export const GET_ALL_BUYERS_NEW = `${BASE_URL}/vendorManagement/getAllVendor/buyer`;
+export const GET_ALL_SELLERS_NEW = `${BASE_URL}/vendorManagement/getAllVendor/supplier`;
 
 // STOCK Management 
 export const CREATE_STOCK = `${BASE_URL}/stockManagement/createStock`;

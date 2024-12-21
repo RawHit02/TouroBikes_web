@@ -38,8 +38,8 @@ export const fetchBuyersAndSuppliers = createAsyncThunk<
     try {
       const url =
         type === "supplier"
-          ? "http://localhost:8001/api/v1/vendorManagement/getVendorNP/supplier"
-          : "http://localhost:8001/api/v1/vendorManagement/getVendorNP/buyer";
+          ? "http://localhost:8001/api/v1/vendorManagement/getAllVendor/supplier"
+          : "http://localhost:8001/api/v1/vendorManagement/getAllVendor/buyer";
 
       const res = await apiClient.get(url);
 
