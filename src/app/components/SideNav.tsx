@@ -99,6 +99,22 @@ const SideNav: React.FC<SideNavProps> = ({ onPress, navOpen }) => {
     setAnchorElAdmin(null);
   };
 
+  const handleLogout = () => {
+    // clear cookie
+    document.cookie =
+      "authToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    router.push("/");
+  };
+
+const [anchorElProfile, setAnchorElProfile] =
+  React.useState<null | HTMLElement>(null);
+const openProfile = Boolean(anchorElProfile);
+
+const handleProfileClick = (event: React.MouseEvent<HTMLParagraphElement>) =>
+  setAnchorElProfile(event.currentTarget);
+const handleProfileClose = () => setAnchorElProfile(null);
+
+
   return (
     <>
       <Box className="w-full bg-primary h-[calc(100vh-32px)] rounded-xl px-4 pt-9 pb-4 flex flex-col justify-between overflow-auto">
@@ -522,15 +538,29 @@ const SideNav: React.FC<SideNavProps> = ({ onPress, navOpen }) => {
             }`}
           >
             <Box className="w-[50px] h-[50px] rounded-full overflow-hidden">
-              <Image src={DummyProfile} alt="prifile image" />
+              <Image src={DummyProfile} alt="profile image" />
             </Box>
             <Box className={`${navOpen ? "" : "hidden"}`}>
-              <Typography className="text-white font-medium">
+              <Typography
+                className="text-white font-medium cursor-pointer"
+                onClick={handleProfileClick}
+              >
                 JOHN CARTER
               </Typography>
               <Typography className="text-sm text-primary200 font-medium">
                 john@gmail.com
               </Typography>
+              <Menu
+                id="profile-menu"
+                anchorEl={anchorElAdmin}
+                open={openProfile}
+                onClose={handleProfileClose}
+                MenuListProps={{
+                  "aria-labelledby": "profile-menu-button",
+                }}
+              >
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
             </Box>
             <ArrowForwardIosIcon
               className={`text-white text-sm ${navOpen ? "" : "hidden"}`}

@@ -1,4 +1,6 @@
 "use client";
+
+
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AddNewBuyerDialog from "@/app/components/AddNewBuyerDialog";
@@ -54,7 +56,6 @@ const fetchData = async () => {
     await fetchData();
   };
 
-  // Handle Buyer Click , Navigate to details page
   const handleBuyerClick = (buyerId: string) => {
     const url = `/vender-management/buyers/buyer-details?id=${buyerId}`;
     console.log("Navigating to:", url);
@@ -112,7 +113,6 @@ const fetchData = async () => {
 
       {/* Add/Edit Dialog */}
       <AddNewBuyerDialog
-        //  onBuyerCreated={handleBuyerCreated}
         onBuyerCreated={refreshBuyers}
         initialValues={editedBuyer || undefined}
         isEditMode={Boolean(editedBuyer?.id)}

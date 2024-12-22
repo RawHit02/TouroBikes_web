@@ -32,12 +32,44 @@ const SignIn = () => {
     password: Yup.string().required("Please enter your password"),
   });
 
-  const handleLogin = () => {
-    // Dispatch login action
-    dispatch(login());
-    // Navigate to the dashboard
-    router.push("/dashboard");
-  };
+
+  //  const handleLogin = () => {
+  //    // Dispatch login action
+  //    dispatch(login());
+  //    // Navigate to the dashboard
+  //    router.push("/dashboard");
+  //  };
+
+
+const handleLogin = async (values: { username: string; password: string }) => {
+  const { username, password } = values;
+
+  try {
+    // Mock login logic
+    if (username === "admin" && password === "password") {
+      const mockData = { token: "mockedAuthToken" };
+
+      // Set athToken in cookies
+      document.cookie = `authToken=${
+        mockData.token
+      }; path=/; secure; expires=${new Date(
+        Date.now() + 60 * 60 * 1000 // 1-hour 
+      ).toUTCString()};`;
+
+      // Dispatch action for login
+      dispatch(login());
+
+      router.push("/dashboard");
+    } else {
+      alert("Invalid username or password");
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Login failed. Please try again.");
+  }
+};
+
+
 
   return (
     <Box className="relative h-screen w-full">

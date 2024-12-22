@@ -3,8 +3,7 @@ import { ApiParamModel } from "../common/ApiParamModel";
 export interface StockManagementInwardModel {
   id: string;
   transId: string;
- // stockType: string;
-  itemType: string;
+  itemType: string; // Links to ornament type
   description: string;
   quantity: string;
   unitPrice: string;
@@ -20,15 +19,19 @@ export interface StockManagementInwardModel {
   updatedDate: string;
   goldType: string;
   diamondType: string;
-  silverType : string;
+  silverType: string;
   colorGrade: string;
-  issuedBy : string ;
+  issuedBy: string;
   clarity: string;
-  vendor?: string;
+  vendor?: string; // Links to buyer/supplier dropdown
+  ornament: string; // Required for ornament selection
+  color: string; // Required for color selection
+  purity: string; // Required for purity selection
+  form: string; // Required for form selection
+  type: string; // Required for ornament type selection
 }
 
 export interface InitialInwardsModelState {
- // selectedSupplierId: string,
   message: string;
   itemCount: number;
   userError: string | undefined;
@@ -41,6 +44,7 @@ export interface InitialInwardsModelState {
 export interface GetAllInwardsRequest extends ApiParamModel {
   TransId?: string;
 }
+
 export interface CreateStockInwardPayload {
   transId: string; // Required
   description: string; // Required
@@ -51,13 +55,12 @@ export interface CreateStockInwardPayload {
   totalValue: string; // Required
   batchNumber: string; // Required
   receivedBy: string; // Required
-  goldType: string; // Required
-  diamondType: string; // Required
-  clarity: string; // Required
-  colorGrade: string; // Required
-  issuedBy: string; // Required
-  silverType: string; // Required
   location: string; // Required
   notes: string; // Optional
-  vendor?: string; // Optional
+  vendor: string; // Required
+  ornament: string; // Required
+  color: string; // Required
+  purity: string; // Required
+  form: string; // Required
+  type: string; // Required
 }

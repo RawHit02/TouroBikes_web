@@ -1,4 +1,6 @@
 "use client";
+
+
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AddEmployeeDialog from "@/app/components/AddNewEmployeeDialog";
@@ -15,62 +17,39 @@ import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOu
 
 
 const Employees = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const [editedEmployee, setEditedEmployee] =
     useState<EmployeeFormValues | null>(null); 
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false);
+  const [refreshEmployeeList, setRefreshEmployeeList] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    const params = {
-      page: 1,
-      take: 10,
-      order: "asc",
-      orderBy: "name",
-    };
-    try {
-      await dispatch(
-        getAllEmployeesAction({ commonApiParamModel: params })
-      ).unwrap();
-    } catch (error) {
-      console.error("Error fetching employees:", error);
-    }
-  },[dispatch ]);
-
-  const refreshEmployees = async () => {
-    await fetchData();
-  };
 
   const normalizeNumberForEdit = (number: string) => {
     return number.startsWith("+91") ? number.slice(3) : number;
   };
 
-  const handleEditEmployee = (employee: EmployeeManagementEmployeeModel) => {
-    setEditedEmployee({
-      id: employee.id,
-      name: employee.name,
-      phoneNumber: normalizeNumberForEdit(employee.phoneNumber),
-      email: employee.email,
-      address: employee.address,
-      employeeShift: employee.employeeShift,
-      profileImage: null, 
-    });
+  const handleEditEmployee = (employee: EmployeeFormValues) => {
+    setEditedEmployee(employee);
     setIsAddEmployeeDialogOpen(true);
   };
 
   const handleAddEmployee = () => {
-    setEditedEmployee(null); // Reset edited
-    setIsAddEmployeeDialogOpen(true); // Open dialog for adding
+    setEditedEmployee(null); 
+    setIsAddEmployeeDialogOpen(true); 
   };
+
 
   // Close dialog handler
   const handleCloseDialog = () => {
-    setIsAddEmployeeDialogOpen(false); // Close dialog
-    setEditedEmployee(null); // Reset edited data
+    setIsAddEmployeeDialogOpen(false); 
+    setEditedEmployee(null); 
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+
+  const handleEmployeeCreated = () => {
+    setRefreshEmployeeList((prev) => !prev); 
+    setIsAddEmployeeDialogOpen(false); 
+  };
+
 
   return (
     <Box className="bg-white border border-[#E8EBED] rounded-xl p-6 h-[calc(100vh-116px)] overflow-auto">
@@ -91,16 +70,19 @@ const Employees = () => {
 
       {/* Employee List */}
       <Box className="mt-4">
-        <EmployeeManagementEmployee onEditEmployee={handleEditEmployee} />
+        <EmployeeManagementEmployee
+          onEditEmployee={handleEditEmployee}
+          refreshList={refreshEmployeeList} 
+        />
       </Box>
 
       {/* Add/Edit Dialog */}
       <AddNewEmployeeDialog
-        onEmployeeCreated={refreshEmployees} // Refresh Employee after dialog submission
-        initialValues={editedEmployee || undefined} // Prefill data for edit
-        isEditMode={Boolean(editedEmployee?.id)} // Indicate edit mode
-        open={isAddEmployeeDialogOpen} // Dialog visibility control
-        onClose={handleCloseDialog} // Close dialog handler
+        onEmployeeCreated={handleEmployeeCreated} 
+        initialValues={editedEmployee || undefined} 
+        isEditMode={Boolean(editedEmployee?.id)}
+        open={isAddEmployeeDialogOpen} 
+        onClose={handleCloseDialog} 
       />
     </Box>
   );

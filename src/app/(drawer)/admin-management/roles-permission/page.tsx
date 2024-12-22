@@ -29,14 +29,26 @@ const RolesPermission = () => {
             variant="contained"
             className="bg-primary500 rounded-lg h-10 text-base"
             startIcon={<AddCircleOutlineOutlinedIcon />}
-            onClick={() => router.push('/admin-management/roles-permission/all-permission')}
+            onClick={() =>
+              router.push("/admin-management/roles-permission/all-permission")
+            }
           >
             Add roles & permission
           </Button>
         </Box>
       </Box>
       <Box className="mt-4">
-        <AttendanceTableRecords onEditRecord={() => {}} />
+        <AttendanceTableRecords
+          onEditRecord={() => {}}
+          records={[]}
+          itemCount={0}
+          loading={false}
+          rowsPerPage={0}
+          page={0}
+          onPageChange={(newPage: number) => {}}
+          onRowsPerPageChange={(newRowsPerPage: number) => {}}
+          onDeleteRecord={(id: string) => {}}
+        />
       </Box>
     </Box>
   );

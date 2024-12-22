@@ -130,11 +130,19 @@ const AddNewEmployeeDialog: React.FC<AddNewEmployeeDialogProps> = ({
        });
      } else {
        // Add Employee
-       await dispatch(
+       const result = await dispatch(
          createEmployee({ createEmployeePayload: employeePayload })
        ).unwrap();
+
+       // Append the newly created employee to the Redux store
+       dispatch({
+         type: "manage_employee_management_slice/addEmployeeToList",
+         payload: result.data, // New employee from API response
+       });
+
        enqueueSnackbar("Employee added successfully!", { variant: "success" });
      }
+
 
      // Reset form and close dialog
      resetForm();

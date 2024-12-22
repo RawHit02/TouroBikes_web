@@ -265,7 +265,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
           variant: "success",
         });
       } else {
-        await dispatch(createInward({ createInwardPayload: payload })).unwrap();
+        await dispatch(createInward(payload)).unwrap();
         enqueueSnackbar("Inward stock added successfully!", {
           variant: "success",
         });
