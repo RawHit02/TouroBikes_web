@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -37,17 +37,19 @@ const ITEM_HEIGHT = 48;
 const headCellsOutward = [
   { field: "transId", headerName: "Trans ID", sortable: true }, // Transaction ID
   { field: "date", headerName: "Date", sortable: true }, // Date of the transaction
+  { field: "buyerName", headerName: "Buyer", sortable: true }, // Buyer Name
+
   { field: "description", headerName: "Description", sortable: true }, // Description of the item
   { field: "itemType", headerName: "Item Type", sortable: true }, // Type of item (Gadget, Gold, etc.)
-  { field: "quantity", headerName: "Quantity", sortable: true }, // Quantity of the item
-  { field: "unitPrice", headerName: "Unit Price", sortable: true }, // Unit price of the item
+  { field: "quantity", headerName: "Qty.", sortable: true }, // Quantity of the item
   { field: "commission", headerName: "Commission", sortable: true }, // Commission associated with the item
+  { field: "unitPrice", headerName: "Unit Price", sortable: true }, // Unit price of the item
   { field: "totalValue", headerName: "Total Value", sortable: true }, // Total value calculated from quantity * unit price
   { field: "batchNumber", headerName: "Batch No.", sortable: true }, // Batch number
-  { field: "receivedBy", headerName: "Received By", sortable: true }, // Person who received the item
+  { field: "issuedBy", headerName: "Issued By", sortable: true }, // Person who received the item
   { field: "location", headerName: "Location", sortable: true }, // Location where the item is stored
   { field: "notes", headerName: "Notes", sortable: true }, // Any additional notes (Urgent, Special instructions, etc.)
-  { field: "vendor", headerName: "Vendor ID", sortable: true }, // Vendor ID (reference to the vendor table)
+  // { field: "vendor", headerName: "Vendor ID", sortable: true }, // Vendor ID (reference to the vendor table)
 ];
 
 const StockManagementOutward = ({
@@ -67,10 +69,10 @@ const StockManagementOutward = ({
   const dispatch = useDispatch<AppDispatch>();
 
   const { getAllOutwards, itemCount } = useAppSelector(
-    (state) => state.stockManagementReducer.outwards
+    (state) => state.stockManagement.outwards
   );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const params: GetAllOutwardsRequest = {
         page: page + 1,
@@ -82,11 +84,11 @@ const StockManagementOutward = ({
     } catch (error) {
       console.error("Error fetching outwards:", error);
     }
-  };
+  }, [dispatch, page, rowsPerPage, order, orderBy]);
 
   useEffect(() => {
     fetchData();
-  }, [page, rowsPerPage, order, orderBy]);
+  }, [fetchData]);
 
   const handleClickMenu = (
     event: React.MouseEvent<HTMLElement>,
@@ -175,6 +177,7 @@ const StockManagementOutward = ({
                   )}
                 </TableCell>
               ))}
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -189,19 +192,18 @@ const StockManagementOutward = ({
                       {row.transId}
                     </Typography>
                   </TableCell>
-                  <TableCell>{row.date}</TableCell>
-                  //<TableCell>{row.supplierName}</TableCell>
+                  <TableCell>{row.createdDate}</TableCell>
+                  <TableCell>{row.buyerName || "N/A"}</TableCell>{" "}
                   <TableCell>{row.description}</TableCell>
                   <TableCell>{row.itemType}</TableCell>
                   <TableCell>{row.quantity}</TableCell>
-                  <TableCell>{row.unitPrice}</TableCell>
                   <TableCell>{row.commission}</TableCell>
+                  <TableCell>{row.unitPrice}</TableCell>
                   <TableCell>{row.totalValue}</TableCell>
-                  <TableCell>{row.batchNo}</TableCell>
+                  <TableCell>{row.batchNumber}</TableCell>
                   <TableCell>{row.issuedBy}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.notes}</TableCell>
-                  <TableCell>{row.buyerName || "N/A"}</TableCell>
                   <TableCell>
                     <IconButton
                       onClick={(event) => handleClickMenu(event, row.id)}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -64,10 +64,10 @@ const StockManagementInward = ({
   const [selectedInwardId, setSelectedInwardId] = useState<string | null>(null); // Inward ID for the menu actions
   const dispatch = useDispatch<AppDispatch>();
   const { getAllInwards, itemCount } = useAppSelector(
-    (state) => state.stockManagementReducer.inwards
+    (state) => state.stockManagement.inwards
   );
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const params: GetAllInwardsRequest = {
         page: page + 1,
@@ -79,11 +79,11 @@ const StockManagementInward = ({
     } catch (error) {
       console.error("Error fetching inwards:", error);
     }
-  };
+  }, [dispatch, page, rowsPerPage, order, orderBy]);
 
   useEffect(() => {
     fetchData();
-  }, [page, rowsPerPage, order, orderBy]);
+  }, [fetchData]);
 
   const handleClickMenu = (
     event: React.MouseEvent<HTMLElement>,
@@ -187,7 +187,6 @@ const StockManagementInward = ({
                   </TableCell>
                   <TableCell>{row.createdDate}</TableCell>
                   <TableCell>{row.supplierName || "N/A"}</TableCell>{" "}
-                  {/* Display supplierName */}
                   <TableCell>{row.description}</TableCell>
                   <TableCell>{row.itemType}</TableCell>
                   <TableCell>{row.quantity}</TableCell>

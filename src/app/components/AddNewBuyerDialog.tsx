@@ -144,7 +144,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps> = ({
       if (onBuyerCreated) onBuyerCreated();
     } catch (error: any) {
       console.error("Failed to add buyer:", error);
-      enqueueSnackbar(error?.message || "Failed to add buyer", {
+      enqueueSnackbar(error?.message || "Add to add buyer", {
         variant: "error",
       });
       setSnackbarOpen(true);

@@ -2,24 +2,32 @@ import { ApiParamModel } from "../common/ApiParamModel";
 
 export interface StockManagementOutwardModel {
   id: string;
-  date: string;
-  supplierName: string;
-  transId: string;
+  // date: string;
   stockType: string;
+  transId: string;
   itemType: string;
   description: string;
   quantity: string;
   unitPrice: string;
   totalValue: string;
-  batchNo: string;
-  commission: number;
-  issuedBy: string;
+  batchNumber: string;
+  commission: string;
   buyerName: string;
   location: string;
   notes: string;
   createdBy: string;
+  receivedBy: string;
   createdDate: string;
+  goldType: string;
+  diamondType: string;
+  clarity: string;
+  colorGrade: string;
+  issuedBy: string;
+
+  silverType: string;
+
   updatedDate: string;
+  vendor?: string;
 }
 
 export interface InitialOutwardsModelState {
@@ -30,6 +38,7 @@ export interface InitialOutwardsModelState {
   createOutwardRes: string;
   createOutwardLoading: boolean;
   getAllOutwardLoading: boolean;
+ // selectedSupplierId: null;
 }
 
 export interface GetAllOutwardsRequest extends ApiParamModel {
@@ -37,17 +46,24 @@ export interface GetAllOutwardsRequest extends ApiParamModel {
 }
 
 export interface CreateStockOutwardPayload {
-  stockType: string;
-  transId: string;
-  description: string;
-  itemType: string;
-  quantity: number;
-  unitPrice: number;
-  commission: number;
-  totalValue: number;
-  batchNumber: string;
-  receivedBy: string;
-  location: string;
-  notes: string;
-  vendorId?: string;
+  stockType: string; // Required
+  transId: string; // Required
+  description: string; // Required
+  itemType: string; // Required
+  quantity: string; // Required
+  unitPrice: string; // Required
+  commission: string; // Required
+  totalValue: string; // Required
+  batchNumber: string; // Required
+  receivedBy: string; // Required
+  issuedBy: string; // Required
+  goldType: string; // Required
+  diamondType: string; // Required
+  clarity: string; // Required
+  colorGrade: string; // Required
+  silverType: string; // Required
+  buyerName?: string; // Optional
+  location: string; // Required
+  notes: string; // Optional
+  vendor?: string; // Optional
 }

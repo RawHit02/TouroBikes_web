@@ -3,14 +3,14 @@ import { ApiParamModel } from "../common/ApiParamModel";
 export interface StockManagementInwardModel {
   id: string;
   transId: string;
-  stockType: string;
+ // stockType: string;
   itemType: string;
   description: string;
-  quantity: number;
-  unitPrice: number;
-  totalValue: number;
+  quantity: string;
+  unitPrice: string;
+  totalValue: string;
   batchNumber: string;
-  commission: number;
+  commission: string;
   receivedBy: string;
   supplierName: string;
   location: string;
@@ -18,9 +18,17 @@ export interface StockManagementInwardModel {
   createdBy: string;
   createdDate: string;
   updatedDate: string;
+  goldType: string;
+  diamondType: string;
+  silverType : string;
+  colorGrade: string;
+  issuedBy : string ;
+  clarity: string;
+  vendor?: string;
 }
 
 export interface InitialInwardsModelState {
+ // selectedSupplierId: string,
   message: string;
   itemCount: number;
   userError: string | undefined;
@@ -33,19 +41,23 @@ export interface InitialInwardsModelState {
 export interface GetAllInwardsRequest extends ApiParamModel {
   TransId?: string;
 }
-
 export interface CreateStockInwardPayload {
-  stockType: string;
-  transId: string;
-  description: string;
-  itemType: string;
-  quantity: number;
-  unitPrice: number;
-  commission: number;
-  totalValue: number;
-  batchNumber: string;
-  receivedBy: string;
-  location: string;
-  notes: string;
-  vendorId?: string;
+  transId: string; // Required
+  description: string; // Required
+  itemType: string; // Required
+  quantity: string; // Required
+  unitPrice: string; // Required
+  commission: string; // Required
+  totalValue: string; // Required
+  batchNumber: string; // Required
+  receivedBy: string; // Required
+  goldType: string; // Required
+  diamondType: string; // Required
+  clarity: string; // Required
+  colorGrade: string; // Required
+  issuedBy: string; // Required
+  silverType: string; // Required
+  location: string; // Required
+  notes: string; // Optional
+  vendor?: string; // Optional
 }

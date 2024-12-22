@@ -1,14 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
-  StockManagementInwardModel,
-  InitialInwardsModelState,
-} from "@/models/req-model/StockManagementInwardModel";
-import {
-  StockManagementOutwardModel,
-  InitialOutwardsModelState,
-} from "@/models/req-model/StockManagementOutwardModel";
-
-import {
   createInward,
   getAllInwardsAction,
   deleteInwardAction,
@@ -17,11 +8,27 @@ import {
   getAllOutwardsAction,
   deleteOutwardAction,
   editOutwardAction,
+  fetchBuyersAndSuppliers,
+  fetchOrnaments,
+  fetchOrnamentTypes,
+  fetchForms,
+  fetchPurities,
+  fetchColors,
 } from "./stock_management.actions";
+import { InitialInwardsModelState } from "@/models/req-model/StockManagementInwardModel";
+import { InitialOutwardsModelState } from "@/models/req-model/StockManagementOutwardModel";
 
 interface CombinedState {
   inwards: InitialInwardsModelState;
   outwards: InitialOutwardsModelState;
+  buyers: any[]; // Stores all buyers
+  suppliers: any[]; // Stores all suppliers
+  selectedVendorId: string | null; // Track the selected vendor (supplier or buyer)
+  ornamentDetails: { id: string; ornament: string }[]; // Ornament details
+  ornamentTypes: { id: string; ornamentType: string }[]; // Ornament types
+  ornamentForms: { id: string; ornamentForm: string }[]; // Ornament forms
+  ornamentPurities: { id: string; ornamentPurity: string }[]; // Ornament purities
+  ornamentColors: { id: string; ornamentColor: string }[]; // Ornament colors
 }
 
 const initialState: CombinedState = {
@@ -43,120 +50,51 @@ const initialState: CombinedState = {
     createOutwardLoading: false,
     getAllOutwardLoading: false,
   },
+  buyers: [],
+  suppliers: [],
+  selectedVendorId: null,
+  ornamentDetails: [],
+  ornamentTypes: [],
+  ornamentForms: [],
+  ornamentPurities: [],
+  ornamentColors: [],
 };
 
 export const stockManagementSlice = createSlice({
   name: "stock_management_slice",
   initialState,
   reducers: {
-    clearAllStockManagement: () => {
-      return initialState;
+    setSelectedVendorId: (state, action) => {
+      state.selectedVendorId = action.payload;
     },
+    clearSelectedVendorId: (state) => {
+      state.selectedVendorId = null;
+    },
+    clearAllStockManagement: () => initialState,
   },
   extraReducers: (builder) => {
-    // Inward Actions
-    builder.addCase(createInward.pending, (state) => {
-      state.inwards.createInwardLoading = true;
-      state.inwards.userError = "";
+    // Add cases for fetching ornaments, types, purities, forms, and colors
+    builder.addCase(fetchOrnaments.fulfilled, (state, action) => {
+      state.ornamentDetails = action.payload.data;
     });
-    builder.addCase(createInward.fulfilled, (state, action) => {
-      state.inwards.createInwardLoading = false;
-      state.inwards.userError = "";
-      state.inwards.getAllInwards = [
-        action.payload.data,
-        ...state.inwards.getAllInwards,
-      ];
+    builder.addCase(fetchOrnamentTypes.fulfilled, (state, action) => {
+      state.ornamentTypes = action.payload.data;
     });
-    builder.addCase(createInward.rejected, (state, action) => {
-      state.inwards.createInwardLoading = false;
-      state.inwards.userError = action.error.message;
+    builder.addCase(fetchForms.fulfilled, (state, action) => {
+      state.ornamentForms = action.payload.data;
     });
-
-    builder.addCase(getAllInwardsAction.pending, (state) => {
-      state.inwards.getAllInwardLoading = true;
-      state.inwards.userError = "";
+    builder.addCase(fetchPurities.fulfilled, (state, action) => {
+      state.ornamentPurities = action.payload.data;
     });
-    builder.addCase(getAllInwardsAction.fulfilled, (state, action) => {
-      state.inwards.getAllInwardLoading = false;
-      state.inwards.userError = "";
-      state.inwards.getAllInwards = action.payload.data;
-      state.inwards.itemCount = action.payload.itemCount;
-    });
-    builder.addCase(getAllInwardsAction.rejected, (state, action) => {
-      state.inwards.getAllInwardLoading = false;
-      state.inwards.userError = action.error.message;
-    });
-
-    builder.addCase(editInwardAction.fulfilled, (state, action) => {
-      const updatedInward = action.payload.data;
-      const index = state.inwards.getAllInwards.findIndex(
-        (inward) => inward.id === updatedInward.id
-      );
-      if (index !== -1) {
-        state.inwards.getAllInwards[index] = updatedInward;
-      }
-    });
-
-    builder.addCase(deleteInwardAction.fulfilled, (state, action) => {
-      const deletedInwardId = action.meta.arg; // inwardId
-      state.inwards.getAllInwards = state.inwards.getAllInwards.filter(
-        (inward) => inward.id !== deletedInwardId
-      );
-    });
-
-    // Outward Actions
-    builder.addCase(createOutward.pending, (state) => {
-      state.outwards.createOutwardLoading = true;
-      state.outwards.userError = "";
-    });
-    builder.addCase(createOutward.fulfilled, (state, action) => {
-      state.outwards.createOutwardLoading = false;
-      state.outwards.userError = "";
-      state.outwards.getAllOutwards = [
-        action.payload.data,
-        ...state.outwards.getAllOutwards,
-      ];
-    });
-    builder.addCase(createOutward.rejected, (state, action) => {
-      state.outwards.createOutwardLoading = false;
-      state.outwards.userError = action.error.message;
-    });
-
-    builder.addCase(getAllOutwardsAction.pending, (state) => {
-      state.outwards.getAllOutwardLoading = true;
-      state.outwards.userError = "";
-    });
-    builder.addCase(getAllOutwardsAction.fulfilled, (state, action) => {
-      state.outwards.getAllOutwardLoading = false;
-      state.outwards.userError = "";
-      state.outwards.getAllOutwards = Array.isArray(action.payload.data)
-        ? action.payload.data
-        : [];
-      state.outwards.itemCount = action.payload.itemCount || 0;
-    });
-    builder.addCase(getAllOutwardsAction.rejected, (state, action) => {
-      state.outwards.getAllOutwardLoading = false;
-      state.outwards.userError = action.error.message;
-    });
-
-    builder.addCase(editOutwardAction.fulfilled, (state, action) => {
-      const updatedOutward = action.payload.data;
-      const index = state.outwards.getAllOutwards.findIndex(
-        (outward) => outward.id === updatedOutward.id
-      );
-      if (index !== -1) {
-        state.outwards.getAllOutwards[index] = updatedOutward;
-      }
-    });
-
-    builder.addCase(deleteOutwardAction.fulfilled, (state, action) => {
-      const deletedOutwardId = action.meta.arg; // outwardId
-      state.outwards.getAllOutwards = state.outwards.getAllOutwards.filter(
-        (outward) => outward.id !== deletedOutwardId
-      );
+    builder.addCase(fetchColors.fulfilled, (state, action) => {
+      state.ornamentColors = action.payload.data;
     });
   },
 });
 
-export const { clearAllStockManagement } = stockManagementSlice.actions;
+export const {
+  clearAllStockManagement,
+  setSelectedVendorId,
+  clearSelectedVendorId,
+} = stockManagementSlice.actions;
 export default stockManagementSlice.reducer;
