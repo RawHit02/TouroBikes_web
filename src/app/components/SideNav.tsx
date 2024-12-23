@@ -28,7 +28,7 @@ import {
   StockIconActive,
   VendorManagementicon,
   VendorManagementiconActive,
-  
+
 } from "../assets";
 import Image from "next/image";
 import localSessionStorage from "@/hooks/localSessionStorage";
