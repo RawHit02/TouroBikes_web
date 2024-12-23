@@ -190,6 +190,14 @@ const SellersDetails = () => {
     setAge(event.target.value as string);
   };
 
+
+  const handleCopy = (text: string): void => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => alert("Copied to clipboard!"))
+      .catch(() => alert("Failed to copy!"));
+  };
+  
   return (
     <>
       <Box className="bg-white rounded-xl py-2 h-[calc(100vh-116px)] overflow-auto">
@@ -272,7 +280,9 @@ const SellersDetails = () => {
                     <Typography className="text-purple100 text-sm">
                        {sellerDetails?.contactNumber}
                     </Typography>
-                    <ContentCopyIcon className="text-gray100 text-lg" />
+                    <ContentCopyIcon
+                      className="text-gray100 text-lg cursor-pointer"
+                      onClick={() => handleCopy(sellerDetails?.contactNumber ?? "")} />
                   </Box>
                 </Box>
                 <Box className="flex items-center justify-between">
@@ -287,7 +297,9 @@ const SellersDetails = () => {
                     <Typography className="text-purple100 text-sm">
                        {sellerDetails?.whatsappNumber}
                     </Typography>
-                    <ContentCopyIcon className="text-gray100 text-lg" />
+                  <ContentCopyIcon
+                    className="text-gray100 text-lg cursor-pointer"
+                    onClick={() => handleCopy(sellerDetails?.whatsappNumber ?? "")} />
                   </Box>
                 </Box>
                 <Box className="flex items-center justify-between">

@@ -9,17 +9,16 @@ import { RootState, AppDispatch } from "@/redux/store";
 import {
   fetchAttendanceStats,
   fetchAttendanceRecords,
-  deleteAttendanceRecord,
 } from "@/redux/todays_attendance/attendance.actions";
+import{ fetchEmployeesAction} from "@/redux/employee_management/employee_management.actions";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 import moment, { Moment } from "moment";
 import { AttendanceRecordPayload } from "@/models/req-model/AttendanceModel";
 
 const TodaysAttendance = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { stats, loadingStats, records, itemCount } = useSelector(
-    (state: RootState) => state.attendance
-  );
+  const { stats, loadingStats, records, itemCount, getAllEmployees } =
+    useSelector((state: RootState) => state.attendance);
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<{
@@ -43,6 +42,14 @@ const TodaysAttendance = () => {
     }
   }, [dispatch]);
 
+  const fetchEmployees = useCallback(async () => {
+    try {
+      await dispatch(fetchEmployeesAction({ page: 1, take: 50 })).unwrap();
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    }
+  }, [dispatch]);
+
   const fetchRecords = useCallback(async () => {
     setLoadingRecords(true);
     try {
@@ -59,19 +66,11 @@ const TodaysAttendance = () => {
     }
   }, [dispatch, page, rowsPerPage]);
 
-  const handleDeleteRecord = async (id: string) => {
-    try {
-      await dispatch(deleteAttendanceRecord(id)).unwrap();
-      await fetchRecords(); 
-    } catch (error) {
-      console.error("Error deleting attendance record:", error);
-    }
-  };
-
   useEffect(() => {
     fetchStats();
-    fetchRecords(); 
-  }, [fetchStats, fetchRecords]);
+    fetchEmployees(); // Fetch employees for dropdown
+    fetchRecords(); // Fetch attendance records
+  }, [fetchStats, fetchEmployees, fetchRecords]);
 
   const handleEditRecord = (record: AttendanceRecordPayload) => {
     const employeeId =
@@ -151,7 +150,7 @@ const TodaysAttendance = () => {
           onPageChange={setPage}
           onRowsPerPageChange={setRowsPerPage}
           onEditRecord={handleEditRecord}
-          onDeleteRecord={handleDeleteRecord} 
+          onDeleteRecord={() => {}}
         />
       </Box>
 
