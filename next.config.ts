@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  // output: "export",
   reactStrictMode: true,
   images: {
-    unoptimized: true,
+    // unoptimized: true,
+    domains: ["localhost"], // Add domains for your images
   },
 };
 

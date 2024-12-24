@@ -2,10 +2,9 @@ import { ApiParamModel } from "../common/ApiParamModel";
 
 export interface StockManagementOutwardModel {
   id: string;
-  // date: string;
   stockType: string;
   transId: string;
-  itemType: string;
+  itemType: string; // Links to ornament type
   description: string;
   quantity: string;
   unitPrice: string;
@@ -18,16 +17,19 @@ export interface StockManagementOutwardModel {
   createdBy: string;
   receivedBy: string;
   createdDate: string;
+  updatedDate: string;
   goldType: string;
   diamondType: string;
-  clarity: string;
+  silverType: string;
   colorGrade: string;
   issuedBy: string;
-
-  silverType: string;
-
-  updatedDate: string;
-  vendor?: string;
+  clarity: string;
+  vendor?: string; // Links to buyer/supplier dropdown
+  ornament: string; // Required for ornament selection
+  color: string; // Required for color selection
+  purity: string; // Required for purity selection
+  form: string; // Required for form selection
+  type: string; // Required for ornament type selection
 }
 
 export interface InitialOutwardsModelState {
@@ -38,7 +40,6 @@ export interface InitialOutwardsModelState {
   createOutwardRes: string;
   createOutwardLoading: boolean;
   getAllOutwardLoading: boolean;
- // selectedSupplierId: null;
 }
 
 export interface GetAllOutwardsRequest extends ApiParamModel {
@@ -56,14 +57,12 @@ export interface CreateStockOutwardPayload {
   totalValue: string; // Required
   batchNumber: string; // Required
   receivedBy: string; // Required
-  issuedBy: string; // Required
-  goldType: string; // Required
-  diamondType: string; // Required
-  clarity: string; // Required
-  colorGrade: string; // Required
-  silverType: string; // Required
-  buyerName?: string; // Optional
   location: string; // Required
   notes: string; // Optional
-  vendor?: string; // Optional
+  vendor: string; // Required
+  ornament: string; // Required
+  color: string; // Required
+  purity: string; // Required
+  form: string; // Required
+  type: string; // Required
 }

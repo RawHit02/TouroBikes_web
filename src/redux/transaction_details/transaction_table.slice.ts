@@ -46,16 +46,22 @@ const transactionsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTransactions.fulfilled, (state, action) => {
+    .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data.data;
-        state.meta = action.payload.data.meta;
+        state.error = null; // Clear any errors
+        state.data = Array.isArray(action.payload.data?.data)
+          ? action.payload.data.data // Extract rows
+          : [];
+        state.meta = action.payload.data?.meta || { itemCount: 0 }; // Extract meta
       })
+
       .addCase(fetchTransactions.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
-        state.data = [];
+        state.error = action.payload as string; 
+        state.data = []; 
       });
+
+
   },
 });
 

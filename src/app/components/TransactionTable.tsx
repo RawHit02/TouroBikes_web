@@ -61,7 +61,6 @@ const TransactionTable = () => {
   const dispatch = useDispatch<AppDispatch>();
   const {
     data: rows = [],
-    filters,
     meta = { itemCount: 0 },
     loading,
     error,
@@ -81,10 +80,6 @@ const TransactionTable = () => {
       })
     );
   }, [dispatch, page, rowsPerPage, order]);
-
-    console.log("Rows:", rows);
-  console.log("Meta:", meta);
-
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -113,31 +108,33 @@ const TransactionTable = () => {
   };
 
   const visibleRows = useMemo(() => {
-    return Array.isArray(rows)
-      ? [...rows].sort((a, b) => {
-          const aValue = String(a[orderBy as keyof typeof a] || "");
-          const bValue = String(b[orderBy as keyof typeof b] || "");
-          return order === "ASC"
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
-        })
-      : [];
-  }, [rows, order, orderBy]);
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return <Typography color="error">{error}</Typography>;
-  }
+    if (!Array.isArray(rows)) {
+      console.error("Expected rows to be an array but received:", rows);
+      return [];
+    }
+    return rows.map((row) => ({
+      transId: row.transId,
+      createdDate: new Date(row.createdDate).toLocaleDateString(),
+      description: row.description,
+      quantity: row.quantity,
+      unitPrice: row.unitPrice,
+      commission: row.commission,
+      totalValue: row.totalValue,
+      amountPaid: row.amountPaid,
+      balanceDue: row.balanceDue,
+      paymentType: row.paymentType,
+      paymentStatus: row.paymentStatus,
+      notes: row.notes,
+    }));
+  }, [rows]);
 
   return (
     <Box sx={{ width: "100%" }} className="secondary-table">
+      {loading && (
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Box>
+      )}
       <TableContainer>
         <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="small">
           <TableHead>
@@ -182,7 +179,7 @@ const TransactionTable = () => {
               </StyledTableRow>
             ) : (
               visibleRows.map((row) => (
-                <StyledTableRow key={row.id}>
+                <StyledTableRow key={row.transId}>
                   <StyledTableCell>{row.transId}</StyledTableCell>
                   <StyledTableCell>{row.createdDate}</StyledTableCell>
                   <StyledTableCell>{row.description}</StyledTableCell>

@@ -152,7 +152,6 @@ const AddNewSellerDialog: React.FC<AddNewSellerDialogProps> = ({
       setSnackbarOpen(true);
     }
   };
-
   return (
     <>
       <Dialog

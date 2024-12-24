@@ -53,10 +53,10 @@ const headCells = [
 
 const EmployeeManagementEmployees = ({
   onEditEmployee,
-  isEmployeeCreated,
+  refreshList, 
 }: {
   onEditEmployee: (row: EmployeeManagementEmployeeModel) => void;
-  isEmployeeCreated: boolean;
+  refreshList: boolean; 
 }) => {
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<string>("name");
@@ -87,30 +87,23 @@ const EmployeeManagementEmployees = ({
     } catch (error) {
       console.error("Error fetching Employees:", error);
     }
-  }, [dispatch, page, rowsPerPage, order, orderBy]);
+  }, [dispatch, page, rowsPerPage]);
 
   useEffect(() => {
     fetchData();
-  }, [dispatch, page, rowsPerPage, order, orderBy]);
-
-  // Referesh the page
-  useEffect(() => {
-    if (!!isEmployeeCreated) {
-      fetchData();
-    }
-  }, [isEmployeeCreated]);
+  }, [fetchData, refreshList]);
 
   const handleClickMenu = (
     event: React.MouseEvent<HTMLElement>,
     EmployeeId: string
   ) => {
     setAnchorEl(event.currentTarget);
-    setSelectedEmployeeId(EmployeeId); // Set selected employee
+    setSelectedEmployeeId(EmployeeId); 
   };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
-    setSelectedEmployeeId(null); // Clear selected employee
+    setSelectedEmployeeId(null);
   };
 
   const handleEditClick = (row: EmployeeManagementEmployeeModel) => {
@@ -156,6 +149,14 @@ const EmployeeManagementEmployees = ({
 
   const handleCloseDeleteDialog = () => {
     setOpenDelete(false);
+  };
+
+  const handleEmployeeCreated = async () => {
+    try {
+      fetchData();
+    } catch (error) {
+      console.error("Error refreshing employees after creation:", error);
+    }
   };
 
   return (

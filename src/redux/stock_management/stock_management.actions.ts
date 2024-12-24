@@ -159,9 +159,13 @@ export const fetchColors = createAsyncThunk<
 });
 
 // Create Inward
-export const createInward = createAsyncThunk(
+export const createInward = createAsyncThunk<
+  any, // Replace with the actual response type if known
+  CreateStockInwardPayload, // Replace with the actual payload type
+  { rejectValue: string }
+>(
   "stockManagement/createInward",
-  async (payload, { rejectWithValue }) => {
+  async (payload: CreateStockInwardPayload, { rejectWithValue }) => {
     try {
       const res = await apiClient.post(CREATE_STOCK, payload);
       return res.data;
@@ -172,7 +176,6 @@ export const createInward = createAsyncThunk(
     }
   }
 );
-
 // Create Outward
 export const createOutward = createAsyncThunk(
   "stockManagement/createOutward",

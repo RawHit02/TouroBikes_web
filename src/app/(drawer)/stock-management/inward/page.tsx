@@ -1,4 +1,6 @@
 "use client";
+
+
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AddStockEntryDialog from "@/app/components/AddStockEntryDialog";

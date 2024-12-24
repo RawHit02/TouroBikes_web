@@ -12,11 +12,23 @@ export const fetchTransactions = createAsyncThunk<
 >("transactions/fetch", async (filters, { rejectWithValue }) => {
   try {
     const response = await apiClient.get(GET_TRANSACTIONS, { params: filters });
+    if (!response.data || !response.data.data) {
+      return rejectWithValue("No transactions found");
+    }
     return response.data;
   } catch (error: any) {
-    console.error("API Error:", error.response?.data || error.message);
-    return rejectWithValue(
-      error.response?.data || "Failed to fetch transactions"
-    );
+    const errorMessage =
+      error.response?.data?.message ||
+      error.response?.data ||
+      error.message ||
+      "An unexpected error occurred";
+
+    // console.error("API Error:", errorMessage);
+    return rejectWithValue(errorMessage);
   }
 });
+
+
+
+
+  

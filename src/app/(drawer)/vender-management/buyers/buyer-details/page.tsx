@@ -1,4 +1,6 @@
 "use client"
+
+
 import React, { useEffect, useState, Suspense } from "react";
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -163,6 +165,13 @@ const BuyerDetails = () => {
     setAge(event.target.value as string);
   };
 
+  const handleCopy = (text: string): void => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => alert("Copied to clipboard!"))
+      .catch(() => alert("Failed to copy!"));
+  };
+
   return (
     <>
       <Box className="bg-white rounded-xl py-2 h-[calc(100vh-116px)] overflow-auto">
@@ -190,7 +199,9 @@ const BuyerDetails = () => {
           <Divider className="border-2 border-primaryExtraLight" />
 
           <TabPanel value={value} index={0}>
-            <Typography className="text-2xl font-bold mt-5">User Profile</Typography>
+            <Typography className="text-2xl font-bold mt-5">
+              User Profile
+            </Typography>
             <Box className="border border-primary100 rounded-lg p-6 mt-4">
               <Box className="bg-primaryExtraLight flex items-center justify-between rounded-2xl p-4 pr-0 linear-gradient-bg">
                 <Box className="flex items-center gap-4">
@@ -204,7 +215,7 @@ const BuyerDetails = () => {
                     <Box className="flex items-center gap-2 mt-3">
                       <EmailIcon className="text-primary200 text-xl" />
                       <Typography className="text-sm text-primary">
-                      {buyerDetails?.email}
+                        {buyerDetails?.email}
                       </Typography>
                     </Box>
                   </Box>
@@ -231,34 +242,54 @@ const BuyerDetails = () => {
                   </Typography>
                 </Box>
               </Box>
+
+              {/* phone Number section */}
               <Box className="mt-6 flex flex-col gap-4">
                 <Box className="flex items-center justify-between">
                   <Box className="flex items-center gap-2">
                     <LocalPhoneIcon className="text-gray100" />
-                    <Typography className="text-primary text-sm">{buyerDetails?.contactNumber}</Typography>
+                    <Typography className="text-primary text-sm">
+                      Phone Number
+                    </Typography>
                   </Box>
                   <Box className="flex items-center gap-2">
-                    <Typography className="text-purple100 text-sm">+91 9045896 325</Typography>
-                    <ContentCopyIcon className="text-gray100 text-lg" />
+                    <Typography className="text-purple100 text-sm">
+                      {buyerDetails?.contactNumber}
+                    </Typography>
+                    <ContentCopyIcon
+                      className="text-gray100 text-lg cursor-pointer"
+                      onClick={() => handleCopy(buyerDetails?.contactNumber ?? "")}
+                    />
                   </Box>
                 </Box>
+
+                 {/* Whatsapp number section */}
                 <Box className="flex items-center justify-between">
                   <Box className="flex items-center gap-2">
                     <Image src={WhatsappIcon} alt="whatsapp" />
-                    <Typography className="text-primary text-sm"> {buyerDetails?.whatsappNumber}</Typography>
+                    <Typography className="text-primary text-sm">
+                      WhatsApp Number{" "}
+                    </Typography>
                   </Box>
                   <Box className="flex items-center gap-2">
-                    <Typography className="text-purple100 text-sm">+91 9045896 325</Typography>
-                    <ContentCopyIcon className="text-gray100 text-lg" />
+                    <Typography className="text-purple100 text-sm">
+                      {buyerDetails?.whatsappNumber}
+                    </Typography>
+                    <ContentCopyIcon
+                      className="text-gray100 text-lg cursor-pointer"
+                      onClick={() => handleCopy(buyerDetails?.whatsappNumber ?? "")}
+                    />
                   </Box>
                 </Box>
                 <Box className="flex items-center justify-between">
                   <Box className="flex items-center gap-2">
                     <Image src={AddressIcon} alt="address" />
-                    <Typography className="text-primary text-sm">{buyerDetails?.address}</Typography>
+                    <Typography className="text-primary text-sm">
+                      Address
+                    </Typography>
                   </Box>
                   <Typography className="text-purple100 text-sm">
-                    2337 Kildeer Drive, Kentucky, Canada
+                    {buyerDetails?.address}
                   </Typography>
                 </Box>
               </Box>
@@ -267,14 +298,18 @@ const BuyerDetails = () => {
               <Box className="flex items-center justify-between">
                 <Box className="flex items-center gap-2">
                   <BlockIcon className="text-gray100 text-xl" />
-                  <Typography className="text-primary text-sm">Block</Typography>
+                  <Typography className="text-primary text-sm">
+                    Block
+                  </Typography>
                 </Box>
                 <Switch className="primary-switch" />
               </Box>
               <Box className="flex items-center justify-between">
                 <Box className="flex items-center gap-2">
                   <Image src={DeleteIcon} alt="delete" />
-                  <Typography className="text-primary text-sm">You can delete account</Typography>
+                  <Typography className="text-primary text-sm">
+                    You can delete account
+                  </Typography>
                 </Box>
                 <Typography className="text-error200 text-base cursor-pointer">
                   Delete Account
@@ -285,10 +320,12 @@ const BuyerDetails = () => {
           <TabPanel value={value} index={1}>
             <Box className="mt-5">
               <Box className="flex items-center gap-[10px]">
-                <Typography className='text-2xl font-bold'>Ledger</Typography>
+                <Typography className="text-2xl font-bold">Ledger</Typography>
                 <Box className="flex items-center gap-3">
-                  <ShareOutlinedIcon className='text-primary500' />
-                  <Typography className='text-primary500 text-base'>Share</Typography>
+                  <ShareOutlinedIcon className="text-primary500" />
+                  <Typography className="text-primary500 text-base">
+                    Share
+                  </Typography>
                 </Box>
               </Box>
               <Box className="flex items-center gap-2 mt-4">
@@ -304,11 +341,13 @@ const BuyerDetails = () => {
                 </Box>
                 <FormControl fullWidth>
                   <Select
-                    size='small'
+                    size="small"
                     value={age}
                     onChange={handleChangeSelect}
                     displayEmpty
-                    IconComponent={() => (<KeyboardArrowDownIcon className='text-baseBlack text-[20px] mr-1' />)}
+                    IconComponent={() => (
+                      <KeyboardArrowDownIcon className="text-baseBlack text-[20px] mr-1" />
+                    )}
                   >
                     <MenuItem disabled value="">
                       Item
@@ -320,11 +359,13 @@ const BuyerDetails = () => {
                 </FormControl>
                 <FormControl fullWidth>
                   <Select
-                    size='small'
+                    size="small"
                     value={age}
                     onChange={handleChangeSelect}
                     displayEmpty
-                    IconComponent={() => (<KeyboardArrowDownIcon className='text-baseBlack text-[20px] mr-1' />)}
+                    IconComponent={() => (
+                      <KeyboardArrowDownIcon className="text-baseBlack text-[20px] mr-1" />
+                    )}
                   >
                     <MenuItem disabled value="">
                       Price
@@ -335,20 +376,23 @@ const BuyerDetails = () => {
                     <Box className="px-[14px] mt-3">
                       <Typography>Range</Typography>
                       <PriceSlider
-                        aria-label="ios slider" defaultValue={[60, 90]} valueLabelDisplay="on"
+                        aria-label="ios slider"
+                        defaultValue={[60, 90]}
+                        valueLabelDisplay="on"
                       />
                     </Box>
-                    <Box>
-                    </Box>
+                    <Box></Box>
                   </Select>
                 </FormControl>
                 <FormControl fullWidth>
                   <Select
-                    size='small'
+                    size="small"
                     value={age}
                     onChange={handleChangeSelect}
                     displayEmpty
-                    IconComponent={() => (<KeyboardArrowDownIcon className='text-baseBlack text-[20px] mr-1' />)}
+                    IconComponent={() => (
+                      <KeyboardArrowDownIcon className="text-baseBlack text-[20px] mr-1" />
+                    )}
                   >
                     <MenuItem disabled value="">
                       Payment Method
@@ -360,11 +404,13 @@ const BuyerDetails = () => {
                 </FormControl>
                 <FormControl fullWidth>
                   <Select
-                    size='small'
+                    size="small"
                     value={age}
                     onChange={handleChangeSelect}
                     displayEmpty
-                    IconComponent={() => (<KeyboardArrowDownIcon className='text-baseBlack text-[20px] mr-1' />)}
+                    IconComponent={() => (
+                      <KeyboardArrowDownIcon className="text-baseBlack text-[20px] mr-1" />
+                    )}
                   >
                     <MenuItem disabled value="">
                       Status
@@ -374,7 +420,15 @@ const BuyerDetails = () => {
                     <MenuItem value={30}>Silver</MenuItem>
                   </Select>
                 </FormControl>
-                <Button className='min-w-[121px] h-[42px]' variant='contained' size='large' color='primary' startIcon={<SearchIcon />}>Search</Button>
+                <Button
+                  className="min-w-[121px] h-[42px]"
+                  variant="contained"
+                  size="large"
+                  color="primary"
+                  startIcon={<SearchIcon />}
+                >
+                  Search
+                </Button>
               </Box>
               <Box className="mt-4">
                 <TransactionTable />
