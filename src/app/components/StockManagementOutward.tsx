@@ -47,7 +47,6 @@ const headCellsOutward = [
   { field: "batchNumber", headerName: "Batch No.", sortable: true }, // Batch number
   { field: "location", headerName: "Location", sortable: true }, // Location where the item is stored
   { field: "notes", headerName: "Notes", sortable: true }, // Any additional notes (Urgent, Special instructions, etc.)
-  { field: "paymentStatus", headerName: "Payment Status", sortable: true }, // Payment status of the transaction
 
   // { field: "vendor", headerName: "Vendor ID", sortable: true }, // Vendor ID (reference to the vendor table)
 ];
@@ -213,7 +212,6 @@ const StockManagementOutward = ({
                   <TableCell>{row.batchNumber}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.notes}</TableCell>
-                  <TableCell>{row.paymentStatus}</TableCell>
 
                   <TableCell>
                     <IconButton

@@ -17,6 +17,7 @@ import {
   POST_ORNAMENT_FORMS,
   POST_ORNAMENT_PURITY,
   POST_ORNAMENT_TYPES,
+  UPDATE_STOCK,
 } from "@/base-url/apiRoutes";
 import {
   CreateStockInwardPayload,
@@ -219,6 +220,49 @@ export const addForm = createAsyncThunk<
     }
   }
 );
+
+
+
+
+// // Fetch Cuts
+// export const fetchCuts = createAsyncThunk<{
+//   data: { id: string; ornamentCut: string }[];
+// },
+// void,
+// { rejectValue: { message: string } }
+// >("stockManagement/fetchCuts", async (_, { rejectWithValue }) => {
+//   try {
+//     const res = await apiClient.get(GET_ORNAMENT_CUTS);
+//     return { data: res.data.data };
+//   } catch (error: any) {
+//     console.error("Error fetching Cuts:", error);
+//     return rejectWithValue({
+//       message: error.response?.data?.message || "Failed to fetch Cuts",
+//     });
+//   }
+// });
+
+// // Ornament Cut: Delete
+// export const deleteCut = createAsyncThunk<
+//   any,
+//   string,
+//   { rejectValue: string }
+// >(
+//   "stockManagement/deleteCut",
+//   async (id, { rejectWithValue }) => {
+//     try {
+//       const response = await apiClient.delete(`${DELETE_ORNAMENT_CUTS}/${id}`);
+//       return response.data;
+//     } catch (error: any) {
+//       console.error("Error deleting cut:", error);
+//       return rejectWithValue(
+//         error.response?.data?.message || "Failed to delete cut"
+//       );
+//     }
+//   }
+// );
+
+
 
 // Fetch Forms
 export const fetchForms = createAsyncThunk<{
@@ -503,7 +547,7 @@ export const editInwardAction = createAsyncThunk<{
   async ({ editInwardPayload, inwardId }, { rejectWithValue }) => {
     try {
       const res = await apiClient.patch(
-        `${CREATE_STOCK}/${inwardId}`,
+        `${UPDATE_STOCK}/${inwardId}`,
         editInwardPayload
       );
       return { data: res.data.data, message: res.data.message };
@@ -533,7 +577,7 @@ export const editOutwardAction = createAsyncThunk<{
   async ({ editOutwardPayload, outwardId }, { rejectWithValue }) => {
     try {
       const res = await apiClient.patch(
-        `${CREATE_STOCK}/${outwardId}`,
+        `${UPDATE_STOCK}/${outwardId}`,
         editOutwardPayload
       );
       return { data: res.data.data, message: res.data.message };
