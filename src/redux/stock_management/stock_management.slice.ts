@@ -122,6 +122,23 @@ export const stockManagementSlice = createSlice({
       );
     });
 
+
+  // // Fetch Cuts
+  //   builder.addCase(addCut.fulfilled, (state, action) => {
+  //     state.ornamentCuts.push(action.payload.data);
+  //   });
+  //   builder.addCase(fetchCuts.fulfilled, (state, action) => {
+  //     state.ornamentCuts = action.payload.data;
+  //   });
+  //   builder.addCase(deleteCut.fulfilled, (state, action) => {
+  //     state.ornamentCuts = state.ornamentCuts.filter(
+  //       (item) => item.id !== action.meta.arg
+  //     );
+  //   });
+
+
+    
+
     // Fetch / add / delete Purities
     builder.addCase(addPurity.fulfilled, (state, action) => {
       state.ornamentPurities.push(action.payload.data);

@@ -1,7 +1,7 @@
 import { ApiParamModel } from "../common/ApiParamModel";
 
 export interface StockManagementInwardModel {
-  id: string;
+  id: any;
   transId: string; // Transaction ID
   stockType: string; // Specifies the type, always "inward"
   description: string; // Description of the stock
@@ -13,9 +13,10 @@ export interface StockManagementInwardModel {
   location: string; // Location of stock
   notes: string; // Additional notes
   vendor: string; // Supplier ID
-  ornament: string; // Ornament ID
+  ornament: any; // Ornament ID
   type: string; // Ornament type ID
   form: string; // Ornament form ID
+  // cut: string ;
   purity: string; // Ornament purity ID
   color: string; // Ornament color ID (optional for Gold/Silver)
   formOfGold: string; // Specific to Gold
@@ -29,6 +30,7 @@ export interface StockManagementInwardModel {
   createdBy: string; // Created by user
   createdDate: string; // Creation date
   updatedDate: string; // Last updated date
+  formOfSilver: string;
   goldType: string;
 }
 
@@ -59,10 +61,11 @@ export interface CreateStockInwardPayload {
   location: string; // Stock location
   notes: string; // Optional notes
   vendor: string; // Supplier ID
-  ornament: string; // Ornament ID
+  ornament: any; // Ornament ID
   type: string; // Ornament type ID
   form: string; // Ornament form ID
+  // cut : string;
   purity: string; // Ornament purity ID
   color: string; // Optional for Gold/Silver
-  cutGrade: string; // Optional for Diamond
+  // cutGrade: string; // Optional for Diamond
 }

@@ -15,6 +15,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
+import DeleteDialog from "./DeleteDialog";
+
 import {
   DeleteRed,
   DummyProfile,
@@ -52,6 +54,7 @@ const headCellsInward = [
 
 const StockManagementInward = ({
   onEditInward,
+  // onDeleteRecord,
 }: {
   onEditInward: (row: StockManagementInwardModel) => void;
 }) => {
@@ -66,6 +69,7 @@ const StockManagementInward = ({
   const { getAllInwards, itemCount } = useAppSelector(
     (state) => state.stockManagement.inwards
   );
+  const [openDelete, setOpenDelete] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -102,7 +106,6 @@ const StockManagementInward = ({
     onEditInward(row);
     handleCloseMenu();
   };
-
 
   const handleDeleteInward = async () => {
     if (selectedInwardId) {
@@ -187,16 +190,26 @@ const StockManagementInward = ({
                     </Typography>
                   </TableCell>
                   <TableCell>{row.createdDate}</TableCell>
-                  <TableCell>{typeof row.vendor === 'object' && (row.vendor as { name: string })?.name ? (row.vendor as { name: string }).name : "N/A"}</TableCell>
-                    <TableCell>{row.description}</TableCell>
-                    <TableCell>{typeof row.ornament === 'object' && (row.ornament as { ornamentName: string })?.ornamentName ? (row.ornament as { ornamentName: string }).ornamentName : "N/A"}</TableCell>
-                    <TableCell>{row.quantity}</TableCell>
-                    <TableCell>{row.unitPrice}</TableCell>
-                    <TableCell>{row.commission}</TableCell>
-                    <TableCell>{row.totalValue}</TableCell>
-                    <TableCell>{row.batchNumber}</TableCell>
-                    <TableCell>{row.location}</TableCell>
-                    <TableCell>{row.notes}</TableCell>
+                  <TableCell>
+                    {typeof row.vendor === "object" &&
+                    (row.vendor as { name: string })?.name
+                      ? (row.vendor as { name: string }).name
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>{row.description}</TableCell>
+                  <TableCell>
+                    {typeof row.ornament === "object" &&
+                    (row.ornament as { ornamentName: string })?.ornamentName
+                      ? (row.ornament as { ornamentName: string }).ornamentName
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>{row.quantity}</TableCell>
+                  <TableCell>{row.unitPrice}</TableCell>
+                  <TableCell>{row.commission}</TableCell>
+                  <TableCell>{row.totalValue}</TableCell>
+                  <TableCell>{row.batchNumber}</TableCell>
+                  <TableCell>{row.location}</TableCell>
+                  <TableCell>{row.notes}</TableCell>
 
                   {/* <TableCell>{row.receivedBy}</TableCell> */}
                   <TableCell>

@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -12,8 +13,7 @@ import {
   MenuItem,
   Select,
   OutlinedInput,
-} from "@mui/material";
-import Grid from "@mui/material/Grid";
+} from "@mui/material"; import Grid from "@mui/material/Grid";
 import { CheckCircleIcon, CloseOutlinedIcon } from "../assets";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import { useSnackbar } from "notistack";
@@ -28,13 +28,19 @@ import {
   setSelectedVendorId,
   fetchOrnamentTypes,
   fetchForms,
+  // fetchCut,
   fetchPurities,
   fetchColors,
   fetchOrnaments,
 } from "@/redux/stock_management/stock_management.actions";
 import {
-  inwardStockSchema,
-  outwardStockSchema,
+  inwardStockSchemaGold,
+  inwardStockSchemaSilver,
+  inwardStockSchemaDiamond,
+
+outwardStockSchemaSilver,
+outwardStockSchemaDiamond,
+  outwardStockSchemaGold,
 } from "@/yupSchema/stockEntrySchema";
 import {
   CreateStockInwardPayload,
@@ -57,6 +63,8 @@ interface AddStockEntryDialogProps {
   onOutwardCreated?: () => Promise<void>;
 }
 
+
+
 interface Vendor {
   id: string;
   name: string;
@@ -70,7 +78,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
     (state: any) => state.stockManagement.ornamentDetails
   );
 
-  const validationSchema = props.stock ? inwardStockSchema : outwardStockSchema;
+
 
   // Fetch suppliers/buyers from Redux store
   const buyersAndSuppliers = useSelector((state: any) =>
@@ -93,14 +101,29 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
     (state: any) => state.stockManagement.ornamentColors
   );
 
+  // const ornamentCuts = useSelector(
+  //   (state: any) => state.stockManagement.ornamentCuts
+  // )
+
   // Local state for dynamic dropdown options
   const [stockType, setStockType] = useState<string>(
     () => ornaments?.[0]?.id || ""
   );
   const [selectedOrnamentName, setSelectedOrnamentName] = useState("");
+
+  // console.log("selected name ", selectedOrnamentName);
+    
+  const validationSchema = props.stock
+    ? (selectedOrnamentName === "Gold" && inwardStockSchemaGold) ||
+      (selectedOrnamentName === "Silver" && inwardStockSchemaSilver) || selectedOrnamentName === "Diamond" && outwardStockSchemaDiamond
+    : (selectedOrnamentName === "Gold" && outwardStockSchemaGold) ||
+      (selectedOrnamentName === "Silver" && outwardStockSchemaSilver) || selectedOrnamentName === "Diamond" && outwardStockSchemaDiamond;
+
   const [purityOptions, setPurityOptions] = useState([...ornamentPurities]);
   const [typeOptions, setTypeOptions] = useState([...ornamentTypes]);
   const [formOptions, setFormOptions] = useState([...ornamentForms]);
+  // const [cutOptions, setCutOptions] = useState([...ornamentCuts]);
+
   const [colorOptions, setColorOptions] = useState([...ornamentColors]);
   const [diamondTypeOptions, setDiamondTypeOptions] = useState([
     ...ornamentTypes,
@@ -121,24 +144,43 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
 
   useEffect(() => {
     if (ornaments.length > 0) {
+        // console.log({ ornamet: props.initialValues?.ornament?.id})
+      if( props.initialValues?.ornament?.id){ 
+        setStockType(props.initialValues.ornament.id);
+        setSelectedOrnamentName(props.initialValues.ornament.ornamentName);
+      } else {
       const goldOrnament: { id: string; ornamentName: string } | undefined =
         ornaments.find(
           (ornament: { id: string; ornamentName: string }) =>
             ornament.ornamentName.toLowerCase() === "gold"
         );
       if (goldOrnament) {
+        // console.log("Gold Ornamen")
         setStockType(goldOrnament.id);
         setSelectedOrnamentName(goldOrnament.ornamentName);
       } else {
+        // console.log("O id");
         setStockType(ornaments[0].id);
         setSelectedOrnamentName(ornaments[0].ornamentName);
       }
-    } else {
+    } } else {
+      // console.log("Code coming here");
       // Fallback when there are no ornaments
       setStockType("default-stock-type");
       setSelectedOrnamentName("Gold"); // Or set to your preferred default
     }
   }, [ornaments]);
+
+
+
+  useEffect(() => {
+    if(props.isEditMode && props.initialValues?.ornament?.id) {
+       setStockType(props.initialValues.ornament.id);
+      setSelectedOrnamentName(props.initialValues.ornament.ornamentName); 
+    }
+  }, [props.isEditMode])
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -149,6 +191,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
       }
       await dispatch(fetchOrnamentTypes());
       await dispatch(fetchForms());
+      // await dispatch(fetchCuts());
       await dispatch(fetchPurities());
       await dispatch(fetchColors());
       await dispatch(fetchOrnaments());
@@ -191,6 +234,13 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
       { id: newItem.id, ornamentForm: newItem.name },
     ]);
   };
+  
+  // const handleAddCut = (newItem: { id: string; name: string }) => {
+  //   setCutOptions((prev: { id: string; ornamentCut: string }[]) => [
+  //     ...prev,
+  //     { id: newItem.id, ornamentCut: newItem.name },
+  //   ]);
+  // };
 
   const handleAddColor = (newItem: { id: string; name: string }) => {
     setColorOptions((prev: { id: string; ornamentColor: string }[]) => [
@@ -203,50 +253,49 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
   };
 
   const handleSubmit = async (
-    values: StockManagementInwardModel | StockManagementOutwardModel
+    values: StockManagementInwardModel | StockManagementOutwardModel,
+    { resetForm }: { resetForm: () => void }
   ) => {
     console.log("Form values before processing:", values);
-
     try {
       // Construct payload dynamically based on stock type
       const payload: CreateStockInwardPayload | CreateStockOutwardPayload = {
         stockType: props.stock ? "inward" : "outward",
-        transId: values.transId || "default-trans-id", // Ensure transId is included
-        description: values.description || "",
+        transId: values.transId?.toString() || "default-trans-id", // Ensure transId is included
+        description: values.description.toString() || "",
         quantity: values.quantity?.toString() || "",
         unitPrice: values.unitPrice?.toString() || "",
         totalValue: values.totalValue?.toString() || "",
-        commission: props.stock ? "" : values.commission || "", // Commission only for outward
-        batchNumber: values.batchNumber || "",
-        location: values.location || "",
-        notes: values.notes || "",
-        vendor: selectedVendorId || values.vendor || "", // Buyer for outward, supplier for inward
+        commission: values.commission?.toString() || "", // Commission only for outward
+        batchNumber: values.batchNumber?.toString() || "",
+        location: values.location?.toString() || "",
+        notes: values.notes?.toString() || "",
+        vendor: selectedVendorId || values.vendor?.toString() || "", // Buyer for outward, supplier for inward
         ornament: stockType || values.ornament || "", // Stock type ID
         type:
           values.goldType ||
           values.diamondType ||
-          values.silverType ||
-          values.type ||
-          "",
-        form: values.formOfGold || values.cutGrade || values.form || "", // Form based on stock type
+          values.silverType || "",
+          // values.type || "",
+        form: values.formOfGold || values.cutGrade || values.formOfSilver || "", // Form based on stock type
+        // cut : values.cutOfDiamond ,
         purity: values.purity || values.clarity || values.sclarity || "", // Purity based on stock type
-        color: values.colorGrade || values.color || "", // Optional for diamond or silver
-        cutGrade: values.cutGrade || "", // Optional for diamond
-        paymentStatus: props.stock ? "" : values.paymentStatus || "", // Payment status for outward only
+        // color: values.colorGrade || values.color || "", // Optional for diamond or silver
+        // cutGrade: values.cutGrade || "", // Optional for diamond
       };
 
-      console.log("Constructed payload before filtering:", payload);
+      // console.log("Constructed payload before filtering:", payload);
 
       // Filter out undefined fields to avoid sending unnecessary data
       const filteredPayload = Object.fromEntries(
         Object.entries(payload).filter(([_, value]) => value !== undefined)
       ) as CreateStockInwardPayload | CreateStockOutwardPayload;
 
-      console.log("Filtered payload for API:", filteredPayload);
+      // console.log("Filtered payload for API:", filteredPayload);
 
       // Dispatch the appropriate Redux action
       if (props.isEditMode && props.initialValues?.id) {
-        console.log("Edit mode detected. Sending update request...");
+        console.log("Edit mode detected. Sending update request...",values);
         if (props.stock) {
           console.log("Updating inward stock...");
           await dispatch(
@@ -280,6 +329,10 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
           enqueueSnackbar("Inward stock created successfully!", {
             variant: "success",
           });
+          // Trigger the refresh for inward stock
+          if (props.onInwardCreated) {
+            await props.onInwardCreated();
+          }
         } else {
           console.log("Creating outward stock...");
           await dispatch(
@@ -288,6 +341,10 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
           enqueueSnackbar("Outward stock created successfully!", {
             variant: "success",
           });
+           // Trigger the refresh for outward stock
+        if (props.onOutwardCreated) {
+          await props.onOutwardCreated();
+        }
         }
       }
       console.log("API call successful. Closing the dialog...");
@@ -329,45 +386,42 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
         initialValues={{
           id: props.initialValues?.id || "",
           stockType: props.stock ? "inward" : "outward",
-          transId: props.initialValues?.transId || "default-trans-id", // Ensure transId is included
+          transId: props.initialValues?.transId || "default-trans-id", 
           description: props.initialValues?.description || "",
           quantity: props.initialValues?.quantity?.toString() || "", // Convert to string
           unitPrice: props.initialValues?.unitPrice?.toString() || "", // Convert to string
           totalValue: props.initialValues?.totalValue?.toString() || "", // Convert to string
-          commission: props.stock
-            ? "" // Default to empty for inward
-            : props.initialValues?.commission?.toString() || "", // Convert for outward
+          commission: props.initialValues?.commission?.toString() || "", // Convert for outward
           batchNumber: props.initialValues?.batchNumber || "",
           location: props.initialValues?.location || "",
           notes: props.initialValues?.notes || "",
-          vendor: props.initialValues?.vendor || "",
-          ornament: props.initialValues?.ornament || "",
-          goldType: props.initialValues?.goldType || "",
-          diamondType: props.initialValues?.diamondType || "",
-          silverType: props.initialValues?.silverType || "",
-          formOfGold: props.initialValues?.formOfGold || "",
-          cutGrade: props.initialValues?.cutGrade || "",
-          purity: props.initialValues?.purity || "",
-          clarity: props.initialValues?.clarity || "",
-          sclarity: props.initialValues?.sclarity || "",
-          colorGrade: props.initialValues?.colorGrade || "",
-          color: props.initialValues?.color || "", // Ensure color is included
-          form: props.initialValues?.form || "", // Ensure form is included
-          type: props.initialValues?.type || "", // Ensure type is included
+          vendor: props.initialValues?.vendor?.id || "",
+          ornament: props.initialValues?.ornament?.id || "",
+          goldType: props.initialValues?.type?.id || "",
+          diamondType: props.initialValues?.type?.id || "",
+          silverType: props.initialValues?.type?.id || "",
+          formOfGold: props.initialValues?.form?.id || "",
+          cutGrade: props.initialValues?.form?.id || "",
+          formOfSilver : props.initialValues?.form?.id || "",
+          purity: props.initialValues?.purity?.id || "",
+          clarity: props.initialValues?.purity?.id || "",
+          sclarity: props.initialValues?.purity?.id || "",
+          colorGrade: props.initialValues?.color?.id || "",
+          // color: props.initialValues?.color?.id || "", 
+          form: props.initialValues?.form?.id || "", 
+          type: props.initialValues?.type?.id || "", 
           createdBy: props.initialValues?.createdBy || "default-user", // Provide default value
           createdDate:
             props.initialValues?.createdDate || new Date().toISOString(), // Default to current date
           updatedDate:
             props.initialValues?.updatedDate || new Date().toISOString(), // Default to current date
-          paymentStatus: props.stock
-            ? "" // Default to empty for inward
-            : props.initialValues?.paymentStatus || "", // Use for outward
+         
         }}
-        validationSchema={validationSchema}
+         validationSchema={validationSchema}
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {({ values, handleChange, handleBlur }) => (
+        {({ errors, values, touched, handleChange, handleBlur }) => (
           <Form>
             <DialogContent className="px-9">
               <Box sx={{ width: "100%" }}>
@@ -381,7 +435,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                       <Field
                         as={Select}
                         name="stockType"
-                        value={stockType || ""} // Controlled value
+                        error={touched.stockType && Boolean(errors.stockType)}
+                        value={ stockType ? stockType :  props.isEditMode ?  props.initialValues?.ornament?.id  &&  props.initialValues.ornament.id || "" : ""}
+                        
                         onChange={(
                           e: React.ChangeEvent<{ value: unknown }>
                         ) => {
@@ -391,6 +447,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             (ornament: { id: string; ornamentName: string }) =>
                               ornament.id === selectedId
                           );
+                          console.log({ selectedOrnament });
                           setSelectedOrnamentName(
                             selectedOrnament?.ornamentName || ""
                           );
@@ -399,11 +456,15 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                         fullWidth
                       >
                         {ornaments.map(
-                          (type: { id: string; ornamentName: string }) => (
+                          (type: { id: string; ornamentName: string }) => { 
+                        
+                            //  console.log("props initial values", props.initialValues);
+
+                            return(
                             <MenuItem key={type.id} value={type.id}>
                               {type.ornamentName}
                             </MenuItem>
-                          )
+                          )}
                         )}
                       </Field>
                       <CustomErrorMessage name="stockType" />
@@ -411,7 +472,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                   </Grid>
 
                   {/* Dynamic Fields Based on Stock Type */}
-                  {(selectedOrnamentName || "Gold") === "Gold" && (
+                  {selectedOrnamentName === "Gold" && (
                     <>
                       <Grid item xs={6}>
                         <Box>
@@ -421,7 +482,14 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="goldType"
-                            value={values.goldType || ""} // Ensure controlled value
+                            error={touched.goldType && Boolean(errors.goldType)}
+                          //  value={ props.isEditMode ?  props.initialValues?.type?.id  &&  props.initialValues.type.id || "" : stockType || ""} // Controlled value
+                            // value={values?.type ? values?.type : props?.isEditMode ? props?.initialValues?.type?.id && props.initialValues?.type?.id || "" : ""}
+                            
+                            value={values?.goldType ? values?.goldType : props?.isEditMode ? props?.initialValues?.goldType?.id && props.initialValues?.goldType?.id || "" : ""}
+
+                            
+                            // value={values.goldType || ""} // Ensure controlled value
                             onChange={handleChange}
                             displayEmpty
                             fullWidth
@@ -440,9 +508,11 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                                 )
                                 .map(
                                   (type: {
+                                    
                                     id: string;
                                     ornamentType: string;
                                   }) => (
+                                    
                                     <MenuItem key={type.id} value={type.id}>
                                       {type.ornamentType}
                                     </MenuItem>
@@ -487,8 +557,13 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="formOfGold"
-                            value={values.formOfGold || ""} // Ensure controlled value
+                            // value={values.formOfGold || ""} // Ensure controlled value
+                           value={values?.formOfGold ? values?.formOfGold : props?.isEditMode ? props?.initialValues?.formOfGold?.id && props.initialValues?.formOfGold?.id || "" : ""}
+
                             onChange={handleChange}
+                            error={
+                              touched.formOfGold && Boolean(errors.formOfGold)
+                            }
                             displayEmpty
                             fullWidth
                           >
@@ -552,6 +627,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             name="quantity"
                             as={OutlinedInput}
+                            error={touched.quantity && Boolean(errors.quantity)}
                             fullWidth
                             placeholder="Enter quantity"
                             value={values.quantity || ""} // Fallback to empty string
@@ -567,8 +643,11 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           </Typography>
                           <Field
                             as={Select}
+                            error={touched.purity && Boolean(errors.purity)}
                             name="purity"
-                            value={values.purity || ""} // Ensure controlled value
+                            // value={values.purity || ""} // Ensure controlled value
+                            value={values?.purity ? values?.purity : props?.isEditMode ? props?.initialValues?.purity?.id && props.initialValues?.purity?.id || "" : ""}
+
                             onChange={handleChange}
                             displayEmpty
                             fullWidth
@@ -589,11 +668,13 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                                   (purity: {
                                     id: string;
                                     ornamentPurity: string;
-                                  }) => (
+                                  }) => { 
+                                    // console.log("commission", values.commission);
+                                    return  (
                                     <MenuItem key={purity.id} value={purity.id}>
                                       {purity.ornamentPurity}
                                     </MenuItem>
-                                  )
+                                  )}
                                 )
                             ) : (
                               <MenuItem value="" disabled>
@@ -640,6 +721,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           </Typography>
                           <Field
                             name="description"
+                            error={
+                              touched.description && Boolean(errors.description)
+                            }
                             as={OutlinedInput}
                             fullWidth
                             placeholder="Enter description "
@@ -657,6 +741,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             name="unitPrice"
                             as={OutlinedInput}
+                            error={
+                              touched.unitPrice && Boolean(errors.unitPrice)
+                            }
                             fullWidth
                             placeholder="Enter unit price"
                             value={values.unitPrice || ""} // Fallback to empty string
@@ -672,6 +759,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           </Typography>
                           <Field
                             name="totalValue"
+                            error={
+                              touched.totalValue && Boolean(errors.totalValue)
+                            }
                             as={OutlinedInput}
                             fullWidth
                             placeholder="Enter total value"
@@ -681,41 +771,41 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                         </Box>
                       </Grid>
 
-                      {props.stock && (
-                        <>
-                          <Grid item xs={6}>
-                            <Box>
-                              <Typography className="text-sm text-primary mb-1">
-                                Location
-                              </Typography>
-                              <Field
-                                name="location"
-                                as={OutlinedInput}
-                                fullWidth
-                                placeholder="Enter location"
-                                value={values.location || ""} // Fallback to empty string
-                              />
-                              <CustomErrorMessage name="location" />
-                            </Box>
-                          </Grid>
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Location
+                          </Typography>
+                          <Field
+                            name="location"
+                            as={OutlinedInput}
+                            error={touched.location && Boolean(errors.location)}
+                            fullWidth
+                            placeholder="Enter location"
+                            value={values.location || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="location" />
+                        </Box>
+                      </Grid>
 
-                          <Grid item xs={6}>
-                            <Box>
-                              <Typography className="text-sm text-primary mb-1">
-                                Batch Number
-                              </Typography>
-                              <Field
-                                name="batchNumber"
-                                as={OutlinedInput}
-                                fullWidth
-                                placeholder="Enter Batch Number"
-                                value={values.batchNumber || ""} // Fallback to empty string
-                              />
-                              <CustomErrorMessage name="batchNumber" />
-                            </Box>
-                          </Grid>
-                        </>
-                      )}
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Batch Number
+                          </Typography>
+                          <Field
+                            name="batchNumber"
+                            as={OutlinedInput}
+                            error={
+                              touched.batchNumber && Boolean(errors.batchNumber)
+                            }
+                            fullWidth
+                            placeholder="Enter Batch Number"
+                            value={values.batchNumber || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="batchNumber" />
+                        </Box>
+                      </Grid>
 
                       <Grid item xs={6}>
                         <Box>
@@ -725,7 +815,11 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="vendor"
-                            value={values.vendor || ""}
+                            error={touched.vendor && Boolean(errors.vendor)}
+
+                            value={values?.vendor ? values?.vendor : props?.isEditMode ? props?.initialValues?.vendor && props.initialValues?.vendor || "" : ""}
+
+                            // value={values.vendor || ""}
                             onChange={(
                               e: React.ChangeEvent<{ value: unknown }>
                             ) => {
@@ -737,6 +831,12 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             fullWidth
                             className="mt-1"
                           >
+
+                             {/* Placeholder for default selection */}
+                            <MenuItem value="" disabled>
+                            {props.stock ? "Supplier Name" : "Buyer Name"}
+                            </MenuItem>
+                            
                             {buyersAndSuppliers?.length > 0 ? (
                               buyersAndSuppliers.map((item: Vendor) => (
                                 <MenuItem key={item.id} value={item.id}>
@@ -762,6 +862,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           </Typography>
                           <Field
                             name="commission"
+                            error={
+                              touched.commission && Boolean(errors.commission)
+                            }
                             as={OutlinedInput}
                             fullWidth
                             placeholder="Enter commission"
@@ -770,48 +873,6 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <CustomErrorMessage name="commission" />
                         </Box>
                       </Grid>
-
-                      {!props.stock && (
-                        <Grid item xs={6}>
-                          <Box>
-                            <Typography className="text-sm text-primary mb-1">
-                              Payment Status
-                            </Typography>
-                            <Field
-                              as={Select}
-                              name="paymentStatus"
-                              value={values.paymentStatus || ""} // Ensure controlled value
-                              onChange={handleChange}
-                              displayEmpty
-                              fullWidth
-                            >
-                              <MenuItem value="pending">Pending</MenuItem>
-                              <MenuItem value="completed">Completed</MenuItem>
-                              <MenuItem value="partial">Partial Done</MenuItem>
-                            </Field>
-                            <CustomErrorMessage name="paymentStatus" />
-                          </Box>
-                        </Grid>
-                      )}
-
-                      {!props.stock && (
-                        <Grid item xs={6}>
-                          <Box>
-                            <Typography className="text-sm text-primary mb-1">
-                              Batch Number
-                            </Typography>
-                            <Field
-                              name="batchNumber"
-                              as={OutlinedInput}
-                              fullWidth
-                              placeholder="Enter Batch Number"
-                              value={values.batchNumber || ""} // Fallback to empty string
-                            />
-                            <CustomErrorMessage name="batchNumber" />
-                          </Box>
-                        </Grid>
-                      )}
-
                       <Grid item xs={12}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
@@ -820,6 +881,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             name="notes"
                             as={OutlinedInput}
+                            error={touched.notes && Boolean(errors.notes)}
                             fullWidth
                             placeholder="Enter notes"
                             value={values.notes || ""} // Fallback to empty string
@@ -841,7 +903,12 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="diamondType"
-                            value={values.diamondType || ""} // Ensure controlled value
+                            error={
+                              touched.diamondType && Boolean(errors.diamondType)
+                            }
+                            // value={values.diamondType || ""} // Ensure controlled value
+                            value={values?.diamondType ? values?.diamondType : props?.isEditMode ? props?.initialValues?.diamondType?.id && props.initialValues?.diamondType?.id || "" : ""}
+
                             onChange={handleChange}
                             displayEmpty
                             fullWidth
@@ -906,6 +973,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           </Typography>
                           <Field
                             name="description"
+                            error={
+                              touched.description && Boolean(errors.description)
+                            }
                             as={OutlinedInput}
                             fullWidth
                             placeholder="e.g., 1.50"
@@ -923,7 +993,10 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="clarity"
-                            value={values.clarity || ""}
+                            error={touched.clarity && Boolean(errors.clarity)}
+                            // value={values.clarity || ""}
+                              value={values?.clarity ? values?.clarity : props?.isEditMode ? props?.initialValues?.clarity?.id && props.initialValues?.clarity?.id || "" : ""}
+
                             onChange={handleChange}
                             displayEmpty
                             fullWidth
@@ -992,7 +1065,12 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="colorGrade"
-                            value={values.colorGrade || ""} // Fallback to empty string
+                            error={
+                              touched.colorGrade && Boolean(errors.colorGrade)
+                            }
+                            // value={values.colorGrade || ""} // Fallback to empty string
+                            value={values?.colorGrade ? values?.colorGrade : props?.isEditMode ? props?.initialValues?.colorGrade?.id && props.initialValues?.colorGrade?.id || "" : ""}
+
                             onChange={handleChange}
                             displayEmpty
                             fullWidth
@@ -1058,7 +1136,10 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="cutGrade"
-                            value={values.cutGrade || ""} // Fallback to empty string
+                            error={touched.cutGrade && Boolean(errors.cutGrade)}
+                            // value={values.cutGrade || ""} // Fallback to empty string
+                             value={values?.cutGrade ? values?.cutGrade : props?.isEditMode ? props?.initialValues?.cutGrade?.id && props.initialValues?.cutGrade?.id || "" : ""}
+
                             onChange={handleChange}
                             displayEmpty
                             fullWidth
@@ -1124,6 +1205,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             name="unitPrice"
                             as={OutlinedInput}
+                            error={
+                              touched.unitPrice && Boolean(errors.unitPrice)
+                            }
                             fullWidth
                             placeholder="Enter unit price"
                             value={values.unitPrice || ""} // Fallback to empty string
@@ -1140,6 +1224,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             name="totalValue"
                             as={OutlinedInput}
+                            error={
+                              touched.totalValue && Boolean(errors.totalValue)
+                            }
                             fullWidth
                             placeholder="Enter total value"
                             value={values.totalValue || ""} // Fallback to empty string
@@ -1147,42 +1234,41 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <CustomErrorMessage name="totalValue" />
                         </Box>
                       </Grid>
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Location
+                          </Typography>
+                          <Field
+                            name="location"
+                            as={OutlinedInput}
+                            error={touched.location && Boolean(errors.location)}
+                            fullWidth
+                            placeholder="Enter location"
+                            value={values.location || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="location" />
+                        </Box>
+                      </Grid>
 
-                      {props.stock && (
-                        <>
-                          <Grid item xs={6}>
-                            <Box>
-                              <Typography className="text-sm text-primary mb-1">
-                                Location
-                              </Typography>
-                              <Field
-                                name="location"
-                                as={OutlinedInput}
-                                fullWidth
-                                placeholder="Enter location"
-                                value={values.location || ""} // Fallback to empty string
-                              />
-                              <CustomErrorMessage name="location" />
-                            </Box>
-                          </Grid>
-
-                          <Grid item xs={6}>
-                            <Box>
-                              <Typography className="text-sm text-primary mb-1">
-                                Batch Number
-                              </Typography>
-                              <Field
-                                name="batchNumber"
-                                as={OutlinedInput}
-                                fullWidth
-                                placeholder="Enter Batch Number"
-                                value={values.batchNumber || ""} // Fallback to empty string
-                              />
-                              <CustomErrorMessage name="batchNumber" />
-                            </Box>
-                          </Grid>
-                        </>
-                      )}
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Batch Number
+                          </Typography>
+                          <Field
+                            name="batchNumber"
+                            as={OutlinedInput}
+                            error={
+                              touched.batchNumber && Boolean(errors.batchNumber)
+                            }
+                            fullWidth
+                            placeholder="Enter Batch Number"
+                            value={values.batchNumber || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="batchNumber" />
+                        </Box>
+                      </Grid>
 
                       <Grid item xs={6}>
                         <Box>
@@ -1192,7 +1278,10 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="vendor"
-                            value={values.vendor || ""}
+                            error={touched.vendor && Boolean(errors.vendor)}
+                            // value={values.vendor || ""}
+                               value={values?.vendor ? values?.vendor : props?.isEditMode ? props?.initialValues?.vendor?.id && props.initialValues?.vendor?.id || "" : ""}
+
                             onChange={(
                               e: React.ChangeEvent<{ value: unknown }>
                             ) => {
@@ -1204,6 +1293,15 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             fullWidth
                             className="mt-1"
                           >
+
+                              {/* Placeholder for default selection */}
+                            <MenuItem value="" disabled>
+                            {props.stock ? "Supplier Name" : "Buyer Name"}
+                            </MenuItem>
+
+
+
+                            
                             {buyersAndSuppliers?.length > 0 ? (
                               buyersAndSuppliers.map((item: Vendor) => (
                                 <MenuItem key={item.id} value={item.id}>
@@ -1230,6 +1328,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             name="commission"
                             as={OutlinedInput}
+                            error={
+                              touched.commission && Boolean(errors.commission)
+                            }
                             fullWidth
                             placeholder="Enter commission"
                             value={values.commission || ""} // Fallback to empty string
@@ -1237,47 +1338,6 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <CustomErrorMessage name="commission" />
                         </Box>
                       </Grid>
-
-                      {!props.stock && (
-                        <Grid item xs={6}>
-                          <Box>
-                            <Typography className="text-sm text-primary mb-1">
-                              Payment Status
-                            </Typography>
-                            <Field
-                              as={Select}
-                              name="paymentStatus"
-                              value={values.paymentStatus || ""} // Ensure controlled value
-                              onChange={handleChange}
-                              displayEmpty
-                              fullWidth
-                            >
-                              <MenuItem value="pending">Pending</MenuItem>
-                              <MenuItem value="completed">Completed</MenuItem>
-                              <MenuItem value="partial">Partial Done</MenuItem>
-                            </Field>
-                            <CustomErrorMessage name="paymentStatus" />
-                          </Box>
-                        </Grid>
-                      )}
-
-                      {!props.stock && (
-                        <Grid item xs={6}>
-                          <Box>
-                            <Typography className="text-sm text-primary mb-1">
-                              Batch Number
-                            </Typography>
-                            <Field
-                              name="batchNumber"
-                              as={OutlinedInput}
-                              fullWidth
-                              placeholder="Enter Batch Number"
-                              value={values.batchNumber || ""} // Fallback to empty string
-                            />
-                            <CustomErrorMessage name="batchNumber" />
-                          </Box>
-                        </Grid>
-                      )}
 
                       <Grid item xs={12}>
                         <Box>
@@ -1288,6 +1348,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             name="notes"
                             as={OutlinedInput}
                             fullWidth
+                            error={touched.notes && Boolean(errors.notes)}
                             placeholder="Enter notes"
                             value={values.notes || ""} // Fallback to empty string
                           />
@@ -1308,7 +1369,12 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="silverType"
-                            value={values.silverType || ""}
+                            error={
+                              touched.silverType && Boolean(errors.silverType)
+                            }
+                            // value={values.silverType || ""}
+                            value={values?.silverType ? values?.silverType : props?.isEditMode ? props?.initialValues?.silverType?.id && props.initialValues?.silverType?.id || "" : ""}
+
                             onChange={handleChange}
                             displayEmpty
                             fullWidth
@@ -1374,6 +1440,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             name="description"
                             as={OutlinedInput}
+                            error={
+                              touched.description && Boolean(errors.description)
+                            }
                             fullWidth
                             placeholder="e.g., 1.50"
                             value={values.description || ""} // Fallback to empty string
@@ -1389,8 +1458,11 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           </Typography>
                           <Field
                             as={Select}
+                            error={touched.sclarity && Boolean(errors.sclarity)}
                             name="sclarity"
-                            value={values.sclarity || ""} // Ensure controlled value
+                            // value={values.sclarity || ""} // Ensure controlled value
+                             value={values?.sclarity ? values?.sclarity : props?.isEditMode ? props?.initialValues?.sclarity?.id && props.initialValues?.sclarity?.id || "" : ""}
+
                             onChange={handleChange}
                             displayEmpty
                             fullWidth
@@ -1459,6 +1531,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             name="quantity"
                             as={OutlinedInput}
+                            error={touched.quantity && Boolean(errors.quantity)}
                             fullWidth
                             placeholder="Enter quantity"
                             value={values.quantity || ""} // Fallback to empty string
@@ -1467,21 +1540,77 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                         </Box>
                       </Grid>
 
-                      <Grid item xs={6}>
+                     <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Description
+                            Form of Silver
                           </Typography>
                           <Field
-                            name="description"
-                            as={OutlinedInput}
+                            as={Select}
+                            name="formOfSilver"
+                            // value={values.formOfSilver || ""} // Ensure controlled value
+                             value={values?.formOfSilver ? values?.formOfSilver : props?.isEditMode ? props?.initialValues?.formOfSilver?.id && props.initialValues?.formOfSilver?.id || "" : ""}
+
+                            onChange={handleChange}
+                            error={
+                              touched.formOfSilver && Boolean(errors.formOfSilver)
+                            }
+                            displayEmpty
                             fullWidth
-                            placeholder="Enter description"
-                            value={values.description || ""} // Fallback to empty string
-                          />
-                          <CustomErrorMessage name="description" />
+                          >
+                            {/* Placeholder for default selection */}
+                            <MenuItem value="" disabled>
+                              Select form of Silver
+                            </MenuItem>
+
+                            {ornamentForms.length > 0 ? (
+                              ornamentForms
+                                .filter(
+                                  (form: { ornament?: { id: string } }) =>
+                                    form.ornament?.id === stockType // Filter based on selected stockType
+                                )
+                                .map(
+                                  (form: {
+                                    id: string;
+                                    ornamentForm: string;
+                                  }) => (
+                                    <MenuItem key={form.id} value={form.id}>
+                                      {form.ornamentForm}
+                                    </MenuItem>
+                                  )
+                                )
+                            ) : (
+                              <MenuItem value="" disabled>
+                                No Options Available
+                              </MenuItem>
+                            )}
+
+                            {/* Add New Item functionality */}
+                            <MenuItem className="flex flex-row justify-center w-full">
+                              <AddNewItem
+                                stockTypeId={stockType || "default-stock-type"}
+                                category="form"
+                                onAddItem={(newItem: {
+                                  id: string;
+                                  name: string;
+                                }) => {
+                                  setFormOptions((prev: any[]) => [
+                                    ...prev,
+                                    {
+                                      id: newItem.id,
+                                      ornamentForm: newItem.name,
+                                      ornament: stockType, // Link it to the current stockType
+                                    },
+                                  ]);
+                                }}
+                              />
+                            </MenuItem>
+                          </Field>
+                          <CustomErrorMessage name="form" />
                         </Box>
                       </Grid>
+
+
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
@@ -1491,6 +1620,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             name="unitPrice"
                             as={OutlinedInput}
                             fullWidth
+                            error={
+                              touched.unitPrice && Boolean(errors.unitPrice)
+                            }
                             placeholder="Enter unit price"
                             value={values.unitPrice || ""} // Fallback to empty string
                           />
@@ -1506,47 +1638,51 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             name="totalValue"
                             as={OutlinedInput}
                             fullWidth
+                            error={
+                              touched.totalValue && Boolean(errors.totalValue)
+                            }
                             placeholder="Enter total value"
                             value={values.totalValue || ""} // Fallback to empty string
                           />
                           <CustomErrorMessage name="totalValue" />
                         </Box>
                       </Grid>
-                      {props.stock && (
-                        <>
-                          <Grid item xs={6}>
-                            <Box>
-                              <Typography className="text-sm text-primary mb-1">
-                                Location
-                              </Typography>
-                              <Field
-                                name="location"
-                                as={OutlinedInput}
-                                fullWidth
-                                placeholder="Enter location"
-                                value={values.location || ""} // Fallback to empty string
-                              />
-                              <CustomErrorMessage name="location" />
-                            </Box>
-                          </Grid>
 
-                          <Grid item xs={6}>
-                            <Box>
-                              <Typography className="text-sm text-primary mb-1">
-                                Batch Number
-                              </Typography>
-                              <Field
-                                name="batchNumber"
-                                as={OutlinedInput}
-                                fullWidth
-                                placeholder="Enter batch Number"
-                                value={values.batchNumber || ""} // Fallback to empty string
-                              />
-                              <CustomErrorMessage name="batchNumber" />
-                            </Box>
-                          </Grid>
-                        </>
-                      )}
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Location
+                          </Typography>
+                          <Field
+                            name="location"
+                            as={OutlinedInput}
+                            error={touched.location && Boolean(errors.location)}
+                            fullWidth
+                            placeholder="Enter location"
+                            value={values.location || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="location" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Batch Number
+                          </Typography>
+                          <Field
+                            name="batchNumber"
+                            as={OutlinedInput}
+                            error={
+                              touched.batchNumber && Boolean(errors.batchNumber)
+                            }
+                            fullWidth
+                            placeholder="Enter batch Number"
+                            value={values.batchNumber || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="batchNumber" />
+                        </Box>
+                      </Grid>
 
                       <Grid item xs={6}>
                         <Box>
@@ -1556,7 +1692,10 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                           <Field
                             as={Select}
                             name="vendor"
-                            value={values.vendor || ""}
+                            // value={values.vendor || ""}
+
+                             value={values?.vendor ? values?.vendor : props?.isEditMode ? props?.initialValues?.vendor?.id && props.initialValues?.vendor?.id || "" : ""}
+
                             onChange={(
                               e: React.ChangeEvent<{ value: unknown }>
                             ) => {
@@ -1568,6 +1707,13 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             fullWidth
                             className="mt-1"
                           >
+
+                               {/* Placeholder for default selection */}
+                            <MenuItem value="" disabled>
+                            {props.stock ? "Supplier Name" : "Buyer Name"}
+                            </MenuItem>
+
+
                             {buyersAndSuppliers?.length > 0 ? (
                               buyersAndSuppliers.map((item: Vendor) => (
                                 <MenuItem key={item.id} value={item.id}>
@@ -1594,6 +1740,9 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             name="commission"
                             as={OutlinedInput}
                             fullWidth
+                            error={
+                              touched.commission && Boolean(errors.commission)
+                            }
                             placeholder="Enter commission"
                             value={values.commission || ""} // Fallback to empty string
                           />
@@ -1601,43 +1750,6 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                         </Box>
                       </Grid>
 
-                      {!props.stock && (
-                        <Grid item xs={6}>
-                          <Box>
-                            <Typography className="text-sm text-primary mb-1">
-                              Payment Status
-                            </Typography>
-                            <Field
-                              as={Select}
-                              name="paymentStatus"
-                              fullWidth
-                              value={values.paymentStatus || ""} // Fallback to empty string
-                            >
-                              <MenuItem value="pending">Pending</MenuItem>
-                              <MenuItem value="completed">Completed</MenuItem>
-                              <MenuItem value="partial">Partial Done</MenuItem>
-                            </Field>
-                            <CustomErrorMessage name="paymentStatus" />
-                          </Box>
-                        </Grid>
-                      )}
-                      {!props.stock && (
-                        <Grid item xs={6}>
-                          <Box>
-                            <Typography className="text-sm text-primary mb-1">
-                              Batch Number
-                            </Typography>
-                            <Field
-                              name="batchNumber"
-                              as={OutlinedInput}
-                              fullWidth
-                              placeholder="Enter Batch Number"
-                              value={values.batchNumber || ""} // Fallback to empty string
-                            />
-                            <CustomErrorMessage name="batchNumber" />
-                          </Box>
-                        </Grid>
-                      )}
                       <Grid item xs={12}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
@@ -1647,6 +1759,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
                             name="notes"
                             as={OutlinedInput}
                             fullWidth
+                            error={touched.notes && Boolean(errors.notes)}
                             placeholder="Enter notes"
                             value={values.notes || ""} // Fallback to empty string
                           />

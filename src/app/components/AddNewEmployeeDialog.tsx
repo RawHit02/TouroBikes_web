@@ -324,7 +324,7 @@ const AddNewEmployeeDialog: React.FC<AddNewEmployeeDialogProps> = ({
                       className="text-red-600"
                     />
                   </Box>
-                  <Box>
+                    <Box>
                     <Typography className="text-sm text-primary">
                       Address
                     </Typography>
@@ -341,7 +341,7 @@ const AddNewEmployeeDialog: React.FC<AddNewEmployeeDialogProps> = ({
                       component="div"
                       className="text-red-600"
                     />
-                  </Box>
+                    </Box>
 
                   <Box>
                     <Typography className="text-sm text-primary">
