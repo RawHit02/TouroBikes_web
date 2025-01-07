@@ -63,17 +63,22 @@ export const getAllEmployeesAction = createAsyncThunk<
         },
       };
       const res = await apiClient.get(`${GET_ALL_EMPLOYEES}`, options);
-      let data: EmployeeManagementEmployeeModel[] = [];
-      if (res?.data?.data.data) data = res.data.data.data;
-      return { data, itemCount: res.data.data.meta.itemCount };
+
+      // Extracting data and meta
+      const data = res?.data?.data?.data || [];
+      const itemCount = res?.data?.data?.meta?.itemCount || 0;
+
+      return { data, itemCount };
     } catch (error: any) {
       console.error("Error occurred:", error);
       const status = error.response?.status || 500;
+
       CustomToast.ErrorToast(
         error?.response?.data?.message ||
           error?.message ||
           "Failed to fetch Employees"
       );
+
       return rejectWithValue({
         message: "Failed to fetch employees",
         status,
@@ -81,6 +86,7 @@ export const getAllEmployeesAction = createAsyncThunk<
     }
   }
 );
+
 
 // Edit Employee
 export const editEmployeeAction = createAsyncThunk<
@@ -117,7 +123,7 @@ export const deleteEmployeeAction = createAsyncThunk<
   "employeeManagement/deleteEmployee",
   async (EmployeeId, { rejectWithValue }) => {
     try {
-      const response = await apiClient._delete(
+      const response = await apiClient.delete(
         `${DELETE_EMPLOYEE}/${EmployeeId}`
       );
       return { message: "Employee deleted successfully" };

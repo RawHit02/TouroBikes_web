@@ -209,6 +209,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps> = ({
                     <input
                       type="file"
                       accept="image/*"
+                      title ="upload profile image"
                       className="absolute opacity-0 w-full h-full"
                       onChange={(event) =>
                         handleImageUpload(event, setFieldValue)
@@ -404,7 +405,7 @@ const AddNewBuyerDialog: React.FC<AddNewBuyerDialogProps> = ({
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
-        onClose={handleSnackbarClose}
+        onClose={handleSnackbarClose} 
         message={snackbarMessage}
       />
     </>

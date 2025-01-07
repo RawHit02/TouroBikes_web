@@ -1,4 +1,6 @@
 "use client";
+
+
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AddNewSellerDialog from "@/app/components/AddNewSellerDialog";
@@ -18,7 +20,6 @@ const Sellers = () => {
   const [editedSeller, setEditedSeller] = useState<SellerFormValues | null>(null); 
   const [isAddSellerDialogOpen, setIsAddSellerDialogOpen] = useState(false); 
 
-  // Fetch sellers data from backend
   const fetchData = async () => {
     const params = {
       page: 1,
@@ -47,7 +48,6 @@ const Sellers = () => {
       console.error("Failed to fetch sellers:" , error);}
   }
 
-  // Refresh seller data after Add/Edit/Delete
   const refreshSellers = async () => {
     await fetchData();
   };
@@ -65,7 +65,6 @@ const Sellers = () => {
 
 
 
-  // Handle edit button click
   const handleEditSeller = (seller: VendorManagementSellerModel) => {
     setEditedSeller({
       id: seller.id,
@@ -74,17 +73,15 @@ const Sellers = () => {
       whatsappNumber: normalizeNumberForEdit(seller.whatsappNumber),
       email: seller.email,
       address: seller.address,
-      profileImage: null, // Handle profile image as needed
+      profileImage: null, 
     });
     setIsAddSellerDialogOpen(true);
   };
 
 
-
-  // Close dialog handler
   const handleCloseDialog = () => {
-    setIsAddSellerDialogOpen(false); // Close dialog
-    setEditedSeller(null); // Reset edited seller data
+    setIsAddSellerDialogOpen(false); 
+    setEditedSeller(null); 
   };
 
 
@@ -115,11 +112,11 @@ const Sellers = () => {
 
       {/* Add/Edit Dialog */}
       <AddNewSellerDialog
-        onSellerCreated={refreshSellers} // Refresh sellers after dialog submission
-        initialValues={editedSeller || undefined} // Prefill data for edit
-        isEditMode={Boolean(editedSeller?.id)} // Indicate edit mode
-        open={isAddSellerDialogOpen} // Dialog visibility control
-        onClose={handleCloseDialog} // Close dialog handler
+        onSellerCreated={refreshSellers} 
+        initialValues={editedSeller || undefined} 
+        isEditMode={Boolean(editedSeller?.id)} 
+        open={isAddSellerDialogOpen} 
+        onClose={handleCloseDialog} 
       />
     </Box>
   );

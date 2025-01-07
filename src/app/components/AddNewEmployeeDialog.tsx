@@ -130,11 +130,19 @@ const AddNewEmployeeDialog: React.FC<AddNewEmployeeDialogProps> = ({
        });
      } else {
        // Add Employee
-       await dispatch(
+       const result = await dispatch(
          createEmployee({ createEmployeePayload: employeePayload })
        ).unwrap();
+
+       // Append the newly created employee to the Redux store
+       dispatch({
+         type: "manage_employee_management_slice/addEmployeeToList",
+         payload: result.data, // New employee from API response
+       });
+
        enqueueSnackbar("Employee added successfully!", { variant: "success" });
      }
+
 
      // Reset form and close dialog
      resetForm();
@@ -209,6 +217,7 @@ const AddNewEmployeeDialog: React.FC<AddNewEmployeeDialogProps> = ({
                       type="file"
                       accept="image/*"
                       className="absolute opacity-0 w-full h-full"
+                      title="Upload profile image"
                       onChange={(event) =>
                         handleImageUpload(event, setFieldValue)
                       }
@@ -315,7 +324,7 @@ const AddNewEmployeeDialog: React.FC<AddNewEmployeeDialogProps> = ({
                       className="text-red-600"
                     />
                   </Box>
-                  <Box>
+                    <Box>
                     <Typography className="text-sm text-primary">
                       Address
                     </Typography>
@@ -332,7 +341,7 @@ const AddNewEmployeeDialog: React.FC<AddNewEmployeeDialogProps> = ({
                       component="div"
                       className="text-red-600"
                     />
-                  </Box>
+                    </Box>
 
                   <Box>
                     <Typography className="text-sm text-primary">

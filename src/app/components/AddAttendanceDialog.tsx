@@ -166,14 +166,12 @@ const AddAttendanceDialog: React.FC<AddAttendanceDialogProps> = ({
       // console.log("Shift Value in useEffect:", shift); // Debug the shift value
 
      
- 
-      
+
   const handleEmployeeChange = (e: SelectChangeEvent<string>) => {
     const selectedEmployee = employees.find((emp) => emp.id === e.target.value);
     formik.setFieldValue("employeeId", e.target.value);
     formik.setFieldValue("employeeName", selectedEmployee?.name || "");
   };
-
   return (
     <Dialog
       fullWidth

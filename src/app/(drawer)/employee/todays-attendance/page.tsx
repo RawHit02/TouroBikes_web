@@ -10,18 +10,17 @@ import {
   fetchAttendanceStats,
   fetchAttendanceRecords,
 } from "@/redux/todays_attendance/attendance.actions";
-import { fetchEmployeesAction } from "@/redux/employee_management/employee_management.actions";
+import{ fetchEmployeesAction} from "@/redux/employee_management/employee_management.actions";
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
-import moment, { Moment } from "moment"; // Import Moment.js
+import moment, { Moment } from "moment";
 import { AttendanceRecordPayload } from "@/models/req-model/AttendanceModel";
 
 const TodaysAttendance = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { stats, loadingStats } = useSelector(
-    (state: RootState) => state.attendance
-  );
+  const { stats, loadingStats, records, itemCount, getAllEmployees } =
+    useSelector((state: RootState) => state.attendance);
 
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false); // Control dialog visibility
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<{
     id: string;
     employeeId: string;
@@ -31,64 +30,81 @@ const TodaysAttendance = () => {
     shift: string;
   } | null>(null);
 
-  // Fetch attendance data
-  const fetchData = useCallback(async () => {
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [page, setPage] = useState(0);
+  const [loadingRecords, setLoadingRecords] = useState(false);
+
+  const fetchStats = useCallback(async () => {
     try {
       await dispatch(fetchAttendanceStats());
+    } catch (error) {
+      console.error("Error fetching attendance stats:", error);
+    }
+  }, [dispatch]);
+
+  const fetchEmployees = useCallback(async () => {
+    try {
+      await dispatch(fetchEmployeesAction({ page: 1, take: 50 })).unwrap();
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+    }
+  }, [dispatch]);
+
+  const fetchRecords = useCallback(async () => {
+    setLoadingRecords(true);
+    try {
       await dispatch(
         fetchAttendanceRecords({
-          page: 1,
-          take: 10,
+          page: page + 1,
+          take: rowsPerPage,
         })
       );
-      await dispatch(fetchEmployeesAction({ page: 1, take: 50 }));
     } catch (error) {
-      console.error("Error fetching attendance data:", error);
+      console.error("Error fetching attendance records:", error);
+    } finally {
+      setLoadingRecords(false);
     }
-  },[dispatch]);
+  }, [dispatch, page, rowsPerPage]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchStats();
+    fetchEmployees(); // Fetch employees for dropdown
+    fetchRecords(); // Fetch attendance records
+  }, [fetchStats, fetchEmployees, fetchRecords]);
 
-  // Handle editing a record
   const handleEditRecord = (record: AttendanceRecordPayload) => {
     const employeeId =
       typeof record.employee === "string"
-        ? record.employee // If it's already a string, use it directly
-        : record.employee?.id || ""; // If it's an object, extract the ID
+        ? record.employee
+        : record.employee?.id || "";
 
     setEditRecord({
       id: record.id || "",
-      employeeId, // Correctly assign the employee ID
-      inTime: record.firstIn ? moment(record.firstIn) : null, // Convert firstIn to Moment
-      outTime: record.lastOut ? moment(record.lastOut) : null, // Convert lastOut to Moment
+      employeeId,
+      inTime: record.firstIn ? moment(record.firstIn) : null,
+      outTime: record.lastOut ? moment(record.lastOut) : null,
       status: record.status,
       shift: record.shift,
     });
     setIsEditDialogOpen(true);
   };
 
-  // Handle adding a new attendance
   const handleAddAttendance = () => {
-    setEditRecord(null); // Reset the edited record
-    setIsEditDialogOpen(true); // Open the dialog for adding
+    setEditRecord(null);
+    setIsEditDialogOpen(true);
   };
 
-  // Handle dialog close
   const handleCloseDialog = () => {
-    setIsEditDialogOpen(false); // Close the dialog
-    setEditRecord(null); // Reset the edited record
+    setIsEditDialogOpen(false);
+    setEditRecord(null);
   };
 
-  // Refresh attendance data after any updates
-  const refreshAttendance = async () => {
-    await fetchData();
+  const handleRefresh = async () => {
+    await fetchRecords();
   };
 
   return (
     <Box className="bg-white border border-[#E8EBED] rounded-xl p-6 h-[calc(100vh-116px)] overflow-auto">
-      {/* Header */}
       <Box className="flex items-center justify-between">
         <Typography className="text-2xl font-bold">
           Today&apos;s Attendance
@@ -103,7 +119,6 @@ const TodaysAttendance = () => {
         </Button>
       </Box>
 
-      {/* Stats Section */}
       <Box className="flex flex-row gap-4 mt-4">
         <Box className="rounded-2xl p-6 flex flex-col gap-4 border border-primary500">
           {loadingStats ? (
@@ -125,15 +140,23 @@ const TodaysAttendance = () => {
         </Box>
       </Box>
 
-      {/* Table Section */}
       <Box className="mt-4">
-        <AttendanceTableRecords onEditRecord={handleEditRecord} />
+        <AttendanceTableRecords
+          records={records}
+          itemCount={itemCount}
+          loading={loadingRecords}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={setPage}
+          onRowsPerPageChange={setRowsPerPage}
+          onEditRecord={handleEditRecord}
+          onDeleteRecord={() => {}}
+        />
       </Box>
 
-      {/* Add/Edit Dialog */}
       <AddAttendanceDialog
-        open={isEditDialogOpen} // Dialog visibility control
-        onClose={handleCloseDialog} // Close dialog handler
+        open={isEditDialogOpen}
+        onClose={handleCloseDialog}
         initialValues={
           editRecord || {
             id: "",
@@ -144,10 +167,9 @@ const TodaysAttendance = () => {
             shift: "",
             todaysHour: "0.00",
           }
-        } // Provide default initial values for Add Attendance
-        // initialValues={editRecord || undefined} // Pass the record to edit
-        isEditMode={Boolean(editRecord?.id)} // Indicate whether it's edit mode
-        onRecordUpdated={refreshAttendance} // Refresh data after submission
+        }
+        isEditMode={Boolean(editRecord?.id)}
+        onRecordUpdated={handleRefresh}
       />
     </Box>
   );

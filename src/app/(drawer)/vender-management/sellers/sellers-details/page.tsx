@@ -1,4 +1,6 @@
 "use client";
+
+
 import React, { useEffect, useState , Suspense } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -188,6 +190,14 @@ const SellersDetails = () => {
     setAge(event.target.value as string);
   };
 
+
+  const handleCopy = (text: string): void => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => alert("Copied to clipboard!"))
+      .catch(() => alert("Failed to copy!"));
+  };
+  
   return (
     <>
       <Box className="bg-white rounded-xl py-2 h-[calc(100vh-116px)] overflow-auto">
@@ -213,7 +223,7 @@ const SellersDetails = () => {
             />
           </Tabs>
           <Divider className="border-2 border-primaryExtraLight" />
-          
+
           <TabPanel value={value} index={0}>
             <Typography className="text-2xl font-bold mt-5">
               User Profile
@@ -263,39 +273,44 @@ const SellersDetails = () => {
                   <Box className="flex items-center gap-2">
                     <LocalPhoneIcon className="text-gray100" />
                     <Typography className="text-primary text-sm">
-                      {sellerDetails?.contactNumber}
+                      Phone Number
                     </Typography>
                   </Box>
                   <Box className="flex items-center gap-2">
                     <Typography className="text-purple100 text-sm">
-                      +91 9045896 325
+                       {sellerDetails?.contactNumber}
                     </Typography>
-                    <ContentCopyIcon className="text-gray100 text-lg" />
+                    <ContentCopyIcon
+                      className="text-gray100 text-lg cursor-pointer"
+                      onClick={() => handleCopy(sellerDetails?.contactNumber ?? "")} />
                   </Box>
                 </Box>
                 <Box className="flex items-center justify-between">
                   <Box className="flex items-center gap-2">
                     <Image src={WhatsappIcon} alt="whatsapp" />
                     <Typography className="text-primary text-sm">
-                      {sellerDetails?.whatsappNumber}
+                      {" "}
+                      WhatsApp Number
                     </Typography>
                   </Box>
                   <Box className="flex items-center gap-2">
                     <Typography className="text-purple100 text-sm">
-                      +91 9045896 325
+                       {sellerDetails?.whatsappNumber}
                     </Typography>
-                    <ContentCopyIcon className="text-gray100 text-lg" />
+                  <ContentCopyIcon
+                    className="text-gray100 text-lg cursor-pointer"
+                    onClick={() => handleCopy(sellerDetails?.whatsappNumber ?? "")} />
                   </Box>
                 </Box>
                 <Box className="flex items-center justify-between">
                   <Box className="flex items-center gap-2">
                     <Image src={AddressIcon} alt="address" />
                     <Typography className="text-primary text-sm">
-                      {sellerDetails?.address}
+                      Address
                     </Typography>
                   </Box>
                   <Typography className="text-purple100 text-sm">
-                    2337 Kildeer Drive, Kentucky, Canada
+                    {sellerDetails?.address}
                   </Typography>
                 </Box>
               </Box>

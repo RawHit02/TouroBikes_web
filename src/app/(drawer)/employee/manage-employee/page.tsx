@@ -1,4 +1,6 @@
 "use client";
+
+
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AddEmployeeDialog from "@/app/components/AddNewEmployeeDialog";
@@ -13,47 +15,39 @@ import { EmployeeManagementEmployeeModel } from "@/models/req-model/EmployeeMana
 import AddCircleOutlineOutlinedIcon from "@mui/icons-material/AddCircleOutlineOutlined";
 
 const Employees = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const [editedEmployee, setEditedEmployee] =
     useState<EmployeeFormValues | null>(null);
   const [isAddEmployeeDialogOpen, setIsAddEmployeeDialogOpen] = useState(false);
+  const [refreshEmployeeList, setRefreshEmployeeList] = useState(false);
 
-  const [isEmployeeCreated, setIsEmployeeCreated] = useState<boolean>(false);
-
-  const refreshEmployees = async () => {
-    setIsEmployeeCreated(true);
-  };
 
   const normalizeNumberForEdit = (number: string) => {
     return number.startsWith("+91") ? number.slice(3) : number;
   };
 
-  const handleEditEmployee = (employee: EmployeeManagementEmployeeModel) => {
-    setEditedEmployee({
-      id: employee.id,
-      name: employee.name,
-      phoneNumber: normalizeNumberForEdit(employee.phoneNumber),
-      email: employee.email,
-      address: employee.address,
-      employeeShift: employee.employeeShift,
-      profileImage: null,
-    });
+  const handleEditEmployee = (employee: EmployeeFormValues) => {
+    setEditedEmployee(employee);
     setIsAddEmployeeDialogOpen(true);
   };
 
   const handleAddEmployee = () => {
-    setEditedEmployee(null); // Reset edited
-    setIsAddEmployeeDialogOpen(true); // Open dialog for adding
-    setIsEmployeeCreated(false);
+    setEditedEmployee(null); 
+    setIsAddEmployeeDialogOpen(true); 
   };
+
 
   // Close dialog handler
   const handleCloseDialog = () => {
-    setIsAddEmployeeDialogOpen(false); // Close dialog
-    setEditedEmployee(null); // Reset edited data
-
-    setIsEmployeeCreated(false);
+    setIsAddEmployeeDialogOpen(false); 
+    setEditedEmployee(null); 
   };
+
+
+  const handleEmployeeCreated = () => {
+    setRefreshEmployeeList((prev) => !prev); 
+    setIsAddEmployeeDialogOpen(false); 
+  };
+
 
   return (
     <Box className="bg-white border border-[#E8EBED] rounded-xl p-6 h-[calc(100vh-116px)] overflow-auto">
@@ -76,17 +70,17 @@ const Employees = () => {
       <Box className="mt-4">
         <EmployeeManagementEmployee
           onEditEmployee={handleEditEmployee}
-          isEmployeeCreated={isEmployeeCreated}
+          refreshList={refreshEmployeeList} 
         />
       </Box>
 
       {/* Add/Edit Dialog */}
       <AddNewEmployeeDialog
-        onEmployeeCreated={refreshEmployees} // Refresh Employee after dialog submission
-        initialValues={editedEmployee || undefined} // Prefill data for edit
-        isEditMode={Boolean(editedEmployee?.id)} // Indicate edit mode
-        open={isAddEmployeeDialogOpen} // Dialog visibility control
-        onClose={handleCloseDialog} // Close dialog handler
+        onEmployeeCreated={handleEmployeeCreated} 
+        initialValues={editedEmployee || undefined} 
+        isEditMode={Boolean(editedEmployee?.id)}
+        open={isAddEmployeeDialogOpen} 
+        onClose={handleCloseDialog} 
       />
     </Box>
   );

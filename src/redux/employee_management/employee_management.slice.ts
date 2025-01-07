@@ -34,7 +34,14 @@ export const manageEmployeeManagementSlice = createSlice({
     clearAllManageEmployees: () => {
       return initialState;
     },
-  },
+     addEmployeeToList: (state, action) => {
+      state.employees.getAllEmployees = [
+        action.payload,
+        ...state.employees.getAllEmployees,
+      ];
+      state.employees.itemCount += 1; // Update item count
+    },
+  }, 
   extraReducers: (builder) => {
     // Employee Actions
     builder.addCase(createEmployee.pending, (state) => {
@@ -44,30 +51,34 @@ export const manageEmployeeManagementSlice = createSlice({
     builder.addCase(createEmployee.fulfilled, (state, action) => {
       state.employees.createEmployeeLoading = false;
       state.employees.userError = "";
-      state.employees.getAllEmployees = [
-        action.payload.data,
-        ...state.employees.getAllEmployees,
-      ];
+      // state.employees.getAllEmployees = [
+      //   action.payload.data,
+      //   ...state.employees.getAllEmployees,
+      // ];
     });
     builder.addCase(createEmployee.rejected, (state, action) => {
       state.employees.createEmployeeLoading = false;
       state.employees.userError = action.error.message;
     });
 
-    builder.addCase(getAllEmployeesAction.pending, (state) => {
-      state.employees.getAllEmployeeLoading = true;
-      state.employees.userError = "";
-    });
-    builder.addCase(getAllEmployeesAction.fulfilled, (state, action) => {
-      state.employees.getAllEmployeeLoading = false;
-      state.employees.userError = "";
-      state.employees.getAllEmployees = action.payload.data;
-      state.employees.itemCount = action.payload.itemCount;
-    });
-    builder.addCase(getAllEmployeesAction.rejected, (state, action) => {
-      state.employees.getAllEmployeeLoading = false;
-      state.employees.userError = action.error.message;
-    });
+        builder.addCase(getAllEmployeesAction.pending, (state) => {
+        state.employees.getAllEmployeeLoading = true;
+        state.employees.userError = "";
+        state.employees.getAllEmployees = []; // Clear stale data
+      });
+
+      builder.addCase(getAllEmployeesAction.fulfilled, (state, action) => {
+        state.employees.getAllEmployeeLoading = false;
+        state.employees.userError = "";
+        state.employees.getAllEmployees = action.payload.data;
+        state.employees.itemCount = action.payload.itemCount;
+      });
+
+      builder.addCase(getAllEmployeesAction.rejected, (state, action) => {
+        state.employees.getAllEmployeeLoading = false;
+        state.employees.userError = action.error.message;
+      });
+
 
     builder.addCase(editEmployeeAction.fulfilled, (state, action) => {
       const updatedEmployee = action.payload.data;

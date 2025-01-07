@@ -1,33 +1,35 @@
 import { ApiParamModel } from "../common/ApiParamModel";
 
 export interface StockManagementOutwardModel {
-  id: string;
-  // date: string;
-  stockType: string;
-  transId: string;
-  itemType: string;
-  description: string;
-  quantity: string;
-  unitPrice: string;
-  totalValue: string;
-  batchNumber: string;
-  commission: string;
-  buyerName: string;
-  location: string;
-  notes: string;
-  createdBy: string;
-  receivedBy: string;
-  createdDate: string;
+  id: any;
+  transId: string; // Transaction ID
+  stockType: string; // Specifies the type, always "outward"
+  description: string; // Description of the stock
+  quantity: string; // Quantity of stock
+  unitPrice: string; // Price per unit
+  totalValue: string; // Total value of the stock
+  commission: string; // Commission applicable
+  batchNumber: string; // Batch number
+  location: string; // Location of stock
+  notes: string; // Additional notes
+  vendor: string; // Buyer ID
+  ornament: any; // Ornament ID
+  type: string; // Ornament type ID
+  form: string; // Ornament form ID
+  purity: string; // Ornament purity ID
+  // color: string; // Ornament color ID (optional for Gold/Silver)
+  formOfGold: string; // Specific to Gold
+  formOfSilver: string;
+  diamondType: string; // Specific to Diamond
+  silverType: string; // Specific to Silver
+  cutGrade: string; // Specific to Diamond
+  clarity: string; // Specific to Diamond
+  sclarity: string; // Specific to Silver clarity
+  colorGrade: string; // Specific to Diamond
+  createdBy: string; // Created by user
+  createdDate: string; // Creation date
+  updatedDate: string; // Last updated date
   goldType: string;
-  diamondType: string;
-  clarity: string;
-  colorGrade: string;
-  issuedBy: string;
-
-  silverType: string;
-
-  updatedDate: string;
-  vendor?: string;
 }
 
 export interface InitialOutwardsModelState {
@@ -38,7 +40,6 @@ export interface InitialOutwardsModelState {
   createOutwardRes: string;
   createOutwardLoading: boolean;
   getAllOutwardLoading: boolean;
- // selectedSupplierId: null;
 }
 
 export interface GetAllOutwardsRequest extends ApiParamModel {
@@ -46,24 +47,21 @@ export interface GetAllOutwardsRequest extends ApiParamModel {
 }
 
 export interface CreateStockOutwardPayload {
-  stockType: string; // Required
-  transId: string; // Required
-  description: string; // Required
-  itemType: string; // Required
-  quantity: string; // Required
-  unitPrice: string; // Required
-  commission: string; // Required
-  totalValue: string; // Required
-  batchNumber: string; // Required
-  receivedBy: string; // Required
-  issuedBy: string; // Required
-  goldType: string; // Required
-  diamondType: string; // Required
-  clarity: string; // Required
-  colorGrade: string; // Required
-  silverType: string; // Required
-  buyerName?: string; // Optional
-  location: string; // Required
-  notes: string; // Optional
-  vendor?: string; // Optional
+  stockType: string; // Must be "outward"
+  transId: string; // Transaction ID
+  description: string; // Stock description
+  quantity: string; // Quantity of stock
+  unitPrice: string; // Price per unit
+  totalValue: string; // Total stock value
+  commission: string; // Commission amount
+  batchNumber: string; // Batch number
+  location: string; // Stock location
+  notes: string; // Optional notes
+  vendor: string; // Buyer ID
+  ornament: any; // Ornament ID
+  type: string; // Ornament type ID
+  form: string; // Ornament form ID
+  purity: string; // Ornament purity ID
+  // color: string; // Optional for Gold/Silver
+  // cutGrade: string; // Optional for Diamond
 }

@@ -15,6 +15,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
+import DeleteDialog from "./DeleteDialog";
+
 import {
   DeleteRed,
   DummyProfile,
@@ -24,7 +26,7 @@ import {
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { GetAllInwardsRequest } from "@/models/req-model/StockManagementInwardModel";
+import { CreateStockInwardPayload, GetAllInwardsRequest } from "@/models/req-model/StockManagementInwardModel";
 import {
   deleteInwardAction,
   getAllInwardsAction,
@@ -45,13 +47,14 @@ const headCellsInward = [
   { field: "commission", headerName: "Commission", sortable: true },
   { field: "totalValue", headerName: "Total Value", sortable: true },
   { field: "batchNo", headerName: "Batch No.", sortable: true },
-  { field: "receivedBy", headerName: "Received By", sortable: true },
+  // { field: "receivedBy", headerName: "Received By", sortable: true },
   { field: "location", headerName: "Location", sortable: true },
   { field: "notes", headerName: "Notes", sortable: true },
 ];
 
 const StockManagementInward = ({
   onEditInward,
+  // onDeleteRecord,
 }: {
   onEditInward: (row: StockManagementInwardModel) => void;
 }) => {
@@ -66,6 +69,7 @@ const StockManagementInward = ({
   const { getAllInwards, itemCount } = useAppSelector(
     (state) => state.stockManagement.inwards
   );
+  const [openDelete, setOpenDelete] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -186,17 +190,28 @@ const StockManagementInward = ({
                     </Typography>
                   </TableCell>
                   <TableCell>{row.createdDate}</TableCell>
-                  <TableCell>{row.supplierName || "N/A"}</TableCell>{" "}
+                  <TableCell>
+                    {typeof row.vendor === "object" &&
+                    (row.vendor as { name: string })?.name
+                      ? (row.vendor as { name: string }).name
+                      : "N/A"}
+                  </TableCell>
                   <TableCell>{row.description}</TableCell>
-                  <TableCell>{row.itemType}</TableCell>
+                  <TableCell>
+                    {typeof row.ornament === "object" &&
+                    (row.ornament as { ornamentName: string })?.ornamentName
+                      ? (row.ornament as { ornamentName: string }).ornamentName
+                      : "N/A"}
+                  </TableCell>
                   <TableCell>{row.quantity}</TableCell>
                   <TableCell>{row.unitPrice}</TableCell>
                   <TableCell>{row.commission}</TableCell>
                   <TableCell>{row.totalValue}</TableCell>
                   <TableCell>{row.batchNumber}</TableCell>
-                  <TableCell>{row.receivedBy}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.notes}</TableCell>
+
+                  {/* <TableCell>{row.receivedBy}</TableCell> */}
                   <TableCell>
                     <IconButton
                       onClick={(event) => handleClickMenu(event, row.id)}
