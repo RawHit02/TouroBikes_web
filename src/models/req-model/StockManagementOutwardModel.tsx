@@ -7,8 +7,8 @@ export interface StockManagementOutwardModel {
   description: string; // Description of the stock
   quantity: string; // Quantity of stock
   unitPrice: string; // Price per unit
-  totalValue: string; // Total value of the stock
-  commission: string; // Commission applicable
+  totalPrice: any; // Total value of the stock
+  commissionRate: string; // Commission applicable
   batchNumber: string; // Batch number
   location: string; // Location of stock
   notes: string; // Additional notes
@@ -18,8 +18,7 @@ export interface StockManagementOutwardModel {
   form: any; // Ornament form ID
   purity: any; // Ornament purity ID
   color: any; // Ornament color ID (optional for Gold/Silver)
-  // cut : string;
-  grade : any;
+  grade: any;
   formOfGold: any; // Specific to Gold
   formOfSilver: any;
   diamondType: any; // Specific to Diamond
@@ -32,6 +31,12 @@ export interface StockManagementOutwardModel {
   createdDate: string; // Creation date
   updatedDate: string; // Last updated date
   goldType: any;
+  paymentStatus: string;
+  paymentMethod : string;
+  amountPaid: string;
+  baseTotal: any;
+  commissionValue: any;
+  balanceDue: any;
 }
 
 export interface InitialOutwardsModelState {
@@ -54,8 +59,8 @@ export interface CreateStockOutwardPayload {
   description: string; // Stock description
   quantity: string; // Quantity of stock
   unitPrice: string; // Price per unit
-  totalValue: string; // Total stock value
-  commission: string; // Commission amount
+  totalPrice: any; // Total stock value
+  commissionRate: string; // Commission amount
   batchNumber: string; // Batch number
   location: string; // Stock location
   notes: string; // Optional notes
@@ -66,4 +71,11 @@ export interface CreateStockOutwardPayload {
   purity: any; // Ornament purity ID
   color: any; // Optional for Gold/Silver
   grade: any; // Optional for Diamond
+paymentStatus : string ;
+   amountPaid : string; 
+    paymentMethod : string;
+
+  baseTotal: any;
+  commissionValue: any;
+  balanceDue: any;
 }

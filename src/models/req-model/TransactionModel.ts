@@ -33,14 +33,15 @@ export interface TransactionData {
   description: string;
   quantity: number;
   unitPrice: number;
-  // baseTotal: number;
-  commission: number;
-  // commissionValue : number ;
-  totalValue: number;
+  baseTotal: number;
+  commissionRate: number;
+  commissionValue : number ;
+  totalPrice: number;
   notes: string;
   createdDate: string;
   amountPaid: number;
   balanceDue: number;
   paymentStatus: string;
-  paymentType: string;
+  paymentMethod : string;
+  // paymentType: string;
 }

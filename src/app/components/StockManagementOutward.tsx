@@ -27,6 +27,7 @@ import {
   getAllOutwardsAction,
 } from "@/redux/stock_management/stock_management.actions";
 import { StockManagementOutwardModel } from "@/models/req-model/StockManagementOutwardModel";
+import moment from "moment";
 
 const ITEM_HEIGHT = 48;
 
@@ -37,7 +38,7 @@ const headCellsOutward = [
   { field: "description", headerName: "Description", sortable: true },
   { field: "itemType", headerName: "Item Type", sortable: true },
   { field: "quantity", headerName: "Qty.", sortable: true },
-  { field: "commission", headerName: "Commission", sortable: true },
+  { field: "commissionRate", headerName: "Commission Rate", sortable: true },
   { field: "unitPrice", headerName: "Unit Price", sortable: true },
   { field: "totalValue", headerName: "Total Value", sortable: true },
   { field: "batchNumber", headerName: "Batch No.", sortable: true },
@@ -190,7 +191,7 @@ const StockManagementOutward = ({
                       {row.transId}
                     </Typography>
                   </TableCell>
-                  <TableCell>{row.createdDate}</TableCell>
+                  {row.createdDate ? moment(row.createdDate).format("DD MMM YYYY, h:mm A") : "N/A"}
                   <TableCell>
                     {typeof row.vendor === "object" &&
                     (row.vendor as { name: string })?.name
@@ -205,9 +206,9 @@ const StockManagementOutward = ({
                       : "N/A"}
                   </TableCell>
                   <TableCell>{row.quantity}</TableCell>
-                  <TableCell>{row.commission}</TableCell>
+                  <TableCell>{row.commissionRate}</TableCell>
                   <TableCell>{row.unitPrice}</TableCell>
-                  <TableCell>{row.totalValue}</TableCell>
+                  <TableCell>{row.totalPrice}</TableCell>
                   <TableCell>{row.batchNumber}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.notes}</TableCell>

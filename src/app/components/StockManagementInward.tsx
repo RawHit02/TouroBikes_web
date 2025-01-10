@@ -16,6 +16,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
 import DeleteDialog from "./DeleteDialog";
+import moment from "moment";
 
 import {
   DeleteRed,
@@ -46,9 +47,12 @@ const headCellsInward = [
   { field: "description", headerName: "Description", sortable: true },
   { field: "itemType", headerName: "Item Type", sortable: true },
   { field: "quantity", headerName: "Qty", sortable: true },
-  { field: "unitPrice", headerName: "Unit Price", sortable: true },
-  { field: "commission", headerName: "Commission", sortable: true },
-  { field: "totalValue", headerName: "Total Value", sortable: true },
+  { field: "unitPrice", headerName: "Base Price Per/Unit", sortable: true },
+  // { field: "baseTotal", headerName: "Base Total", sortable: true },
+  { field: "commissionRate", headerName: "Commission Rate", sortable: true },
+  // { field: "commissionValue", headerName: "Commission Value", sortable: true },
+  { field: "totalValue", headerName: "Total Price", sortable: true },
+  // { field: "amountPaid", headerName: "Amount Paid", sortable: true },
   { field: "batchNo", headerName: "Batch No.", sortable: true },
   { field: "location", headerName: "Location", sortable: true },
   { field: "notes", headerName: "Notes", sortable: true },
@@ -192,7 +196,9 @@ const StockManagementInward = ({
                       {row.transId}
                     </Typography>
                   </TableCell>
-                  <TableCell>{row.createdDate}</TableCell>
+                <TableCell>
+                  {row.createdDate ? moment(row.createdDate).format("DD MMM YYYY, h:mm A") : "N/A"}
+                </TableCell>
                   <TableCell>
                     {typeof row.vendor === "object" &&
                     (row.vendor as { name: string })?.name
@@ -208,8 +214,10 @@ const StockManagementInward = ({
                   </TableCell>
                   <TableCell>{row.quantity}</TableCell>
                   <TableCell>{row.unitPrice}</TableCell>
-                  <TableCell>{row.commission}</TableCell>
-                  <TableCell>{row.totalValue}</TableCell>
+                  {/* <TableCell>{row.baseTotal}</TableCell> */}
+                  <TableCell>{row.commissionRate}</TableCell>
+                  {/* <TableCell>{row.commissionValue}</TableCell> */}
+                  <TableCell>{row.totalPrice}</TableCell>
                   <TableCell>{row.batchNumber}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.notes}</TableCell>

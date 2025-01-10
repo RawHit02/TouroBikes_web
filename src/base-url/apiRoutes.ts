@@ -86,6 +86,13 @@ export const GET_ATTENDANCE_RECORDS = `${BASE_URL}/attendanceManagement/getAtten
 export const UPDATE_ATTENDANCE_RECORD = `${BASE_URL}/attendanceManagement/updateAttendance`;
 export const DELETE_ATTENDANCE_RECORD = `${BASE_URL}/attendanceManagement/deleteAttendance`;
 
+
+// Dashboard Management
+export const GET_DASHBOARD = `${BASE_URL}/dashboardManagement/dashboard`; 
+export const GET_DUES = `${BASE_URL}/dashboardManagement/getDues`;
+
+
+
 // Sass Loader Configuration
 export const sassLoaderOptions = {
   implementation: require('sass'),

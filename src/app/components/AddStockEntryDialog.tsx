@@ -115,6 +115,7 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
     : (selectedOrnamentName === "Gold" && outwardStockSchemaGold) ||
       (selectedOrnamentName === "Silver" && outwardStockSchemaSilver) ||
       (selectedOrnamentName === "Diamond" && outwardStockSchemaDiamond);
+      
 
   const [purityOptions, setPurityOptions] = useState([...ornamentPurities]);
   const [typeOptions, setTypeOptions] = useState([...ornamentTypes]);
@@ -128,6 +129,47 @@ const AddStockEntryDialog: React.FC<AddStockEntryDialogProps> = (props) => {
   const [silverTypeOptions, setSilverTypeOptions] = useState([
     ...ornamentTypes,
   ]);
+
+  const handleBaseTotalCalculation = (quantity: string, unitPrice: string) => {
+    const qty = parseFloat(quantity) || 0;
+    const price = parseFloat(unitPrice) || 0;
+    return qty * price;
+  };
+
+  const handleCommissionValueCalculation = (baseTotal: string , commissionRate : string ) => {
+    const btotal = parseFloat(baseTotal) || 0;
+    const commrate = parseFloat(commissionRate) || 0;
+    return (btotal * commrate)/100 ;
+  };
+
+
+  const handleTotalPriceCalculation = (
+    baseTotal: string,
+    commissionValue: string
+  )   => {
+    const btotal = parseFloat(baseTotal) || 0;
+    const commValue = parseFloat(commissionValue) || 0;
+    return btotal + commValue ; // Total Price = Base Total + Commission Value
+  };
+
+
+ const handleBalanceDueCalculation = (
+  totalPrice: string,
+  amountPaid: string
+) => {
+  const tPrice = parseFloat(totalPrice) || 0;
+  const amtPaid = parseFloat(amountPaid) || 0;
+  return tPrice - amtPaid; // Ensure balanceDue is never negative
+};
+
+  //  useEffect(() => {
+  //   setBaseTotal(
+  //     handleBaseTotalCalculation(
+  //       props.initialValues?.quantity || "0",
+  //       props.initialValues?.unitPrice || "0"
+  //     )
+  //   );
+  // }, [props.initialValues?.quantity, props.initialValues?.unitPrice]);
 
   interface CustomErrorMessageProps {
     name: string;
@@ -264,8 +306,8 @@ useEffect(() => {
         description: values.description.toString() || "",
         quantity: values.quantity?.toString() || "",
         unitPrice: values.unitPrice?.toString() || "",
-        totalValue: values.totalValue?.toString() || "",
-        commission: values.commission?.toString() || "", // Commission only for outward
+        // totalPrice: values.totalPrice|| "",
+        commissionRate: values.commissionRate?.toString() || "", // Commission only for outward
         batchNumber: values.batchNumber?.toString() || "",
         location: values.location?.toString() || "",
         notes: values.notes?.toString() || "",
@@ -276,9 +318,33 @@ useEffect(() => {
         purity: values.purity || values.clarity || values.sclarity || "", // Purity based on stock type
         color: values.colorGrade || "", // Optional for diamond
         grade: values.cutGrade?.toString() || "", // Optional for diamond
+        amountPaid: values.amountPaid?.toString() || "", // Ensure this field is included
+        paymentStatus : values.paymentStatus?.toString() || "",
+        paymentMethod : values.paymentMethod?.toString() || "",
+
+        baseTotal: handleBaseTotalCalculation(
+          values.quantity,
+          values.unitPrice
+        ),
+        commissionValue: handleCommissionValueCalculation(
+          values.baseTotal,
+          values.commissionRate
+        ),
+
+        totalPrice: handleTotalPriceCalculation(
+          values.baseTotal,
+          values.commissionValue
+        ),
+
+        balanceDue: handleBalanceDueCalculation(
+          values.totalPrice,
+          values.amountPaid
+        ),
+
+        
       };
 
-      // console.log("Constructed payload before filtering:", payload);
+      console.log("Constructed payload before filtering:", payload);
 
       // Filter out undefined fields to avoid sending unnecessary data
       const filteredPayload = Object.fromEntries(
@@ -289,7 +355,7 @@ useEffect(() => {
 
       // Dispatch the appropriate Redux action
       if (props.isEditMode && props.initialValues?.id) {
-        // console.log("Edit mode detected. Sending update request...", values);
+         console.log("Edit mode detected. Sending update request...", values);
         if (props.stock) {
           console.log("Updating inward stock...");
           await dispatch(
@@ -370,18 +436,15 @@ useEffect(() => {
       <DialogTitle className="flex items-start justify-between px-9 pt-9 pb-6">
         <Box>
           <Typography className="text-2xl leading-6 font-semibold">
-            {" "}
-            Add New Stock{" "}
+            Add New Stock
           </Typography>
           <Typography className="text-secondary800 mt-2">
-            {" "}
-            Enter details of new stock{" "}
+            Enter details of new stock
           </Typography>
         </Box>
         <IconButton onClick={props.onClose} className="p-0">
-          {" "}
-          <CloseOutlinedIcon />{" "}
-        </IconButton>{" "}
+          <CloseOutlinedIcon />
+        </IconButton>
       </DialogTitle>
       <Formik
         initialValues={{
@@ -390,9 +453,8 @@ useEffect(() => {
           transId: props.initialValues?.transId || "default-trans-id",
           description: props.initialValues?.description || "",
           quantity: props.initialValues?.quantity?.toString() || "", // Convert to string
-          unitPrice: props.initialValues?.unitPrice?.toString() || "", // Convert to string
-          totalValue: props.initialValues?.totalValue?.toString() || "", // Convert to string
-          commission: props.initialValues?.commission?.toString() || "", // Convert for outward
+          // totalPrice: props.initialValues?.totalPrice?.toString() || "", // Convert to string
+          commissionRate: props.initialValues?.commissionRate?.toString() || "", // Convert for outward
           batchNumber: props.initialValues?.batchNumber || "",
           location: props.initialValues?.location || "",
           notes: props.initialValues?.notes || "",
@@ -412,6 +474,65 @@ useEffect(() => {
           color: props.initialValues?.color?.id || "",
           form: props.initialValues?.form?.id || "",
           type: props.initialValues?.type?.id || "",
+          unitPrice: props.initialValues?.unitPrice?.toString() || "", // Convert to string
+
+          paymentMethod: props.initialValues?.paymentMethod?.toString() || "",
+
+
+          paymentStatus: props.initialValues?.paymentStatus?.toString() || "",
+
+          amountPaid: props.initialValues?.amountPaid?.toString() || "", // Ensure this is re-initialized
+
+          totalPrice:
+            props.initialValues?.quantity &&
+            props.initialValues?.unitPrice &&
+            props.initialValues?.commissionRate
+              ? handleTotalPriceCalculation(
+                  (
+                    parseFloat(props.initialValues.quantity) *
+                    parseFloat(props.initialValues.unitPrice)
+                  ).toString(),
+                  handleCommissionValueCalculation(
+                    (
+                      parseFloat(props.initialValues.quantity) *
+                      parseFloat(props.initialValues.unitPrice)
+                    ).toString(),
+                    props.initialValues.commissionRate
+                  ).toString()
+                ).toString()
+              : "",
+
+          baseTotal:
+            props.initialValues?.quantity && props.initialValues?.unitPrice
+              ? (
+                  parseFloat(props.initialValues.quantity) *
+                  parseFloat(props.initialValues.unitPrice)
+                ).toString()
+              : "",
+
+          balanceDue:
+            props.initialValues?.totalPrice && props.initialValues?.amountPaid
+              ? (
+                  parseFloat(props.initialValues.totalPrice) -
+                  parseFloat(props.initialValues.amountPaid)
+                ).toString()
+              : "",
+
+          commissionValue:
+            props.initialValues?.quantity &&
+            props.initialValues?.unitPrice &&
+            props.initialValues?.commissionRate
+              ? handleCommissionValueCalculation(
+                  (
+                    parseFloat(props.initialValues.quantity) *
+                    parseFloat(props.initialValues.unitPrice)
+                  ).toString(),
+                  props.initialValues.commissionRate
+                ).toString()
+              : "",
+
+          // totalPrice: props.initialValues?.totalPrice || "",
+
           createdBy: props.initialValues?.createdBy || "default-user", // Provide default value
           createdDate:
             props.initialValues?.createdDate || new Date().toISOString(), // Default to current date
@@ -422,7 +543,14 @@ useEffect(() => {
         onSubmit={handleSubmit}
         enableReinitialize
       >
-        {({ errors, values, touched, handleChange, handleBlur }) => (
+        {({
+          errors,
+          values,
+          touched,
+          handleChange,
+          handleBlur,
+          setFieldValue,
+        }) => (
           <Form>
             <DialogContent className="px-9">
               <Box sx={{ width: "100%" }}>
@@ -641,23 +769,6 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Quantity
-                          </Typography>
-                          <Field
-                            name="quantity"
-                            as={OutlinedInput}
-                            error={touched.quantity && Boolean(errors.quantity)}
-                            fullWidth
-                            placeholder="Enter quantity"
-                            value={values.quantity || ""} // Fallback to empty string
-                          />
-                          <CustomErrorMessage name="quantity" />
-                        </Box>
-                      </Grid>
-
-                      <Grid item xs={6}>
-                        <Box>
-                          <Typography className="text-sm text-primary mb-1">
                             Purity (Karat Rating)
                           </Typography>
                           <Field
@@ -695,7 +806,7 @@ useEffect(() => {
                                     id: string;
                                     ornamentPurity: string;
                                   }) => {
-                                    // console.log("commission", values.commission);
+                                    // console.log("commission", values.commissionRate);
                                     return (
                                       <MenuItem
                                         key={purity.id}
@@ -747,19 +858,55 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Description
+                            Quantity
                           </Typography>
-                          <Field
-                            name="description"
-                            error={
-                              touched.description && Boolean(errors.description)
-                            }
-                            as={OutlinedInput}
+                          <OutlinedInput
+                            name="quantity"
+                            value={values.quantity || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newQuantity = e.target.value;
+                              setFieldValue("quantity", newQuantity); // Update Formik's state
+                              const newBaseTotal = handleBaseTotalCalculation(
+                                newQuantity,
+                                values.unitPrice
+                              );
+                              setFieldValue(
+                                "baseTotal",
+                                newBaseTotal.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  newBaseTotal.toString(),
+                                  values.commissionRate
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                newBaseTotal.toString(),
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
+                            error={touched.quantity && Boolean(errors.quantity)}
                             fullWidth
-                            placeholder="Enter description "
-                            value={values.description || ""} // Fallback to empty string
+                            placeholder="Enter quantity"
                           />
-                          <CustomErrorMessage name="description" />
+                          <CustomErrorMessage name="quantity" />
                         </Box>
                       </Grid>
 
@@ -768,15 +915,53 @@ useEffect(() => {
                           <Typography className="text-sm text-primary mb-1">
                             Unit Price
                           </Typography>
-                          <Field
+                          <OutlinedInput
                             name="unitPrice"
-                            as={OutlinedInput}
+                            value={values.unitPrice || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newUnitPrice = e.target.value;
+                              setFieldValue("unitPrice", newUnitPrice); // Update Formik's state
+                              const newBaseTotal = handleBaseTotalCalculation(
+                                values.quantity,
+                                newUnitPrice.toString()
+                              );
+                              setFieldValue(
+                                "baseTotal",
+                                newBaseTotal.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  newBaseTotal.toString(),
+                                  values.commissionRate
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                newBaseTotal.toString(),
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
                             error={
                               touched.unitPrice && Boolean(errors.unitPrice)
                             }
                             fullWidth
                             placeholder="Enter unit price"
-                            value={values.unitPrice || ""} // Fallback to empty string
                           />
                           <CustomErrorMessage name="unitPrice" />
                         </Box>
@@ -785,36 +970,182 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Total Value
+                            Base Total (Calc...)
                           </Typography>
-                          <Field
-                            name="totalValue"
-                            error={
-                              touched.totalValue && Boolean(errors.totalValue)
-                            }
-                            as={OutlinedInput}
+                          <OutlinedInput
+                            name="baseTotal"
+                            value={values.baseTotal || ""}
                             fullWidth
-                            placeholder="Enter total value"
-                            value={values.totalValue || ""} // Fallback to empty string
+                            readOnly
+                            placeholder="Calc... base total"
+                            onChange={() => {
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                values.commissionValue
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
                           />
-                          <CustomErrorMessage name="totalValue" />
                         </Box>
                       </Grid>
 
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Location
+                            Commission Rate (%)
                           </Typography>
-                          <Field
-                            name="location"
-                            as={OutlinedInput}
-                            error={touched.location && Boolean(errors.location)}
+                          <OutlinedInput
+                            name="commissionRate"
+                            value={values.commissionRate || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newCommission = e.target.value;
+                              setFieldValue(
+                                "commissionRate",
+                                newCommission.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  values.baseTotal,
+                                  newCommission.toString()
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
+                            error={
+                              touched.commissionRate && Boolean(errors.commissionRate)
+                            }
                             fullWidth
-                            placeholder="Enter location"
-                            value={values.location || ""} // Fallback to empty string
+                            placeholder="Enter commission rate (%)"
                           />
-                          <CustomErrorMessage name="location" />
+                          <CustomErrorMessage name="commissionRate" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Commission Value (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="commissionValue"
+                            value={values.commissionValue || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... commission value"
+                            onChange={() => {
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                values.commissionValue
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                          />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Total Price (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="totalPrice"
+                            value={values.totalPrice || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... total price"
+                          />
+                          <CustomErrorMessage name="totalPrice" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Amount Paid
+                          </Typography>
+                          <OutlinedInput
+                            name="amountPaid"
+                            value={values.amountPaid || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newAmountPaid = e.target.value;
+                              // console.log("Amount Paid Input: ", newAmountPaid);
+                              setFieldValue("amountPaid", newAmountPaid); // Update Formik's state for Amount Paid
+                              const newBalanceDue = handleBalanceDueCalculation(
+                                values.totalPrice,
+                                newAmountPaid
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                newBalanceDue.toString()
+                              ); // Update Balance Due
+                            }}
+                            onBlur={handleBlur}
+                            error={
+                              touched.amountPaid && Boolean(errors.amountPaid)
+                            }
+                            fullWidth
+                            placeholder="Enter amount paid"
+                          />
+                          <CustomErrorMessage name="amountPaid" />
+                        </Box>
+                      </Grid>
+
+                      {/* Balance Due Field */}
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Balance Due (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="balanceDue"
+                            value={values.balanceDue || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... balance due"
+                          />
                         </Box>
                       </Grid>
 
@@ -834,6 +1165,23 @@ useEffect(() => {
                             value={values.batchNumber || ""} // Fallback to empty string
                           />
                           <CustomErrorMessage name="batchNumber" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Location
+                          </Typography>
+                          <Field
+                            name="location"
+                            as={OutlinedInput}
+                            error={touched.location && Boolean(errors.location)}
+                            fullWidth
+                            placeholder="Enter location"
+                            value={values.location || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="location" />
                         </Box>
                       </Grid>
 
@@ -885,7 +1233,6 @@ useEffect(() => {
                               </MenuItem>
                             )}
                           </Field>
-
                           <CustomErrorMessage name="vendor" />
                         </Box>
                       </Grid>
@@ -893,21 +1240,77 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Commission
+                            Payment Status
+                          </Typography>
+                          <Select
+                            name="paymentStatus"
+                            value={values.paymentStatus || ""} // Default to "Remaining"
+                            onChange={(e) => {
+                              const newPaymentStatus = e.target.value;
+                              setFieldValue("paymentStatus", newPaymentStatus); // Update Formik state
+                            }}
+                            fullWidth
+                            displayEmpty
+                          >
+                            <MenuItem value="" disabled>
+                              Select Payment Status
+                            </MenuItem>
+                            <MenuItem value="Partial">Partial</MenuItem>
+                            <MenuItem value="Completed">Completed</MenuItem>
+                            <MenuItem value="Remaining">Remaining</MenuItem>
+                          </Select>
+                          <CustomErrorMessage name="paymentStatus" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                      <Box>
+                        <Typography className="text-sm text-primary mb-1">
+                          Payment Method
+                        </Typography>
+                        <Select
+                          name="paymentMethod"
+                          value={values.paymentMethod || ""} // Default to an empty string
+                          onChange={(e) => {
+                            const newPaymentMethod = e.target.value;
+                            setFieldValue("paymentMethod", newPaymentMethod); // Update Formik state
+                          }}
+                          fullWidth
+                          displayEmpty
+                        >
+                          <MenuItem value="" disabled>
+                            Select Payment Method
+                          </MenuItem>
+                          <MenuItem value="UPI">UPI</MenuItem>
+                          <MenuItem value="Cash">Cash</MenuItem>
+                          <MenuItem value="NEFT">NEFT</MenuItem>
+                          <MenuItem value="Cheque">Cheque</MenuItem>
+                          <MenuItem value="Credit Card">Credit Card</MenuItem>
+                          <MenuItem value="Debit Card">Debit Card</MenuItem>
+                        </Select>
+                          <CustomErrorMessage name="paymentMethod" />
+                      </Box>
+                    </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Description
                           </Typography>
                           <Field
-                            name="commission"
+                            name="description"
                             error={
-                              touched.commission && Boolean(errors.commission)
+                              touched.description && Boolean(errors.description)
                             }
                             as={OutlinedInput}
                             fullWidth
-                            placeholder="Enter commission"
-                            value={values.commission || ""} // Fallback to empty string
+                            placeholder="Enter description "
+                            value={values.description || ""} // Fallback to empty string
                           />
-                          <CustomErrorMessage name="commission" />
+                          <CustomErrorMessage name="description" />
                         </Box>
                       </Grid>
+
                       <Grid item xs={12}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
@@ -1005,25 +1408,6 @@ useEffect(() => {
                             </MenuItem>
                           </Field>
                           <CustomErrorMessage name="diamondType" />
-                        </Box>
-                      </Grid>
-
-                      <Grid item xs={6}>
-                        <Box>
-                          <Typography className="text-sm text-primary mb-1">
-                            Description{" "}
-                          </Typography>
-                          <Field
-                            name="description"
-                            error={
-                              touched.description && Boolean(errors.description)
-                            }
-                            as={OutlinedInput}
-                            fullWidth
-                            placeholder="e.g., 1.50"
-                            value={values.description || ""} // Fallback to empty string
-                          />
-                          <CustomErrorMessage name="description" />
                         </Box>
                       </Grid>
 
@@ -1263,34 +1647,53 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Unit Price
-                          </Typography>
-                          <Field
-                            name="unitPrice"
-                            as={OutlinedInput}
-                            error={
-                              touched.unitPrice && Boolean(errors.unitPrice)
-                            }
-                            fullWidth
-                            placeholder="Enter unit price"
-                            value={values.unitPrice || ""} // Fallback to empty string
-                          />
-                          <CustomErrorMessage name="unitPrice" />
-                        </Box>
-                      </Grid>
-
-                      <Grid item xs={6}>
-                        <Box>
-                          <Typography className="text-sm text-primary mb-1">
                             Quantity
                           </Typography>
-                          <Field
+                          <OutlinedInput
                             name="quantity"
-                            as={OutlinedInput}
+                            value={values.quantity || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newQuantity = e.target.value;
+                              setFieldValue("quantity", newQuantity); // Update Formik's state
+                              const newBaseTotal = handleBaseTotalCalculation(
+                                newQuantity,
+                                values.unitPrice
+                              );
+                              setFieldValue(
+                                "baseTotal",
+                                newBaseTotal.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  newBaseTotal.toString(),
+                                  values.commissionRate
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                newBaseTotal.toString(),
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
                             error={touched.quantity && Boolean(errors.quantity)}
                             fullWidth
                             placeholder="Enter quantity"
-                            value={values.quantity || ""} // Fallback to empty string
                           />
                           <CustomErrorMessage name="quantity" />
                         </Box>
@@ -1299,35 +1702,239 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Total Value
+                            Unit Price
                           </Typography>
-                          <Field
-                            name="totalValue"
-                            as={OutlinedInput}
+                          <OutlinedInput
+                            name="unitPrice"
+                            value={values.unitPrice || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newUnitPrice = e.target.value;
+                              setFieldValue("unitPrice", newUnitPrice); // Update Formik's state
+                              const newBaseTotal = handleBaseTotalCalculation(
+                                values.quantity,
+                                newUnitPrice.toString()
+                              );
+                              setFieldValue(
+                                "baseTotal",
+                                newBaseTotal.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  newBaseTotal.toString(),
+                                  values.commissionRate
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                newBaseTotal.toString(),
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
                             error={
-                              touched.totalValue && Boolean(errors.totalValue)
+                              touched.unitPrice && Boolean(errors.unitPrice)
                             }
                             fullWidth
-                            placeholder="Enter total value"
-                            value={values.totalValue || ""} // Fallback to empty string
+                            placeholder="Enter unit price"
                           />
-                          <CustomErrorMessage name="totalValue" />
+                          <CustomErrorMessage name="unitPrice" />
                         </Box>
                       </Grid>
+
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Location
+                            Base Total (Calc...)
                           </Typography>
-                          <Field
-                            name="location"
-                            as={OutlinedInput}
-                            error={touched.location && Boolean(errors.location)}
+                          <OutlinedInput
+                            name="baseTotal"
+                            value={values.baseTotal || ""}
                             fullWidth
-                            placeholder="Enter location"
-                            value={values.location || ""} // Fallback to empty string
+                            readOnly
+                            placeholder="Calc... base total"
+                            onChange={() => {
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                values.commissionValue
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
                           />
-                          <CustomErrorMessage name="location" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Commission Rate (%)
+                          </Typography>
+                          <OutlinedInput
+                            name="commissionRate"
+                            value={values.commissionRate || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newCommission = e.target.value;
+                              setFieldValue(
+                                "commissionRate",
+                                newCommission.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  values.baseTotal,
+                                  newCommission.toString()
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
+                            error={
+                              touched.commissionRate && Boolean(errors.commissionRate)
+                            }
+                            fullWidth
+                            placeholder="Enter commission rate (%)"
+                          />
+                          <CustomErrorMessage name="commissionRate" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Commission Value (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="commissionValue"
+                            value={values.commissionValue || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... commission value"
+                            onChange={() => {
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                values.commissionValue
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                          />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Total Price (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="totalPrice"
+                            value={values.totalPrice || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... total price"
+                          />
+                          <CustomErrorMessage name="totalPrice" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Amount Paid
+                          </Typography>
+                          <OutlinedInput
+                            name="amountPaid"
+                            value={values.amountPaid || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newAmountPaid = e.target.value;
+                              // console.log("Amount Paid Input: ", newAmountPaid);
+                              setFieldValue("amountPaid", newAmountPaid); // Update Formik's state for Amount Paid
+                              const newBalanceDue = handleBalanceDueCalculation(
+                                values.totalPrice,
+                                newAmountPaid
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                newBalanceDue.toString()
+                              ); // Update Balance Due
+                            }}
+                            onBlur={handleBlur}
+                            error={
+                              touched.amountPaid && Boolean(errors.amountPaid)
+                            }
+                            fullWidth
+                            placeholder="Enter amount paid"
+                          />
+                          <CustomErrorMessage name="amountPaid" />
+                        </Box>
+                      </Grid>
+
+                      {/* Balance Due Field */}
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Balance Due (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="balanceDue"
+                            value={values.balanceDue || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... balance due"
+                          />
                         </Box>
                       </Grid>
 
@@ -1347,6 +1954,23 @@ useEffect(() => {
                             value={values.batchNumber || ""} // Fallback to empty string
                           />
                           <CustomErrorMessage name="batchNumber" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Location
+                          </Typography>
+                          <Field
+                            name="location"
+                            as={OutlinedInput}
+                            error={touched.location && Boolean(errors.location)}
+                            fullWidth
+                            placeholder="Enter location"
+                            value={values.location || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="location" />
                         </Box>
                       </Grid>
 
@@ -1397,7 +2021,6 @@ useEffect(() => {
                               </MenuItem>
                             )}
                           </Field>
-
                           <CustomErrorMessage name="vendor" />
                         </Box>
                       </Grid>
@@ -1405,23 +2028,79 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Commission
+                            Payment Status
                           </Typography>
-                          <Field
-                            name="commission"
-                            as={OutlinedInput}
-                            error={
-                              touched.commission && Boolean(errors.commission)
-                            }
+                          <Select
+                            name="paymentStatus"
+                            value={values.paymentStatus || ""} // Default to "Remaining"
+                            onChange={(e) => {
+                              const newPaymentStatus = e.target.value;
+                              setFieldValue("paymentStatus", newPaymentStatus); // Update Formik state
+                            }}
                             fullWidth
-                            placeholder="Enter commission"
-                            value={values.commission || ""} // Fallback to empty string
-                          />
-                          <CustomErrorMessage name="commission" />
+                            displayEmpty
+                          >
+                            <MenuItem value="" disabled>
+                              Select Payment Status
+                            </MenuItem>
+                            <MenuItem value="Partial">Partial</MenuItem>
+                            <MenuItem value="Completed">Completed</MenuItem>
+                            <MenuItem value="Remaining">Remaining</MenuItem>
+                          </Select>
+                          <CustomErrorMessage name="paymentStatus" />
                         </Box>
                       </Grid>
 
+                       <Grid item xs={6}>
+                      <Box>
+                        <Typography className="text-sm text-primary mb-1">
+                          Payment Method
+                        </Typography>
+                        <Select
+                          name="paymentMethod"
+                          value={values.paymentMethod || ""} // Default to an empty string
+                          onChange={(e) => {
+                            const newPaymentMethod = e.target.value;
+                            setFieldValue("paymentMethod", newPaymentMethod); // Update Formik state
+                          }}
+                          fullWidth
+                          displayEmpty
+                        >
+                          <MenuItem value="" disabled>
+                            Select Payment Method
+                          </MenuItem>
+                          <MenuItem value="UPI">UPI</MenuItem>
+                          <MenuItem value="Cash">Cash</MenuItem>
+                          <MenuItem value="NEFT">NEFT</MenuItem>
+                          <MenuItem value="Cheque">Cheque</MenuItem>
+                          <MenuItem value="Credit Card">Credit Card</MenuItem>
+                          <MenuItem value="Debit Card">Debit Card</MenuItem>
+                        </Select>
+                          <CustomErrorMessage name="paymentMethod" />
+                      </Box>
+                    </Grid>
+
+
                       <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Description{" "}
+                          </Typography>
+                          <Field
+                            name="description"
+                            error={
+                              touched.description && Boolean(errors.description)
+                            }
+                            as={OutlinedInput}
+                            fullWidth
+                            placeholder="e.g., 1.50"
+                            value={values.description || ""} // Fallback to empty string
+                          />
+                          <CustomErrorMessage name="description" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={12}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
                             Notes (if any)
@@ -1470,7 +2149,7 @@ useEffect(() => {
                           >
                             {/* Placeholder for default selection */}
                             <MenuItem value="" disabled>
-                              Select Silver Type
+                              Select type of Silver
                             </MenuItem>
 
                             {/* Dynamically filter and display silver types */}
@@ -1518,121 +2197,6 @@ useEffect(() => {
                             </MenuItem>
                           </Field>
                           <CustomErrorMessage name="silverType" />
-                        </Box>
-                      </Grid>
-
-                      <Grid item xs={6}>
-                        <Box>
-                          <Typography className="text-sm text-primary mb-1">
-                            Description
-                          </Typography>
-                          <Field
-                            name="description"
-                            as={OutlinedInput}
-                            error={
-                              touched.description && Boolean(errors.description)
-                            }
-                            fullWidth
-                            placeholder="e.g., 1.50"
-                            value={values.description || ""} // Fallback to empty string
-                          />
-                          <CustomErrorMessage name="description" />
-                        </Box>
-                      </Grid>
-
-                      <Grid item xs={6}>
-                        <Box>
-                          <Typography className="text-sm text-primary mb-1">
-                            Select silver clarity
-                          </Typography>
-                          <Field
-                            as={Select}
-                            error={touched.sclarity && Boolean(errors.sclarity)}
-                            name="sclarity"
-                            // value={values.sclarity || ""} // Ensure controlled value
-                            value={
-                              values?.sclarity
-                                ? values?.sclarity
-                                : props?.isEditMode
-                                ? (props?.initialValues?.sclarity?.id &&
-                                    props.initialValues?.sclarity?.id) ||
-                                  ""
-                                : ""
-                            }
-                            onChange={handleChange}
-                            displayEmpty
-                            fullWidth
-                          >
-                            {/* Placeholder option */}
-                            <MenuItem value="" disabled>
-                              Select silver clarity
-                            </MenuItem>
-
-                            {/* Map through filtered purity options */}
-                            {ornamentPurities.length > 0 ? (
-                              ornamentPurities
-                                .filter(
-                                  (sclarity: { ornament?: { id: string } }) =>
-                                    sclarity.ornament?.id === stockType // Match the purity with the selected stock type
-                                )
-                                .map(
-                                  (sclarity: {
-                                    id: string;
-                                    ornamentPurity: string;
-                                  }) => (
-                                    <MenuItem
-                                      key={sclarity.id}
-                                      value={sclarity.id}
-                                    >
-                                      {sclarity.ornamentPurity}
-                                    </MenuItem>
-                                  )
-                                )
-                            ) : (
-                              <MenuItem value="" disabled>
-                                No Options Available
-                              </MenuItem>
-                            )}
-
-                            {/* Add New Item functionality */}
-                            <MenuItem className="flex flex-row justify-center w-full">
-                              <AddNewItem
-                                stockTypeId={stockType || "default-stock-type"}
-                                category="purity"
-                                onAddItem={(newItem: {
-                                  id: string;
-                                  name: string;
-                                }) => {
-                                  setPurityOptions((prev: any[]) => [
-                                    ...prev,
-                                    {
-                                      id: newItem.id,
-                                      ornamentPurity: newItem.name,
-                                      ornament: stockType, // Link it to the current stockType
-                                    },
-                                  ]);
-                                }}
-                              />
-                            </MenuItem>
-                          </Field>
-                          <CustomErrorMessage name="sclarity" />
-                        </Box>
-                      </Grid>
-
-                      <Grid item xs={6}>
-                        <Box>
-                          <Typography className="text-sm text-primary mb-1">
-                            Quantity
-                          </Typography>
-                          <Field
-                            name="quantity"
-                            as={OutlinedInput}
-                            error={touched.quantity && Boolean(errors.quantity)}
-                            fullWidth
-                            placeholder="Enter quantity"
-                            value={values.quantity || ""} // Fallback to empty string
-                          />
-                          <CustomErrorMessage name="quantity" />
                         </Box>
                       </Grid>
 
@@ -1717,37 +2281,392 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Unit Price
+                            Select Clarity
                           </Typography>
                           <Field
-                            name="unitPrice"
-                            as={OutlinedInput}
+                            as={Select}
+                            error={touched.sclarity && Boolean(errors.sclarity)}
+                            name="sclarity"
+                            // value={values.sclarity || ""} // Ensure controlled value
+                            value={
+                              values?.sclarity
+                                ? values?.sclarity
+                                : props?.isEditMode
+                                ? (props?.initialValues?.sclarity?.id &&
+                                    props.initialValues?.sclarity?.id) ||
+                                  ""
+                                : ""
+                            }
+                            onChange={handleChange}
+                            displayEmpty
                             fullWidth
+                          >
+                            {/* Placeholder option */}
+                            <MenuItem value="" disabled>
+                              Select silver clarity
+                            </MenuItem>
+
+                            {/* Map through filtered purity options */}
+                            {ornamentPurities.length > 0 ? (
+                              ornamentPurities
+                                .filter(
+                                  (sclarity: { ornament?: { id: string } }) =>
+                                    sclarity.ornament?.id === stockType // Match the purity with the selected stock type
+                                )
+                                .map(
+                                  (sclarity: {
+                                    id: string;
+                                    ornamentPurity: string;
+                                  }) => (
+                                    <MenuItem
+                                      key={sclarity.id}
+                                      value={sclarity.id}
+                                    >
+                                      {sclarity.ornamentPurity}
+                                    </MenuItem>
+                                  )
+                                )
+                            ) : (
+                              <MenuItem value="" disabled>
+                                No Options Available
+                              </MenuItem>
+                            )}
+
+                            {/* Add New Item functionality */}
+                            <MenuItem className="flex flex-row justify-center w-full">
+                              <AddNewItem
+                                stockTypeId={stockType || "default-stock-type"}
+                                category="purity"
+                                onAddItem={(newItem: {
+                                  id: string;
+                                  name: string;
+                                }) => {
+                                  setPurityOptions((prev: any[]) => [
+                                    ...prev,
+                                    {
+                                      id: newItem.id,
+                                      ornamentPurity: newItem.name,
+                                      ornament: stockType, // Link it to the current stockType
+                                    },
+                                  ]);
+                                }}
+                              />
+                            </MenuItem>
+                          </Field>
+                          <CustomErrorMessage name="sclarity" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Quantity
+                          </Typography>
+                          <OutlinedInput
+                            name="quantity"
+                            value={values.quantity || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newQuantity = e.target.value;
+                              setFieldValue("quantity", newQuantity); // Update Formik's state
+                              const newBaseTotal = handleBaseTotalCalculation(
+                                newQuantity,
+                                values.unitPrice
+                              );
+                              setFieldValue(
+                                "baseTotal",
+                                newBaseTotal.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  newBaseTotal.toString(),
+                                  values.commissionRate
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                newBaseTotal.toString(),
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
+                            error={touched.quantity && Boolean(errors.quantity)}
+                            fullWidth
+                            placeholder="Enter quantity"
+                          />
+                          <CustomErrorMessage name="quantity" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Unit Price
+                          </Typography>
+                          <OutlinedInput
+                            name="unitPrice"
+                            value={values.unitPrice || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newUnitPrice = e.target.value;
+                              setFieldValue("unitPrice", newUnitPrice); // Update Formik's state
+                              const newBaseTotal = handleBaseTotalCalculation(
+                                values.quantity,
+                                newUnitPrice.toString()
+                              );
+                              setFieldValue(
+                                "baseTotal",
+                                newBaseTotal.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  newBaseTotal.toString(),
+                                  values.commissionRate
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                newBaseTotal.toString(),
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
                             error={
                               touched.unitPrice && Boolean(errors.unitPrice)
                             }
+                            fullWidth
                             placeholder="Enter unit price"
-                            value={values.unitPrice || ""} // Fallback to empty string
                           />
                           <CustomErrorMessage name="unitPrice" />
                         </Box>
                       </Grid>
+
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Total Value
+                            Base Total (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="baseTotal"
+                            value={values.baseTotal || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... base total"
+                            onChange={() => {
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                values.commissionValue
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                          />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Commission Rate (%)
+                          </Typography>
+                          <OutlinedInput
+                            name="commissionRate"
+                            value={values.commissionRate || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newCommission = e.target.value;
+                              setFieldValue(
+                                "commissionRate",
+                                newCommission.toString()
+                              );
+                              const newCommissionValue =
+                                handleCommissionValueCalculation(
+                                  values.baseTotal,
+                                  newCommission.toString()
+                                );
+                              setFieldValue(
+                                "commissionValue",
+                                newCommissionValue.toString()
+                              );
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                newCommissionValue.toString()
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                            onBlur={handleBlur}
+                            error={
+                              touched.commissionRate && Boolean(errors.commissionRate)
+                            }
+                            fullWidth
+                            placeholder="Enter commission rate (%)"
+                          />
+                          <CustomErrorMessage name="commissionRate" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Commission Value (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="commissionValue"
+                            value={values.commissionValue || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... commission value"
+                            onChange={() => {
+                              const newTotalPrice = handleTotalPriceCalculation(
+                                values.baseTotal,
+                                values.commissionValue
+                              );
+                              setFieldValue(
+                                "totalPrice",
+                                newTotalPrice.toString()
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                handleBalanceDueCalculation(
+                                  newTotalPrice.toString(),
+                                  values.amountPaid
+                                )
+                              );
+                            }}
+                          />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Total Price (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="totalPrice"
+                            value={values.totalPrice || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... total price"
+                          />
+                          <CustomErrorMessage name="totalPrice" />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Amount Paid
+                          </Typography>
+                          <OutlinedInput
+                            name="amountPaid"
+                            value={values.amountPaid || ""}
+                            onChange={(
+                              e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                              const newAmountPaid = e.target.value;
+                              // console.log("Amount Paid Input: ", newAmountPaid);
+                              setFieldValue("amountPaid", newAmountPaid); // Update Formik's state for Amount Paid
+                              const newBalanceDue = handleBalanceDueCalculation(
+                                values.totalPrice,
+                                newAmountPaid
+                              );
+                              setFieldValue(
+                                "balanceDue",
+                                newBalanceDue.toString()
+                              ); // Update Balance Due
+                            }}
+                            onBlur={handleBlur}
+                            error={
+                              touched.amountPaid && Boolean(errors.amountPaid)
+                            }
+                            fullWidth
+                            placeholder="Enter amount paid"
+                          />
+                          <CustomErrorMessage name="amountPaid" />
+                        </Box>
+                      </Grid>
+
+                      {/* Balance Due Field */}
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Balance Due (Calc...)
+                          </Typography>
+                          <OutlinedInput
+                            name="balanceDue"
+                            value={values.balanceDue || ""}
+                            fullWidth
+                            readOnly
+                            placeholder="Calc... balance due"
+                          />
+                        </Box>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Batch Number
                           </Typography>
                           <Field
-                            name="totalValue"
+                            name="batchNumber"
                             as={OutlinedInput}
-                            fullWidth
                             error={
-                              touched.totalValue && Boolean(errors.totalValue)
+                              touched.batchNumber && Boolean(errors.batchNumber)
                             }
-                            placeholder="Enter total value"
-                            value={values.totalValue || ""} // Fallback to empty string
+                            fullWidth
+                            placeholder="Enter Batch Number"
+                            value={values.batchNumber || ""} // Fallback to empty string
                           />
-                          <CustomErrorMessage name="totalValue" />
+                          <CustomErrorMessage name="batchNumber" />
                         </Box>
                       </Grid>
 
@@ -1765,25 +2684,6 @@ useEffect(() => {
                             value={values.location || ""} // Fallback to empty string
                           />
                           <CustomErrorMessage name="location" />
-                        </Box>
-                      </Grid>
-
-                      <Grid item xs={6}>
-                        <Box>
-                          <Typography className="text-sm text-primary mb-1">
-                            Batch Number
-                          </Typography>
-                          <Field
-                            name="batchNumber"
-                            as={OutlinedInput}
-                            error={
-                              touched.batchNumber && Boolean(errors.batchNumber)
-                            }
-                            fullWidth
-                            placeholder="Enter batch Number"
-                            value={values.batchNumber || ""} // Fallback to empty string
-                          />
-                          <CustomErrorMessage name="batchNumber" />
                         </Box>
                       </Grid>
 
@@ -1842,19 +2742,75 @@ useEffect(() => {
                       <Grid item xs={6}>
                         <Box>
                           <Typography className="text-sm text-primary mb-1">
-                            Commission
+                            Payment Status
+                          </Typography>
+                          <Select
+                            name="paymentStatus"
+                            value={values.paymentStatus || ""} // Default to "Remaining"
+                            onChange={(e) => {
+                              const newPaymentStatus = e.target.value;
+                              setFieldValue("paymentStatus", newPaymentStatus); // Update Formik state
+                            }}
+                            fullWidth
+                            displayEmpty
+                          >
+                            <MenuItem value="" disabled>
+                              Select Payment Status
+                            </MenuItem>
+                            <MenuItem value="Partial">Partial</MenuItem>
+                            <MenuItem value="Completed">Completed</MenuItem>
+                            <MenuItem value="Remaining">Remaining</MenuItem>
+                          </Select>
+                          <CustomErrorMessage name="paymentStatus" />
+                        </Box>
+                      </Grid>
+
+                       <Grid item xs={6}>
+                      <Box>
+                        <Typography className="text-sm text-primary mb-1">
+                          Payment Method
+                        </Typography>
+                        <Select
+                          name="paymentMethod"
+                          value={values.paymentMethod || ""} // Default to an empty string
+                          onChange={(e) => {
+                            const newPaymentMethod = e.target.value;
+                            setFieldValue("paymentMethod", newPaymentMethod); // Update Formik state
+                          }}
+                          fullWidth
+                          displayEmpty
+                        >
+                          <MenuItem value="" disabled>
+                            Select Payment Method
+                          </MenuItem>
+                          <MenuItem value="UPI">UPI</MenuItem>
+                          <MenuItem value="Cash">Cash</MenuItem>
+                          <MenuItem value="NEFT">NEFT</MenuItem>
+                          <MenuItem value="Cheque">Cheque</MenuItem>
+                          <MenuItem value="Credit Card">Credit Card</MenuItem>
+                          <MenuItem value="Debit Card">Debit Card</MenuItem>
+                        </Select>
+                          <CustomErrorMessage name="paymentMethod" />
+                      </Box>
+                    </Grid>
+
+
+                      <Grid item xs={6}>
+                        <Box>
+                          <Typography className="text-sm text-primary mb-1">
+                            Description
                           </Typography>
                           <Field
-                            name="commission"
+                            name="description"
                             as={OutlinedInput}
-                            fullWidth
                             error={
-                              touched.commission && Boolean(errors.commission)
+                              touched.description && Boolean(errors.description)
                             }
-                            placeholder="Enter commission"
-                            value={values.commission || ""} // Fallback to empty string
+                            fullWidth
+                            placeholder="enter description"
+                            value={values.description || ""} // Fallback to empty string
                           />
-                          <CustomErrorMessage name="commission" />
+                          <CustomErrorMessage name="description" />
                         </Box>
                       </Grid>
 

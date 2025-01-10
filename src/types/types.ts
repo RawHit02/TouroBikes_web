@@ -5,5 +5,7 @@ export interface Data {
     whatsappNumber: string;
     email: string;
     address: string;
-    profileImage?: string; 
+    balanceDue: number;
+    profileImage?: any ; 
+    vendor?: string;
 }

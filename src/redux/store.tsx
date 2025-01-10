@@ -7,6 +7,9 @@ import VendorManagementReducer from "./vendor_management/vendor_management.slice
 import stockManagementReducer from "@/redux/stock_management/stock_management.slice";
 import EmployeeManagementReducer from "./employee_management/employee_management.slice"; // Employee management reducer
 import attendanceReducer from "./todays_attendance/attendance.slice"; // Attendance reducer
+import dashboardReducer from "./dashboard/dashboard_slice"; // Dashboard slice
+
+
 
 // Configure the Redux store
 export const store = configureStore({
@@ -18,8 +21,10 @@ export const store = configureStore({
     EmployeeManagementReducer,
     attendance: attendanceReducer,
     transactions: transactionsReducer,
+    dashboard: dashboardReducer, // Added the dashboard slice
   },
   devTools: true, // Enable Redux DevTools in development
+  
 });
 
 // Type definitions for state and dispatch
