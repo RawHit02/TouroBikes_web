@@ -142,6 +142,9 @@ const SideNav: React.FC<SideNavProps> = ({ onPress, navOpen }) => {
               className={`flex items-center gap-[6px] p-3 rounded-lg cursor-pointer bg-primary300 nav-item active ${
                 !navOpen && "justify-center"
               }`}
+              onClick={(e) =>
+                drawerItemSelectionCLick(e, NavDrawerItemsConstants.DASHBOARD)
+              }
             >
               <Image
                 src={DashboardIcon}

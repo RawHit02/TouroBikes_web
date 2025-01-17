@@ -48,11 +48,15 @@ const headCells = [
   { id: "description", label: "Item Description" },
   { id: "quantity", label: "Quantity/(Weight)" },
   { id: "unitPrice", label: "Base Price Per/Unit" },
-  { id: "commission", label: "Commission Rate" },
-  { id: "totalValue", label: "Total Price" },
+  { id: "baseTotal", label: "BaseTotal" },
+
+  { id: "commissionRate", label: "Commission Rate" },
+    { id: "commissionValue", label: "CommissionValue" },
+
+  { id: "totalPrice", label: "Total Price" },
   { id: "amountPaid", label: "Amount Paid" },
   { id: "balanceDue", label: "Balance Due" },
-  { id: "paymentType", label: "Payment Method" },
+  { id: "paymentMethod", label: "Payment Method" },
   { id: "paymentStatus", label: "Status" },
   { id: "notes", label: "Notes" },
 ];
@@ -118,11 +122,13 @@ const TransactionTable = () => {
       description: row.description,
       quantity: row.quantity,
       unitPrice: row.unitPrice,
-      commission: row.commission,
-      totalValue: row.totalValue,
+      baseTotal : row.baseTotal,
+      commissionRate: row.commissionRate,
+      commissionValue : row.commissionValue,
+      totalPrice: row.totalPrice,
       amountPaid: row.amountPaid,
       balanceDue: row.balanceDue,
-      paymentType: row.paymentType,
+      paymentMethod: row.paymentMethod,
       paymentStatus: row.paymentStatus,
       notes: row.notes,
     }));
@@ -185,11 +191,13 @@ const TransactionTable = () => {
                   <StyledTableCell>{row.description}</StyledTableCell>
                   <StyledTableCell>{row.quantity}</StyledTableCell>
                   <StyledTableCell>{row.unitPrice}</StyledTableCell>
-                  <StyledTableCell>{row.commission}</StyledTableCell>
-                  <StyledTableCell>{row.totalValue}</StyledTableCell>
+                  <StyledTableCell>{row.baseTotal}</StyledTableCell>
+                  <StyledTableCell>{row.commissionRate}</StyledTableCell>
+                  <StyledTableCell>{row.commissionValue}</StyledTableCell>
+                  <StyledTableCell>{row.totalPrice}</StyledTableCell>
                   <StyledTableCell>{row.amountPaid}</StyledTableCell>
                   <StyledTableCell>{row.balanceDue}</StyledTableCell>
-                  <StyledTableCell>{row.paymentType}</StyledTableCell>
+                  <StyledTableCell>{row.paymentMethod}</StyledTableCell>
                   <StyledTableCell>{row.paymentStatus}</StyledTableCell>
                   <StyledTableCell>{row.notes}</StyledTableCell>
                 </StyledTableRow>

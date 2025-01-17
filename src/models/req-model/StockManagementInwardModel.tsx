@@ -7,31 +7,37 @@ export interface StockManagementInwardModel {
   description: string; // Description of the stock
   quantity: string; // Quantity of stock
   unitPrice: string; // Price per unit
-  totalValue: string; // Total value of the stock
-  commission: string; // Commission applicable
+  totalPrice: any; // Total value of the stock
+  commissionRate: string; // Commission applicable
   batchNumber: string; // Batch number
   location: string; // Location of stock
   notes: string; // Additional notes
-  vendor: string; // Supplier ID
+  vendor: any; // Supplier ID
   ornament: any; // Ornament ID
-  type: string; // Ornament type ID
-  form: string; // Ornament form ID
-  // cut: string ;
-  purity: string; // Ornament purity ID
-  color: string; // Ornament color ID (optional for Gold/Silver)
-  formOfGold: string; // Specific to Gold
-  diamondType: string; // Specific to Diamond
-  silverType: string; // Specific to Silver
-  cutGrade: string; // Specific to Diamond
-  clarity: string; // Specific to Diamond
-  sclarity: string; // Specific to Silver clarity
-  colorGrade: string; // Specific to Diamond
-  paymentStatus: string; // For outward alignment if reused
+  type: any; // Ornament type ID
+  form: any; // Ornament form ID
+  purity: any; // Ornament purity ID
+  color: any; // Ornament color ID (optional for Gold/Silver)
+  formOfGold: any; // Specific to Gold
+  diamondType: any; // Specific to Diamond
+  silverType: any; // Specific to Silver
+  cutGrade: any; // Specific to Diamond
+  clarity: any; // Specific to Diamond
+  sclarity: any; // Specific to Silver clarity
+  colorGrade: any; // Specific to Diamond
   createdBy: string; // Created by user
   createdDate: string; // Creation date
   updatedDate: string; // Last updated date
-  formOfSilver: string;
-  goldType: string;
+  formOfSilver: any;
+  goldType: any;
+  grade: any;
+  commissionValue: string;
+  // New Fields
+  paymentStatus: string;
+  paymentMethod : string;
+  amountPaid: string; // Amount paid by the supplier
+  baseTotal: string; // Calculated base total (quantity * unit price)
+  balanceDue: string; // Calculated balance due (totalValue - amountPaid)
 }
 
 
@@ -55,17 +61,25 @@ export interface CreateStockInwardPayload {
   description: string; // Stock description
   quantity: string; // Quantity of stock
   unitPrice: string; // Price per unit
-  totalValue: string; // Total stock value
-  commission: string; // Commission amount
+  totalPrice: any; // Total stock value
+  commissionRate: string; // Commission amount
   batchNumber: string; // Batch number
   location: string; // Stock location
   notes: string; // Optional notes
-  vendor: string; // Supplier ID
+  vendor: any; // Supplier ID
   ornament: any; // Ornament ID
   type: string; // Ornament type ID
   form: string; // Ornament form ID
-  // cut : string;
   purity: string; // Ornament purity ID
   color: string; // Optional for Gold/Silver
-  // cutGrade: string; // Optional for Diamond
+  grade: string; // Optional for Diamond
+
+  // New Fields
+  paymentStatus : string;
+  paymentMethod : string ;
+  amountPaid: string; // Amount paid by the supplier
+  baseTotal: string; // Calculated base total (quantity * unit price)
+  commissionValue: string; // Calculated commission value
+  balanceDue: string; // Calculated balance due (totalValue - amountPaid)
 }
+

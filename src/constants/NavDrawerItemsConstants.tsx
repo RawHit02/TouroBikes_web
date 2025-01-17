@@ -1,4 +1,8 @@
 export const NavDrawerItemsConstants = {
+  //Dashboard Management
+  DASHBOARD: "dashboard",
+
+  // Vendor Management
   VENDOR_MANAGEMENT_BUYER: "vender-management/buyers",
   VENDOR_MANAGEMENT_SELLERS: "vender-management/sellers",
 

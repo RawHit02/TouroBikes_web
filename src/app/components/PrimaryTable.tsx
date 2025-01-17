@@ -21,10 +21,11 @@ interface PrimaryTableProps {
 
 const PrimaryTable: React.FC<PrimaryTableProps> = ({ rows }) => {
     const columns = [
-        { id: "name", label: "Name/Email" },
-        { id: "contactNumber", label: "Contact Number" },
-        { id: "whatsappNumber", label: "WhatsApp Number" },
-        { id: "address", label: "Address" },
+      { id: "name", label: "Name/Email" },
+      { id: "balanceDue", label: "BalanceDue" },
+      { id: "contactNumber", label: "Contact Number" },
+      { id: "whatsappNumber", label: "WhatsApp Number" },
+      { id: "address", label: "Address" },
     ];
 
     return (
@@ -60,6 +61,7 @@ const PrimaryTable: React.FC<PrimaryTableProps> = ({ rows }) => {
                                         </Box>
                                     </Box>
                                 </TableCell>
+                                <TableCell align="left">{row.balanceDue}</TableCell>
                                 <TableCell align="left">{row.contactNumber}</TableCell>
                                 <TableCell align="left">{row.whatsappNumber}</TableCell>
                                 <TableCell align="left">{row.address}</TableCell>

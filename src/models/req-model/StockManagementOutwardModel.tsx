@@ -7,29 +7,36 @@ export interface StockManagementOutwardModel {
   description: string; // Description of the stock
   quantity: string; // Quantity of stock
   unitPrice: string; // Price per unit
-  totalValue: string; // Total value of the stock
-  commission: string; // Commission applicable
+  totalPrice: any; // Total value of the stock
+  commissionRate: string; // Commission applicable
   batchNumber: string; // Batch number
   location: string; // Location of stock
   notes: string; // Additional notes
-  vendor: string; // Buyer ID
+  vendor: any; // Buyer ID
   ornament: any; // Ornament ID
-  type: string; // Ornament type ID
-  form: string; // Ornament form ID
-  purity: string; // Ornament purity ID
-  // color: string; // Ornament color ID (optional for Gold/Silver)
-  formOfGold: string; // Specific to Gold
-  formOfSilver: string;
-  diamondType: string; // Specific to Diamond
-  silverType: string; // Specific to Silver
-  cutGrade: string; // Specific to Diamond
-  clarity: string; // Specific to Diamond
-  sclarity: string; // Specific to Silver clarity
-  colorGrade: string; // Specific to Diamond
+  type: any; // Ornament type ID
+  form: any; // Ornament form ID
+  purity: any; // Ornament purity ID
+  color: any; // Ornament color ID (optional for Gold/Silver)
+  grade: any;
+  formOfGold: any; // Specific to Gold
+  formOfSilver: any;
+  diamondType: any; // Specific to Diamond
+  silverType: any; // Specific to Silver
+  cutGrade: any; // Specific to Diamond
+  clarity: any; // Specific to Diamond
+  sclarity: any; // Specific to Silver clarity
+  colorGrade: any; // Specific to Diamond
   createdBy: string; // Created by user
   createdDate: string; // Creation date
   updatedDate: string; // Last updated date
-  goldType: string;
+  goldType: any;
+  paymentStatus: string;
+  paymentMethod : string;
+  amountPaid: string;
+  baseTotal: any;
+  commissionValue: any;
+  balanceDue: any;
 }
 
 export interface InitialOutwardsModelState {
@@ -52,16 +59,23 @@ export interface CreateStockOutwardPayload {
   description: string; // Stock description
   quantity: string; // Quantity of stock
   unitPrice: string; // Price per unit
-  totalValue: string; // Total stock value
-  commission: string; // Commission amount
+  totalPrice: any; // Total stock value
+  commissionRate: string; // Commission amount
   batchNumber: string; // Batch number
   location: string; // Stock location
   notes: string; // Optional notes
-  vendor: string; // Buyer ID
+  vendor: any; // Buyer ID
   ornament: any; // Ornament ID
-  type: string; // Ornament type ID
-  form: string; // Ornament form ID
-  purity: string; // Ornament purity ID
-  // color: string; // Optional for Gold/Silver
-  // cutGrade: string; // Optional for Diamond
+  type: any; // Ornament type ID
+  form: any; // Ornament form ID
+  purity: any; // Ornament purity ID
+  color: any; // Optional for Gold/Silver
+  grade: any; // Optional for Diamond
+paymentStatus : string ;
+   amountPaid : string; 
+    paymentMethod : string;
+
+  baseTotal: any;
+  commissionValue: any;
+  balanceDue: any;
 }

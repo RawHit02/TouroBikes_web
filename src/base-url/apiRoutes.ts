@@ -45,10 +45,10 @@ export const GET_ORNAMENT_COLORS = `${BASE_URL}/ornamentColorManagement/getOrnam
 export const DELETE_ORNAMENT_COLORS = `${BASE_URL}/ornamentColorManagement/deleteOrnamentColor`; // Delete Ornament Color
 
 
-// // Ornament Cuts
-// export const POST_ORNAMENT_CUTS = `${BASE_URL}/ornamentCutManagement`;
-// export const GET_ORNAMENT_CUTS = `${BASE_URL}/ornamentCutManagement/getOrnamentCut`; // Fetch Ornament Forms
-// export const DELETE_ORNAMENT_CUTS = `${BASE_URL}/ornamentCutManagement/deleteOrnamentCut`; // Delete Ornament Form
+// Ornament Cut Grade
+export const POST_ORNAMENT_Grade = `${BASE_URL}/ornamentGradeManagement`;
+export const GET_ORNAMENT_Grade = `${BASE_URL}/ornamentGradeManagement/getOrnamentGrade`; // Fetch Ornament Forms
+export const DELETE_ORNAMENT_Grade = `${BASE_URL}/ornamentGradeManagement/deleteOrnamentGrade`; // Delete Ornament Form
 
 
 
@@ -85,6 +85,13 @@ export const ADD_ATTENDANCE_RECORD = `${BASE_URL}/attendanceManagement/createAtt
 export const GET_ATTENDANCE_RECORDS = `${BASE_URL}/attendanceManagement/getAttendance`;
 export const UPDATE_ATTENDANCE_RECORD = `${BASE_URL}/attendanceManagement/updateAttendance`;
 export const DELETE_ATTENDANCE_RECORD = `${BASE_URL}/attendanceManagement/deleteAttendance`;
+
+
+// Dashboard Management
+export const GET_DASHBOARD = `${BASE_URL}/dashboardManagement/dashboard`; 
+export const GET_DUES = `${BASE_URL}/dashboardManagement/getDues`;
+
+
 
 // Sass Loader Configuration
 export const sassLoaderOptions = {

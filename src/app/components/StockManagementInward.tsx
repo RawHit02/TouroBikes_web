@@ -16,6 +16,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
 import DeleteDialog from "./DeleteDialog";
+import moment from "moment";
 
 import {
   DeleteRed,
@@ -26,7 +27,10 @@ import {
 import Image from "next/image";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { CreateStockInwardPayload, GetAllInwardsRequest } from "@/models/req-model/StockManagementInwardModel";
+import {
+  CreateStockInwardPayload,
+  GetAllInwardsRequest,
+} from "@/models/req-model/StockManagementInwardModel";
 import {
   deleteInwardAction,
   getAllInwardsAction,
@@ -43,18 +47,19 @@ const headCellsInward = [
   { field: "description", headerName: "Description", sortable: true },
   { field: "itemType", headerName: "Item Type", sortable: true },
   { field: "quantity", headerName: "Qty", sortable: true },
-  { field: "unitPrice", headerName: "Unit Price", sortable: true },
-  { field: "commission", headerName: "Commission", sortable: true },
-  { field: "totalValue", headerName: "Total Value", sortable: true },
+  { field: "unitPrice", headerName: "Base Price Per/Unit", sortable: true },
+  // { field: "baseTotal", headerName: "Base Total", sortable: true },
+  { field: "commissionRate", headerName: "Commission Rate", sortable: true },
+  // { field: "commissionValue", headerName: "Commission Value", sortable: true },
+  { field: "totalValue", headerName: "Total Price", sortable: true },
+  // { field: "amountPaid", headerName: "Amount Paid", sortable: true },
   { field: "batchNo", headerName: "Batch No.", sortable: true },
-  // { field: "receivedBy", headerName: "Received By", sortable: true },
   { field: "location", headerName: "Location", sortable: true },
   { field: "notes", headerName: "Notes", sortable: true },
 ];
 
 const StockManagementInward = ({
   onEditInward,
-  // onDeleteRecord,
 }: {
   onEditInward: (row: StockManagementInwardModel) => void;
 }) => {
@@ -64,12 +69,12 @@ const StockManagementInward = ({
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const [selectedInwardId, setSelectedInwardId] = useState<string | null>(null); // Inward ID for the menu actions
+  const [selectedInwardId, setSelectedInwardId] = useState<string | null>(null);
+  const [openDelete, setOpenDelete] = useState(false); // Delete dialog state
   const dispatch = useDispatch<AppDispatch>();
   const { getAllInwards, itemCount } = useAppSelector(
     (state) => state.stockManagement.inwards
   );
-  const [openDelete, setOpenDelete] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -94,12 +99,12 @@ const StockManagementInward = ({
     inwardId: string
   ) => {
     setAnchorEl(event.currentTarget);
-    setSelectedInwardId(inwardId); // Set the inward ID for menu actions
+    setSelectedInwardId(inwardId);
   };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
-    setSelectedInwardId(null); // Clear selected inward
+    setSelectedInwardId(null);
   };
 
   const handleEditClick = (row: StockManagementInwardModel) => {
@@ -107,17 +112,20 @@ const StockManagementInward = ({
     handleCloseMenu();
   };
 
+  const handleCloseDeleteDialog = () => {
+    setOpenDelete(false);
+  };
+
   const handleDeleteInward = async () => {
     if (selectedInwardId) {
-      if (window.confirm("Are you sure you want to delete this inward?")) {
-        try {
-          await dispatch(deleteInwardAction(selectedInwardId)).unwrap();
-          fetchData(); // Refresh data after deletion
-        } catch (error) {
-          console.error("Failed to delete inward:", error);
-        }
+      try {
+        await dispatch(deleteInwardAction(selectedInwardId)).unwrap();
+        fetchData(); // Refresh data after deletion
+      } catch (error) {
+        console.error("Failed to delete inward:", error);
       }
-      handleCloseMenu();
+      setSelectedInwardId(null);
+      handleCloseDeleteDialog();
     }
   };
 
@@ -152,19 +160,18 @@ const StockManagementInward = ({
             <TableRow>
               {headCellsInward.map((headCell) => (
                 <TableCell
-                  key={headCell.field} // Use 'field' instead of 'id'
-                  sortDirection={orderBy === headCell.field ? order : false} // Use 'field' for comparison
+                  key={headCell.field}
+                  sortDirection={orderBy === headCell.field ? order : false}
                 >
                   <TableSortLabel
-                    active={orderBy === headCell.field} // Use 'field' for comparison
-                    direction={orderBy === headCell.field ? order : "asc"} // Use 'field' for comparison
+                    active={orderBy === headCell.field}
+                    direction={orderBy === headCell.field ? order : "asc"}
                     onClick={(event) =>
                       handleRequestSort(event, headCell.field)
-                    } // Use 'field' for sort handler
+                    }
                   >
-                    {headCell.headerName}{" "}
-                    {/* Use 'headerName' for column name */}
-                    {orderBy === headCell.field ? ( // Use 'field' for comparison
+                    {headCell.headerName}
+                    {orderBy === headCell.field ? (
                       <Box component="span" className="sr-only">
                         {order === "desc"
                           ? "sorted descending"
@@ -189,7 +196,9 @@ const StockManagementInward = ({
                       {row.transId}
                     </Typography>
                   </TableCell>
-                  <TableCell>{row.createdDate}</TableCell>
+                <TableCell>
+                  {row.createdDate ? moment(row.createdDate).format("DD MMM YYYY, h:mm A") : "N/A"}
+                </TableCell>
                   <TableCell>
                     {typeof row.vendor === "object" &&
                     (row.vendor as { name: string })?.name
@@ -205,13 +214,13 @@ const StockManagementInward = ({
                   </TableCell>
                   <TableCell>{row.quantity}</TableCell>
                   <TableCell>{row.unitPrice}</TableCell>
-                  <TableCell>{row.commission}</TableCell>
-                  <TableCell>{row.totalValue}</TableCell>
+                  {/* <TableCell>{row.baseTotal}</TableCell> */}
+                  <TableCell>{row.commissionRate}</TableCell>
+                  {/* <TableCell>{row.commissionValue}</TableCell> */}
+                  <TableCell>{row.totalPrice}</TableCell>
                   <TableCell>{row.batchNumber}</TableCell>
                   <TableCell>{row.location}</TableCell>
                   <TableCell>{row.notes}</TableCell>
-
-                  {/* <TableCell>{row.receivedBy}</TableCell> */}
                   <TableCell>
                     <IconButton
                       onClick={(event) => handleClickMenu(event, row.id)}
@@ -228,7 +237,7 @@ const StockManagementInward = ({
                         <EditOutlinedIcon />
                         Edit
                       </MenuItem>
-                      <MenuItem onClick={handleDeleteInward}>
+                      <MenuItem onClick={() => setOpenDelete(true)}>
                         <Image src={DeleteRed} alt="Delete" />
                         Delete
                       </MenuItem>
@@ -249,6 +258,15 @@ const StockManagementInward = ({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      {openDelete && (
+        <DeleteDialog
+          handleCloseDeleteDialog={handleCloseDeleteDialog}
+          openDelete={openDelete}
+          handleDeleteAction={handleDeleteInward}
+          dialogueTitle="Delete Inward Record"
+          dialogueDescription="Are you sure you want to delete this inward record?"
+        />
+      )}
     </Box>
   );
 };
