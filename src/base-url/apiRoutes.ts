@@ -4,7 +4,7 @@ const BASE_URL = `${process?.env?.NEXT_PUBLIC_BACKEND_API_URL}/api/v1`;
 
 
 // Login Routes
-export const SIGN_IN = `${BASE_URL}/identity/signIn`;
+export const SIGN_IN = `${BASE_URL}/auth/signIn`;
 
 // Vendor Management
 export const CREATE_VENDOR = `${BASE_URL}/vendorManagement/createVendor`;
